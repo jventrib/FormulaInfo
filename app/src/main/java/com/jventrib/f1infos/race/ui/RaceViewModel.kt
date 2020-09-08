@@ -13,12 +13,12 @@ import kotlinx.coroutines.launch
 class RaceViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: RaceRepository
-    val allWords: LiveData<List<Race>>
+    val allRaces: LiveData<List<Race>>
 
     init {
-        val wordsDao = RaceRoomDatabase.getDatabase(application).raceDao()
-        repository = RaceRepository(wordsDao)
-        allWords = repository.allRaces
+        val raceDao = RaceRoomDatabase.getDatabase(application, viewModelScope).raceDao()
+        repository = RaceRepository(raceDao)
+        allRaces = repository.allRaces
     }
 
     /**
