@@ -1,4 +1,4 @@
-package com.jventrib.f1infos.race.db
+package com.jventrib.f1infos.race.data.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -15,6 +15,9 @@ interface RaceDao {
 
     @Query("SELECT * from race WHERE season = :season ORDER BY round ASC")
     fun getSeasonRaces(season: String): LiveData<List<Race>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(races: List<Race>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(race: Race)
