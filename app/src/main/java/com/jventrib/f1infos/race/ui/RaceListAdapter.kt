@@ -8,16 +8,20 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jventrib.f1infos.R
 import com.jventrib.f1infos.race.model.Race
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class RaceListAdapter internal constructor(
-        context: Context
+    context: Context
 ) : RecyclerView.Adapter<RaceListAdapter.RaceViewHolder>() {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var races = emptyList<Race>() // Cached copy of words
 
     inner class RaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val raceItemView: TextView = itemView.findViewById(R.id.textView)
+        val raceNameItemView: TextView = itemView.findViewById(R.id.nameTextView)
+        val raceDateItemView: TextView = itemView.findViewById(R.id.dateTextView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RaceViewHolder {
@@ -27,7 +31,11 @@ class RaceListAdapter internal constructor(
 
     override fun onBindViewHolder(holder: RaceViewHolder, position: Int) {
         val current = races[position]
-        holder.raceItemView.text = current.raceName
+        holder.raceNameItemView.text = current.raceName
+        holder.raceDateItemView.text =
+            ZonedDateTime.ofInstant(current.datetime, ZoneId.systemDefault()).format(
+                DateTimeFormatter.ISO_DATE_TIME
+            )
     }
 
     internal fun setRaces(races: List<Race>) {
