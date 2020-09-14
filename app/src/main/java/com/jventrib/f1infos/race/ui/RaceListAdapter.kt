@@ -41,8 +41,9 @@ class RaceListAdapter internal constructor(
                 DateTimeFormatter.RFC_1123_DATE_TIME
             )
         Glide
-           .with(context)
+            .with(context)
             .load(current.circuit.location.flag)
+            .diskCacheStrategy(DiskCacheStrategy.DATA)
             .into(holder.flagItemView)
     }
 
