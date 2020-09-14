@@ -1,11 +1,10 @@
 package com.jventrib.f1infos.race.data.db
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
+import com.jventrib.f1infos.common.data.Resource
 import com.jventrib.f1infos.race.model.Race
+import java.io.InputStream
 
 @Dao
 interface RaceDao {
@@ -24,4 +23,7 @@ interface RaceDao {
 
     @Query("DELETE FROM race")
     suspend fun deleteAll()
+
+    @Update
+    fun updateRaceFlag(r: Race)
 }

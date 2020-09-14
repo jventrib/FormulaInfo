@@ -30,6 +30,7 @@ abstract class AppRoomDatabase : RoomDatabase() {
                     "f1_database"
                 )
 //                    .addCallback(RaceDatabaseCallback(scope))
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also { instance = it }
             }

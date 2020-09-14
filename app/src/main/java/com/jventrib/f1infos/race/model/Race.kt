@@ -1,5 +1,6 @@
 package com.jventrib.f1infos.race.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -38,7 +39,8 @@ class Race(
             @SerializedName("long")
             val longitude: Float,
             val locality: String,
-            val country: String
+            val country: String,
+            var flag: String?
         )
     }
 }
