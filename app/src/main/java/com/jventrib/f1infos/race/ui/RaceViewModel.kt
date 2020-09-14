@@ -6,9 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.GsonBuilder
 import com.jventrib.f1infos.common.data.Resource
-import com.jventrib.f1infos.common.data.remote.create
 import com.jventrib.f1infos.race.data.RaceRepository
 import com.jventrib.f1infos.race.data.db.AppRoomDatabase
+import com.jventrib.f1infos.race.data.remote.CountryService
 import com.jventrib.f1infos.race.data.remote.RaceRemoteDataSource
 import com.jventrib.f1infos.race.data.remote.RaceService
 import com.jventrib.f1infos.race.model.Race
@@ -24,16 +24,18 @@ class RaceViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         val raceDao = AppRoomDatabase.getDatabase(application).raceDao()
-        val raceService: RaceService = buildRetrofit().create()
-        val raceRemoteDataSource = RaceRemoteDataSource(raceService)
+        val raceService: RaceService = buildRetrofit("https://ergast.com/api/f1/")
+        val countryService: CountryService = buildRetrofit("https://restcountries.eu/rest/v2/name/")
+        val raceRemoteDataSource = RaceRemoteDataSource(raceService, countryService)
         repository = RaceRepository(raceDao, raceRemoteDataSource)
         allRaces = repository.getAllRaces()
     }
 
-    private fun buildRetrofit() =
-        Retrofit.Builder().baseUrl("https://ergast.com/api/f1/")
+    private inline fun <reified T> buildRetrofit(url: String): T =
+        Retrofit.Builder().baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
             .build()
+            .create(T::class.java)
 
     /**
      * Launching a new coroutine to insert the data in a non-blocking way
