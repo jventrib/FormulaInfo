@@ -55,6 +55,9 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.github.qoqa:glide-svg:3.0.0'
 
+    //Store
+    def var = implementation "com.dropbox.mobile.store:store4:4.0.0-alpha07"
+
     // Room components
     implementation "androidx.room:room-runtime:$rootProject.roomVersion"
     kapt "androidx.room:room-compiler:$rootProject.roomVersion"
