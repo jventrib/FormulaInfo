@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.f1infos.common.data.Resource
 import com.jventrib.f1infos.race.ui.RaceListAdapter
 import com.jventrib.f1infos.race.ui.RaceViewModel
@@ -27,16 +28,16 @@ class MainActivity : AppCompatActivity() {
 
         raceViewModel = ViewModelProvider(this).get(RaceViewModel::class.java)
         raceViewModel.allRaces.observe(this, {
-            when (it.status) {
-                Resource.Status.SUCCESS -> {
+            when (it) {
+                is StoreResponse.Data -> {
                     Log.d(this.localClassName, "Resource.Status.SUCCESS")
 //                    progress_bar.visibility = View.GONE
-                    if (!it.data.isNullOrEmpty()) adapter.setRaces(ArrayList(it.data))
+                    if (!it.value.isNullOrEmpty()) adapter.setRaces(ArrayList(it.value))
                 }
-                Resource.Status.ERROR ->
-                    Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                is StoreResponse.Error ->
+                    Toast.makeText(this, it.errorMessageOrNull(), Toast.LENGTH_SHORT).show()
 
-                Resource.Status.LOADING ->
+                is StoreResponse.Loading ->
                     Log.d(this.localClassName, "Resource.Status.LOADING")
 //                    progress_bar.visibility = View.VISIBLE
             }
