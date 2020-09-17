@@ -25,16 +25,17 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         raceViewModel = ViewModelProvider(this).get(RaceViewModel::class.java)
-        raceViewModel.allRaces.observe(this, {
-            when (it) {
+        raceViewModel.allRaces.observe(this, { response ->
+            when (response) {
                 is StoreResponse.Data -> {
                     Log.d(this.localClassName, "Resource.Status.SUCCESS")
 //                    progress_bar.visibility = View.GONE
-                    if (!it.value.isNullOrEmpty()) adapter.setRaces(ArrayList(it.value))
+                    if (!response.value.isNullOrEmpty()) adapter.setRaces(ArrayList(response.value))
                 }
-                is StoreResponse.Error ->
-                    Toast.makeText(this, it.errorMessageOrNull(), Toast.LENGTH_SHORT).show()
-
+                is StoreResponse.Error.Exception -> {
+                    Log.e(this.localClassName, "Error: ${response.errorMessageOrNull()}", response.error)
+                    Toast.makeText(this, response.errorMessageOrNull(), Toast.LENGTH_SHORT).show()
+                }
                 is StoreResponse.Loading ->
                     Log.d(this.localClassName, "Resource.Status.LOADING")
 //                    progress_bar.visibility = View.VISIBLE

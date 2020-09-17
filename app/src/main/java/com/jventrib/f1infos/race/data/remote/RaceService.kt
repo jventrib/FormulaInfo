@@ -8,6 +8,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface RaceService {
-    @GET("current.json")
-    suspend fun getRaces() : MRResponse<RaceTable>
+    @GET("{season}.json")
+    suspend fun getRaces(@Path("season") season: Int) : MRResponse<RaceTable>
 }
