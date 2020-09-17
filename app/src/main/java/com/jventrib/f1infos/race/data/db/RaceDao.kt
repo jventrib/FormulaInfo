@@ -12,7 +12,7 @@ interface RaceDao {
     fun getAllRaces(): Flow<List<Race>>
 
     @Query("SELECT * from race WHERE season = :season ORDER BY round ASC")
-    fun getSeasonRaces(season: String): Flow<List<Race>>
+    fun getSeasonRaces(season: Int): Flow<List<Race>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(races: List<Race>)

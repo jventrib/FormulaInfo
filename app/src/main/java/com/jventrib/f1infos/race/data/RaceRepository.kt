@@ -1,6 +1,8 @@
 package com.jventrib.f1infos.race.data
 
+import android.util.Log
 import com.dropbox.android.external.store4.*
+import com.jventrib.f1infos.common.utils.emptyListToNull
 import com.jventrib.f1infos.race.data.db.RaceDao
 import com.jventrib.f1infos.race.model.Race
 import com.jventrib.f1infos.race.data.remote.RaceRemoteDataSource
@@ -14,22 +16,27 @@ class RaceRepository(
 ) {
 
     fun getAllRaces(): Flow<StoreResponse<List<Race>>> {
-        val store = StoreBuilder.from(
-            Fetcher.of { it: Int ->
-                raceRemoteDataSource.getRaces().data!!.mrData.table.races.map { r ->
-                    r.apply {
-                        datetime = buildDatetime(r)
-                        circuit.location.flag =
-                            raceRemoteDataSource.getCountryFlag(r.circuit.location.country)
-                    }
+        val fetcher = Fetcher.of { season: Int ->
+            Log.d(javaClass.name, "Get races from remoteDataSource")
+            raceRemoteDataSource.getRaces(season).map { r ->
+                r.apply {
+                    datetime = buildDatetime(r)
+                    circuit.location.flag =
+                        raceRemoteDataSource.getCountryFlag(r.circuit.location.country)
                 }
-            },
+            }
+        }
+        val store = StoreBuilder.from(
+            fetcher,
             SourceOfTruth.of(
-                reader = { year -> raceDao.getAllRaces() },
-                writer = { year: Int, races: List<Race> -> raceDao.insertAll(races) }
+                reader = { season ->
+                    Log.d(javaClass.name, "Get races from DB")
+                    raceDao.getSeasonRaces(season).emptyListToNull()
+                },
+                writer = { _: Int, races: List<Race> -> raceDao.insertAll(races) }
             )
         ).build()
-        return store.stream(StoreRequest.cached(2020, refresh = true))
+        return store.stream(StoreRequest.fresh(2020))
     }
 
 /*
