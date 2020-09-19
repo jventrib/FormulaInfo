@@ -21,10 +21,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RaceViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: RaceRepository
-    val allRaces: LiveData<StoreResponse<List<Race>>>
+    val allRaces: LiveData<StoreResponse<Race>>
 
     init {
-        val raceDao = AppRoomDatabase.getDatabase(application).raceDao()
+        val raceDao = AppRoomDatabase.getDatabase(application, viewModelScope).raceDao()
         val raceService: RaceService = buildRetrofit("https://ergast.com/api/f1/")
         val countryService: CountryService = buildRetrofit("https://restcountries.eu/rest/v2/name/")
         val raceRemoteDataSource = RaceRemoteDataSource(raceService, countryService)

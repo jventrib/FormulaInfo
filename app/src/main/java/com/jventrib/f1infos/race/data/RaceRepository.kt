@@ -6,7 +6,8 @@ import com.jventrib.f1infos.common.utils.emptyListToNull
 import com.jventrib.f1infos.race.data.db.RaceDao
 import com.jventrib.f1infos.race.model.Race
 import com.jventrib.f1infos.race.data.remote.RaceRemoteDataSource
-import kotlinx.coroutines.flow.Flow
+import com.jventrib.f1infos.race.model.SeasonRace
+import kotlinx.coroutines.flow.*
 import java.time.Instant
 import java.time.ZonedDateTime
 
@@ -15,43 +16,38 @@ class RaceRepository(
     private val raceRemoteDataSource: RaceRemoteDataSource
 ) {
 
-    fun getAllRaces(): Flow<StoreResponse<List<Race>>> {
-        val fetcher = Fetcher.of { season: Int ->
+    fun getAllRaces(): Flow<StoreResponse<Race>> {
+        val fetcher = Fetcher.ofFlow { season: SeasonRace ->
             Log.d(javaClass.name, "Get races from remoteDataSource")
-            raceRemoteDataSource.getRaces(season).map { r ->
-                r.apply {
-                    datetime = buildDatetime(r)
-                    circuit.location.flag =
-                        raceRemoteDataSource.getCountryFlag(r.circuit.location.country)
+            flow {
+                raceRemoteDataSource.getRaces(season.season).forEach { r ->
+                    r.apply {
+                        datetime = buildDatetime(r)
+                        circuit.location.flag =
+                            raceRemoteDataSource.getCountryFlag(r.circuit.location.country)
+                    }
+                    emit(r)
                 }
             }
         }
         val store = StoreBuilder.from(
             fetcher,
             SourceOfTruth.of(
-                reader = { season ->
+                reader = { seasonRace ->
                     Log.d(javaClass.name, "Get races from DB")
-                    raceDao.getSeasonRaces(season).emptyListToNull()
+                    val emptyListToNull =
+                        raceDao.getSeasonRaces(seasonRace.season).flatMapLatest {
+                            it.emptyListToNull()?.asFlow() ?: flowOf(null)
+                        }
+                    emptyListToNull
                 },
-                writer = { _: Int, races: List<Race> -> raceDao.insertAll(races) }
+                writer = { _: SeasonRace, race: Race ->
+                    raceDao.insert(race)
+                }
             )
         ).build()
-        return store.stream(StoreRequest.fresh(2020))
+        return store.stream(StoreRequest.fresh(SeasonRace(2020)))
     }
-
-/*
-        performGetOperation({ raceDao.getAllRaces() },
-            { raceRemoteDataSource.getRaces() },
-            {
-                raceDao.insertAll(it.mrData.table.races.map { r ->
-                    r.apply {
-                        datetime = buildDatetime(r)
-                        circuit.location.flag = raceRemoteDataSource.getCountryFlag(r.circuit.location.country)
-                    }
-                })
-            })
-*/
-
 
     suspend fun insert(race: Race) {
         raceDao.insert(race)
