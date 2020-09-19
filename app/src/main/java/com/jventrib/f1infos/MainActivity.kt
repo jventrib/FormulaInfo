@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
                 is StoreResponse.Data -> {
                     Log.d(this.localClassName, "Resource.Status.SUCCESS")
 //                    progress_bar.visibility = View.GONE
-                    if (!response.value.isNullOrEmpty()) adapter.setRaces(ArrayList(response.value))
+                    adapter.addRace(response.value)
                 }
                 is StoreResponse.Error.Exception -> {
                     Log.e(this.localClassName, "Error: ${response.errorMessageOrNull()}", response.error)

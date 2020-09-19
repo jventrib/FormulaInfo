@@ -21,7 +21,8 @@ abstract class AppRoomDatabase : RoomDatabase() {
         private var instance: AppRoomDatabase? = null
 
         fun getDatabase(
-            context: Context
+            context: Context,
+            scope: CoroutineScope
         ): AppRoomDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -29,7 +30,7 @@ abstract class AppRoomDatabase : RoomDatabase() {
                     AppRoomDatabase::class.java,
                     "f1_database"
                 )
-//                    .addCallback(RaceDatabaseCallback(scope))
+                    .addCallback(RaceDatabaseCallback(scope))
 //                    .fallbackToDestructiveMigration()
                     .build()
                     .also { instance = it }

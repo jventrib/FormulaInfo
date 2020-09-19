@@ -11,7 +11,7 @@ import java.time.ZonedDateTime
 import java.util.*
 
 @Entity(tableName = "race", primaryKeys = ["season", "round"])
-class Race(
+data class Race(
     val season: Int,
     val round: Int,
     val url: String,

@@ -14,13 +14,15 @@ import com.jventrib.f1infos.race.model.Race
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.HashSet
 
 class RaceListAdapter internal constructor(
     val context: Context
 ) : RecyclerView.Adapter<RaceListAdapter.RaceViewHolder>() {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
-    private var races = emptyList<Race>() // Cached copy of words
+    private var races = mutableSetOf<Race>()
 
     inner class RaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val raceNameItemView: TextView = itemView.findViewById(R.id.nameTextView)
@@ -34,7 +36,7 @@ class RaceListAdapter internal constructor(
     }
 
     override fun onBindViewHolder(holder: RaceViewHolder, position: Int) {
-        val current = races[position]
+        val current = races.toList()[position]
         holder.raceNameItemView.text = current.raceName
         holder.raceDateItemView.text =
             ZonedDateTime.ofInstant(current.datetime, ZoneId.systemDefault()).format(
@@ -48,9 +50,13 @@ class RaceListAdapter internal constructor(
     }
 
     internal fun setRaces(races: List<Race>) {
-        this.races = races
+        this.races = races.toMutableSet()
         notifyDataSetChanged()
     }
 
     override fun getItemCount() = races.size
+    fun addRace(value: Race) {
+        this.races.add(value)
+        notifyDataSetChanged()
+    }
 }
