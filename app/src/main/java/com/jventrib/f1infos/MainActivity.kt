@@ -40,8 +40,6 @@ class MainActivity : AppCompatActivity() {
                     Log.d(this.localClassName, "Resource.Status.LOADING")
 //                    progress_bar.visibility = View.VISIBLE
             }
-
-//            races?.let { adapter.setRaces(it.data!!) }
         })
     }
 }

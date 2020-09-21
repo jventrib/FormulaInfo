@@ -1,6 +1,7 @@
 package com.jventrib.f1infos.race.ui
 
 import android.content.Context
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.jventrib.f1infos.R
 import com.jventrib.f1infos.race.model.Race
+import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -41,6 +43,9 @@ class RaceListAdapter internal constructor(
                 ZonedDateTime.ofInstant(it, ZoneId.systemDefault()).format(
                     DateTimeFormatter.RFC_1123_DATE_TIME
                 )
+            if (it.isAfter(Instant.now())) {
+                holder.raceDateItemView.typeface = Typeface.DEFAULT_BOLD
+            }
         }
         current.circuit.location.flag?.let {
             Glide

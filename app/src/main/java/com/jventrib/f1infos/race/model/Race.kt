@@ -66,5 +66,7 @@ class Race(
         return "Race(season=$season, round=$round, url='$url', raceName='$raceName', date='$date', time='$time', datetime=$datetime, circuit=$circuit)"
     }
 
-
+    fun buildDatetime() {
+        datetime = ZonedDateTime.parse("${date}T${time}").toInstant()
+    }
 }
