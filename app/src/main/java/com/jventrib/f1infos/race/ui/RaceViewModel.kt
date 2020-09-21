@@ -21,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RaceViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: RaceRepository
-    val allRaces: LiveData<StoreResponse<Race>>
+    val allRaces: LiveData<StoreResponse<List<Race>>>
 
     init {
         val raceDao = AppRoomDatabase.getDatabase(application, viewModelScope).raceDao()

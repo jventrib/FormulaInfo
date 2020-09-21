@@ -14,15 +14,13 @@ import com.jventrib.f1infos.race.model.Race
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
-import kotlin.collections.HashSet
 
 class RaceListAdapter internal constructor(
     val context: Context
 ) : RecyclerView.Adapter<RaceListAdapter.RaceViewHolder>() {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
-    private var races = mutableSetOf<Race>()
+    private var races = emptyList<Race>()
 
     inner class RaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val raceNameItemView: TextView = itemView.findViewById(R.id.nameTextView)
@@ -38,25 +36,25 @@ class RaceListAdapter internal constructor(
     override fun onBindViewHolder(holder: RaceViewHolder, position: Int) {
         val current = races.toList()[position]
         holder.raceNameItemView.text = current.raceName
-        holder.raceDateItemView.text =
-            ZonedDateTime.ofInstant(current.datetime, ZoneId.systemDefault()).format(
-                DateTimeFormatter.RFC_1123_DATE_TIME
-            )
-        Glide
-            .with(context)
-            .load(current.circuit.location.flag)
-            .diskCacheStrategy(DiskCacheStrategy.DATA)
-            .into(holder.flagItemView)
+        current.datetime?.let {
+            holder.raceDateItemView.text =
+                ZonedDateTime.ofInstant(it, ZoneId.systemDefault()).format(
+                    DateTimeFormatter.RFC_1123_DATE_TIME
+                )
+        }
+        current.circuit.location.flag?.let {
+            Glide
+                .with(context)
+                .load(it)
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                .into(holder.flagItemView)
+        }
     }
 
     internal fun setRaces(races: List<Race>) {
-        this.races = races.toMutableSet()
+        this.races = races
         notifyDataSetChanged()
     }
 
     override fun getItemCount() = races.size
-    fun addRace(value: Race) {
-        this.races.add(value)
-        notifyDataSetChanged()
-    }
 }

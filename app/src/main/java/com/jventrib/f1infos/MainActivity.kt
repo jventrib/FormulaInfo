@@ -28,9 +28,9 @@ class MainActivity : AppCompatActivity() {
         raceViewModel.allRaces.observe(this, { response ->
             when (response) {
                 is StoreResponse.Data -> {
-                    Log.d(this.localClassName, "Resource.Status.SUCCESS")
+                    Log.d(this.localClassName, "Resource.Status.SUCCESS: ${response.value}")
 //                    progress_bar.visibility = View.GONE
-                    adapter.addRace(response.value)
+                    adapter.setRaces(response.value)
                 }
                 is StoreResponse.Error.Exception -> {
                     Log.e(this.localClassName, "Error: ${response.errorMessageOrNull()}", response.error)
