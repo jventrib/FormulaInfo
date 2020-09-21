@@ -8,9 +8,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface CountryService {
-
-    @GET("{name}?fulltext=true")
+    @GET("{name}?fulltext=true&fields=flag")
     suspend fun getCountry(@Path("name") name: String) : List<Country>
-
-
 }

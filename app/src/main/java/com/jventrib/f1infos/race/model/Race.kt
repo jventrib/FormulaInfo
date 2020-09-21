@@ -11,7 +11,7 @@ import java.time.ZonedDateTime
 import java.util.*
 
 @Entity(tableName = "race", primaryKeys = ["season", "round"])
-data class Race(
+class Race(
     val season: Int,
     val round: Int,
     val url: String,
@@ -19,7 +19,7 @@ data class Race(
     val date: String,
     val time: String,
     @Expose(serialize = false, deserialize = false)
-    var datetime: Instant,
+    var datetime: Instant?,
     @SerializedName("Circuit")
     @Embedded
     val circuit: Circuit
@@ -43,4 +43,28 @@ data class Race(
             var flag: String?
         )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Race
+
+        if (season != other.season) return false
+        if (round != other.round) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = season
+        result = 31 * result + round
+        return result
+    }
+
+    override fun toString(): String {
+        return "Race(season=$season, round=$round, url='$url', raceName='$raceName', date='$date', time='$time', datetime=$datetime, circuit=$circuit)"
+    }
+
+
 }

@@ -21,7 +21,7 @@ interface RaceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(races: List<Race>)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(race: Race)
 
     @Query("DELETE FROM race")

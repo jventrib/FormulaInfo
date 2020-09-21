@@ -52,7 +52,7 @@ abstract class AppRoomDatabase : RoomDatabase() {
 
         suspend fun populateDatabase(raceDao: RaceDao) {
             // Delete all content here.
-            raceDao.deleteAll()
+//            raceDao.deleteAll()
 
 //            // Add sample words.
 //            var race = Race("2020", 1, "", "Austria", "2020-06-01")
