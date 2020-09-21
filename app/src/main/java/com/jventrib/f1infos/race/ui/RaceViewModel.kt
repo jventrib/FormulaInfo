@@ -38,11 +38,4 @@ class RaceViewModel(application: Application) : AndroidViewModel(application) {
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
             .build()
             .create(T::class.java)
-
-    /**
-     * Launching a new coroutine to insert the data in a non-blocking way
-     */
-    fun insert(race: Race) = viewModelScope.launch(Dispatchers.IO) {
-        repository.insert(race)
-    }
 }
