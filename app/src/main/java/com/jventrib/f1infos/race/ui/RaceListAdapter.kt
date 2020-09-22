@@ -43,9 +43,8 @@ class RaceListAdapter internal constructor(
                 ZonedDateTime.ofInstant(it, ZoneId.systemDefault()).format(
                     DateTimeFormatter.RFC_1123_DATE_TIME
                 )
-            if (it.isAfter(Instant.now())) {
-                holder.raceDateItemView.typeface = Typeface.DEFAULT_BOLD
-            }
+            holder.raceDateItemView.typeface =
+                if (it.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
         }
         current.circuit.location.flag?.let {
             Glide
