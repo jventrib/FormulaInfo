@@ -16,7 +16,7 @@ class RaceRepository(
     fun getAllRaces(): Flow<StoreResponse<List<Race>>> {
         val store = StoreBuilder.from(
             Fetcher.ofFlow { season: Int ->
-                Log.d(javaClass.name, "Get races from remoteDataSource")
+//                Log.d(javaClass.name, "Get races from remoteDataSource")
                 flow {
                     val races = raceRemoteDataSource.getRaces(season).onEach(Race::buildDatetime)
                     //First emit with all races, no flag loaded
@@ -33,7 +33,7 @@ class RaceRepository(
             },
             SourceOfTruth.of(
                 reader = { season ->
-                    Log.d(javaClass.name, "Get races from DB")
+//                    Log.d(javaClass.name, "Get races from DB")
                     raceDao.getSeasonRaces(season).emptyFlowOfListToNull()
                 },
                 writer = { _: Int, races: List<Race> ->
