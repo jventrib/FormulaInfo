@@ -1,11 +1,11 @@
 package com.jventrib.f1infos.race.data
 
-import android.util.Log
 import com.dropbox.android.external.store4.*
 import com.jventrib.f1infos.common.utils.emptyFlowOfListToNull
 import com.jventrib.f1infos.race.data.db.RaceDao
 import com.jventrib.f1infos.race.model.Race
 import com.jventrib.f1infos.race.data.remote.RaceRemoteDataSource
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 
 class RaceRepository(
@@ -13,7 +13,7 @@ class RaceRepository(
     private val raceRemoteDataSource: RaceRemoteDataSource
 ) {
 
-    fun getAllRaces(): Flow<StoreResponse<List<Race>>> {
+    fun getAllRaces(scope: CoroutineScope): Flow<StoreResponse<List<Race>>> {
         val store = StoreBuilder.from(
             Fetcher.ofFlow { season: Int ->
 //                Log.d(javaClass.name, "Get races from remoteDataSource")
@@ -40,8 +40,9 @@ class RaceRepository(
                     raceDao.insertAll(races)
                 }
             )
-        ).build()
-        return store.stream(StoreRequest.cached(2020, false))
+        )
+            .scope(scope).build()
+        return store.stream(StoreRequest.fresh(2020))
     }
 
 

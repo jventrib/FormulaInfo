@@ -13,8 +13,6 @@ import com.jventrib.f1infos.race.data.remote.CountryService
 import com.jventrib.f1infos.race.data.remote.RaceRemoteDataSource
 import com.jventrib.f1infos.race.data.remote.RaceService
 import com.jventrib.f1infos.race.model.Race
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -30,7 +28,7 @@ class RaceViewModel(application: Application) : AndroidViewModel(application) {
         val raceRemoteDataSource = RaceRemoteDataSource(raceService, countryService)
 
         repository = RaceRepository(raceDao, raceRemoteDataSource)
-        allRaces = repository.getAllRaces().asLiveData()
+        allRaces = repository.getAllRaces(viewModelScope).asLiveData()
     }
 
     private inline fun <reified T> buildRetrofit(url: String): T =

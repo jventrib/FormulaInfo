@@ -84,4 +84,5 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
     testImplementation "io.mockk:mockk:1.10.0"
+    testImplementation "com.google.truth:truth:1.0.1"
 }
