@@ -1,35 +1,24 @@
 package com.jventrib.f1infos.race.data
 
-import com.dropbox.android.external.store4.ResponseOrigin
-import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.f1infos.race.data.db.RaceDao
-import com.jventrib.f1infos.race.data.remote.MockRaceRemoteDataSource
 import com.jventrib.f1infos.race.data.remote.RaceRemoteDataSource
 import com.jventrib.f1infos.race.model.Race
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.MatcherAssert
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
 
 class RaceRepositoryTest : TestCase() {
+    private val testScope = TestCoroutineScope()
 
     @Test
     fun testGetAllRaces_whenDBIsEmpty() {
 
-        val raceDao = mockk<RaceDao>()
-
-        val raceRemoteDataSource = mockk<RaceRemoteDataSource>()
         val race = Race(
             2020,
             1,
@@ -50,21 +39,23 @@ class RaceRepositoryTest : TestCase() {
                 )
             )
         )
-        runBlocking {
 
-            every { raceDao.getSeasonRaces(any()) } returns flowOf(listOf())
-            coEvery { raceDao.insertAll(any()) } returns Unit
-            coEvery { raceRemoteDataSource.getRaces(any()) } returns listOf(race)
-            coEvery { raceRemoteDataSource.getCountryFlag(any()) } returns "flag1"
-            val allRaces = RaceRepository(raceDao, raceRemoteDataSource).getAllRaces()
-//            val allRaces = flowOf(StoreResponse.Data(listOf(race), ResponseOrigin.Fetcher))
-//            val allRaces = flowOf<StoreResponse.Data<List<Race>>>(StoreResponse.Data(raceRemoteDataSource.getRaces(2020), ResponseOrigin.Fetcher))
+        val raceDao = mockk<RaceDao>()
+        val raceRemoteDataSource = mockk<RaceRemoteDataSource>()
+
+        every { raceDao.getSeasonRaces(any()) } returns flowOf(listOf(race))
+        coEvery { raceDao.insertAll(any()) } returns Unit
+        coEvery { raceRemoteDataSource.getRaces(any()) } returns listOf(race)
+        coEvery { raceRemoteDataSource.getCountryFlag(any()) } returns "flag1"
+
+        val allRaces = RaceRepository(raceDao, raceRemoteDataSource).getAllRaces(testScope)
 
 
-            allRaces.take(3).collect {
+        val async = testScope.launch {
+            allRaces.collect {
                 println(it.dataOrNull()?.get(0))
-//                cancel()
             }
         }
     }
+
 }
