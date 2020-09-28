@@ -22,7 +22,7 @@
             style="@style/word_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/holo_red_light" />
+            android:background="@color/light_grey" />
     </LinearLayout>
 
     <TextView
@@ -30,5 +30,6 @@
         style="@style/word_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white" />
+        android:background="@android:color/white"
+        android:textSize="16sp"/>
 </LinearLayout>
