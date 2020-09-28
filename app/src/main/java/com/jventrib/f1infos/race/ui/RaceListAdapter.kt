@@ -41,7 +41,7 @@ class RaceListAdapter internal constructor(
         current.datetime?.let {
             holder.raceDateItemView.text =
                 ZonedDateTime.ofInstant(it, ZoneId.systemDefault()).format(
-                    DateTimeFormatter.RFC_1123_DATE_TIME
+                    customDateTimeFormatter
                 )
             holder.raceDateItemView.typeface =
                 if (it.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
