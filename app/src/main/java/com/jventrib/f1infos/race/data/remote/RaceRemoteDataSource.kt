@@ -6,5 +6,6 @@ open class RaceRemoteDataSource(
 ) {
     open suspend fun getRaces(season: Int) = raceService.getRaces(season).mrData.table.races
 
-    suspend fun getCountryFlag(country: String) = countryService.getCountry(country).last().flag
+    suspend fun getCountryFlag(country: String) =
+        countryService.getCountry(country).last().alpha2Code.toLowerCase()
 }
