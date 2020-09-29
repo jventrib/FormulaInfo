@@ -10,6 +10,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.load.resource.bitmap.TransformationUtils.centerCrop
+import com.bumptech.glide.load.resource.bitmap.TransformationUtils.circleCrop
 import com.jventrib.f1infos.R
 import com.jventrib.f1infos.race.model.Race
 import java.time.Instant
@@ -47,9 +51,10 @@ class RaceListAdapter internal constructor(
                 if (it.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
         }
         current.circuit.location.flag?.let {
+            val s = "https://www.countryflags.io/$it/flat/64.png"
             Glide
                 .with(context)
-                .load(it)
+                .load(s)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(holder.flagItemView)
         }

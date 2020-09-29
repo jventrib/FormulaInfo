@@ -42,7 +42,7 @@ class RaceRepository(
             )
         )
             .scope(scope).build()
-        return store.stream(StoreRequest.fresh(2020))
+        return store.stream(StoreRequest.cached(2020, false))
     }
 
 
