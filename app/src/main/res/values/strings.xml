@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">F1Infos</string>
+    <string name="location_flag">Location Flag</string>
 </resources>

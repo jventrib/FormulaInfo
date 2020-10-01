@@ -19,13 +19,14 @@
             android:id="@+id/imageView"
             android:layout_width="64dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:contentDescription="@string/location_flag"
             app:srcCompat="@android:drawable/ic_popup_sync" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:padding="12dp"
             android:orientation="vertical">
 
             <TextView
