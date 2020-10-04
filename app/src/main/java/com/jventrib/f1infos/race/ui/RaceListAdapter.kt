@@ -10,16 +10,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.bitmap.TransformationUtils.centerCrop
-import com.bumptech.glide.load.resource.bitmap.TransformationUtils.circleCrop
 import com.jventrib.f1infos.R
+import com.jventrib.f1infos.common.ui.customDateTimeFormatter
 import com.jventrib.f1infos.race.model.Race
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 class RaceListAdapter internal constructor(
     val context: Context
@@ -35,7 +31,7 @@ class RaceListAdapter internal constructor(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RaceViewHolder {
-        val itemView = inflater.inflate(R.layout.recyclerview_item, parent, false)
+        val itemView = inflater.inflate(R.layout.fragment_race, parent, false)
         return RaceViewHolder(itemView)
     }
 

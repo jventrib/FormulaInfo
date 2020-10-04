@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+/*
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
         val adapter = RaceListAdapter(this)
         recyclerView.adapter = adapter
@@ -41,5 +42,6 @@ class MainActivity : AppCompatActivity() {
 //                    progress_bar.visibility = View.VISIBLE
             }
         })
+*/
     }
 }

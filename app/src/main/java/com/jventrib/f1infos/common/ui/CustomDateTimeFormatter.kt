@@ -1,4 +1,4 @@
-package com.jventrib.f1infos.race.ui
+package com.jventrib.f1infos.common.ui
 
 import java.time.chrono.IsoChronology
 import java.time.format.DateTimeFormatter
