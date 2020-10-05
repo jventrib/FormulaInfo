@@ -21,7 +21,8 @@ import java.time.ZonedDateTime
 
 
 class RaceListAdapter internal constructor(
-    val context: Context
+    val context: Context,
+    private val listener: (Race) -> Unit
 ) : RecyclerView.Adapter<RaceListAdapter.RaceViewHolder>() {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
@@ -31,26 +32,13 @@ class RaceListAdapter internal constructor(
         val raceNameItemView: TextView = itemView.findViewById(R.id.nameTextView)
         val raceDateItemView: TextView = itemView.findViewById(R.id.dateTextView)
         val flagItemView: ImageView = itemView.findViewById(R.id.imageView)
-
-        fun bind(item: Race, listener: AdapterView.OnItemClickListener) {
-            itemView.setOnClickListener { listener.onItemClick(item) }
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RaceViewHolder {
         val itemView = inflater.inflate(R.layout.fragment_race, parent, false)
-        itemView.setOnClickListener(RaceOnClickListener())
         return RaceViewHolder(itemView)
     }
 
-    private inner class RaceOnClickListener : View.OnClickListener {
-        override fun onClick(v: View?) {
-            val itemPosition: Int = v.getChildLayoutPosition(view)
-            val item: String = mList.get(itemPosition)
-            Toast.makeText(mContext, item, Toast.LENGTH_LONG).show()
-        }
-
-    }
 
     override fun onBindViewHolder(holder: RaceViewHolder, position: Int) {
         val current = races.toList()[position]
@@ -71,7 +59,7 @@ class RaceListAdapter internal constructor(
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(holder.flagItemView)
         }
-        itemV
+        holder.itemView.setOnClickListener { listener(current) }
     }
 
 

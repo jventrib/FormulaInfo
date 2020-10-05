@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.f1infos.R
 
@@ -32,7 +33,10 @@ class RaceFragment : Fragment() {
             inflater.inflate(R.layout.fragment_race_list, container, false) as RecyclerView
 
         val context = requireContext()
-        val adapter = RaceListAdapter(context)
+        val adapter = RaceListAdapter(context) {
+            val action = RaceFragmentDirections.actionRaceFragmentToRaceResultFragment(it)
+            view.findNavController().navigate(action)
+        }
         view.adapter = adapter
         view.layoutManager = LinearLayoutManager(context)
 

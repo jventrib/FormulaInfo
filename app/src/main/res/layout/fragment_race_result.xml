@@ -18,7 +18,7 @@
         style="@style/AppTheme">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/imageViewResult"
             android:layout_width="64dp"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
@@ -32,14 +32,14 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/nameTextView"
+                android:id="@+id/nameTextViewResult"
                 style="@style/word_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceHeadline6"/>
 
             <TextView
-                android:id="@+id/dateTextView"
+                android:id="@+id/dateTextViewResult"
                 style="@style/word_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

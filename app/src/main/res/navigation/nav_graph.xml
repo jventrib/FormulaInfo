@@ -11,7 +11,7 @@
         android:label="fragment_race_list"
         tools:layout="@layout/fragment_race_list" >
         <action
-            android:id="@+id/action_raceFragment_to_raceResultFragment3"
+            android:id="@+id/action_raceFragment_to_raceResultFragment"
             app:destination="@id/raceResultFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
@@ -20,5 +20,9 @@
         android:id="@+id/raceResultFragment"
         android:name="com.jventrib.f1infos.race.ui.RaceResultFragment"
         android:label="fragment_race_result"
-        tools:layout="@layout/fragment_race_result" />
+        tools:layout="@layout/fragment_race_result" >
+        <argument
+            android:name="race"
+            app:argType="com.jventrib.f1infos.race.model.Race" />
+    </fragment>
 </navigation>
