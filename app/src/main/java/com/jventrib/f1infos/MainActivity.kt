@@ -1,19 +1,9 @@
 package com.jventrib.f1infos
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.dropbox.android.external.store4.StoreResponse
-import com.jventrib.f1infos.race.ui.RaceListAdapter
-import com.jventrib.f1infos.race.ui.RaceViewModel
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var raceViewModel: RaceViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
