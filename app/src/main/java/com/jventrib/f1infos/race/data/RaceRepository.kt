@@ -27,6 +27,7 @@ class RaceRepository(
                         it.circuit.location.flag =
                             raceRemoteDataSource.getCountryFlag(it.circuit.location.country)
                         //Each time a flag is load, emit all the races
+                        it.circuit.circuitImageUrl = raceRemoteDataSource.getCircuitImage(it.circuit.circuitUrl)
                         emit(races)
                     }
                 }
@@ -42,7 +43,8 @@ class RaceRepository(
             )
         )
             .scope(scope).build()
-        return store.stream(StoreRequest.cached(2020, false))
+//        return store.stream(StoreRequest.cached(2020, false))
+        return store.stream(StoreRequest.fresh(2020))
     }
 
 

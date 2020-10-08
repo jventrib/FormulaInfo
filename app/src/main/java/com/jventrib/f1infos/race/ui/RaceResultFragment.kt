@@ -26,6 +26,7 @@ class RaceResultFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val view = inflater.inflate(R.layout.fragment_race_result, container, false)
 
         val viewModel = ViewModelProvider(this).get(RaceResultViewModel::class.java)
@@ -49,6 +50,13 @@ class RaceResultFragment : Fragment() {
                     .load(s)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(view.findViewById(R.id.imageViewResult))
+            }
+            race.circuit.circuitImageUrl?.let {
+                Glide
+                    .with(requireContext())
+                    .load(it)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .into(view.findViewById(R.id.circuitImageViewResult))
             }
         }
         return view

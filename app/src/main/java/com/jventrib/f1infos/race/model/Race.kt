@@ -1,15 +1,12 @@
 package com.jventrib.f1infos.race.model
 
-import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 import java.time.Instant
 import java.time.ZonedDateTime
-import java.util.*
 
 @Entity(tableName = "race", primaryKeys = ["season", "round"])
 class Race(
@@ -32,7 +29,8 @@ class Race(
         val circuitName: String,
         @SerializedName("Location")
         @Embedded
-        val location: Location
+        val location: Location,
+        var circuitImageUrl: String?
     ) {
         data class Location(
             @SerializedName("lat")
