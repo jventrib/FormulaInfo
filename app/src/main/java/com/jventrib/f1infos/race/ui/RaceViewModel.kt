@@ -12,6 +12,7 @@ import com.jventrib.f1infos.race.data.db.AppRoomDatabase
 import com.jventrib.f1infos.race.data.remote.CountryService
 import com.jventrib.f1infos.race.data.remote.RaceRemoteDataSource
 import com.jventrib.f1infos.race.data.remote.RaceService
+import com.jventrib.f1infos.race.data.remote.WikipediaService
 import com.jventrib.f1infos.race.model.Race
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -25,7 +26,8 @@ class RaceViewModel(application: Application) : AndroidViewModel(application) {
         val raceDao = AppRoomDatabase.getDatabase(application, viewModelScope).raceDao()
         val raceService: RaceService = buildRetrofit("https://ergast.com/api/f1/")
         val countryService: CountryService = buildRetrofit("https://restcountries.eu/rest/v2/name/")
-        val raceRemoteDataSource = RaceRemoteDataSource(raceService, countryService)
+        val wikipediaService: WikipediaService = buildRetrofit("https://en.wikipedia.org/")
+        val raceRemoteDataSource = RaceRemoteDataSource(raceService, countryService, wikipediaService)
 
         repository = RaceRepository(raceDao, raceRemoteDataSource)
         allRaces = repository.getAllRaces(viewModelScope).asLiveData()

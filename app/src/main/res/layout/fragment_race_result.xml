@@ -10,6 +10,10 @@
     app:cardElevation="4dp"
     tools:context=".race.ui.RaceResultFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -47,6 +51,14 @@
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary" />
         </LinearLayout>
-    </LinearLayout>
 
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/circuitImageViewResult"
+        android:layout_width="wrap_content"
+        android:layout_height="480dp"
+        android:layout_marginStart="10dp"
+        android:contentDescription="@string/location_flag"
+        app:srcCompat="@android:drawable/ic_popup_sync" />
+    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
