@@ -1,19 +1,17 @@
 package com.jventrib.f1infos.race.ui
 
 import android.graphics.Typeface
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.lifecycle.liveData
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.jventrib.f1infos.R
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
+import com.jventrib.f1infos.databinding.FragmentRaceResultBinding
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -22,20 +20,25 @@ class RaceResultFragment : Fragment() {
 
     val args: RaceResultFragmentArgs by navArgs()
 
+    var _binding: FragmentRaceResultBinding? = null
+
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        val view = inflater.inflate(R.layout.fragment_race_result, container, false)
+        _binding = FragmentRaceResultBinding.inflate(inflater, container, false)
+        val view = binding.root
 
         val viewModel = ViewModelProvider(this).get(RaceResultViewModel::class.java)
         viewModel.setRace(args.race)
         viewModel.race.observe(requireActivity()) { race ->
 
-            view.findViewById<TextView>(R.id.nameTextViewResult).text = race.raceName
+            binding.nameTextViewResult.text = race.raceName
             race.datetime?.let {
-                val dateTV = view.findViewById<TextView>(R.id.dateTextViewResult)
+                val dateTV = binding.dateTextViewResult
                 dateTV.text =
                     ZonedDateTime.ofInstant(it, ZoneId.systemDefault()).format(
                         customDateTimeFormatter
@@ -49,17 +52,21 @@ class RaceResultFragment : Fragment() {
                     .with(requireContext())
                     .load(s)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .into(view.findViewById(R.id.imageViewResult))
+                    .into(binding.imageViewResult)
             }
             race.circuit.circuitImageUrl?.let {
                 Glide
                     .with(requireContext())
                     .load(it)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .into(view.findViewById(R.id.circuitImageViewResult))
+                    .into(binding.circuitImageViewResult)
             }
         }
         return view
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

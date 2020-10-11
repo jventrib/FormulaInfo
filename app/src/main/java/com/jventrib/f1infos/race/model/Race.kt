@@ -4,6 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.jventrib.f1infos.race.model.f1calendar.F1CRaces
 import java.io.Serializable
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -20,7 +21,8 @@ class Race(
     var datetime: Instant?,
     @SerializedName("Circuit")
     @Embedded
-    val circuit: Circuit
+    val circuit: Circuit,
+    var sessions: F1CRaces.Race1.Sessions
 ): Serializable {
     data class Circuit(
         val circuitId: String,
@@ -41,6 +43,15 @@ class Race(
             val country: String,
             var flag: String?
         )
+
+        data class Sessions(
+            val fp1: String,
+            val fp2: String,
+            val fp3: String,
+            val qualifying: String,
+            val race: String
+        )
+
     }
 
     override fun equals(other: Any?): Boolean {
