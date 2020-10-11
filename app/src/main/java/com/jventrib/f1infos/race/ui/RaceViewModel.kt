@@ -9,10 +9,7 @@ import com.dropbox.android.external.store4.StoreResponse
 import com.google.gson.GsonBuilder
 import com.jventrib.f1infos.race.data.RaceRepository
 import com.jventrib.f1infos.race.data.db.AppRoomDatabase
-import com.jventrib.f1infos.race.data.remote.CountryService
-import com.jventrib.f1infos.race.data.remote.RaceRemoteDataSource
-import com.jventrib.f1infos.race.data.remote.RaceService
-import com.jventrib.f1infos.race.data.remote.WikipediaService
+import com.jventrib.f1infos.race.data.remote.*
 import com.jventrib.f1infos.race.model.Race
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -27,7 +24,8 @@ class RaceViewModel(application: Application) : AndroidViewModel(application) {
         val raceService: RaceService = buildRetrofit("https://ergast.com/api/f1/")
         val countryService: CountryService = buildRetrofit("https://restcountries.eu/rest/v2/name/")
         val wikipediaService: WikipediaService = buildRetrofit("https://en.wikipedia.org/")
-        val raceRemoteDataSource = RaceRemoteDataSource(raceService, countryService, wikipediaService)
+        val f1CalendarService: F1CalendarService = buildRetrofit("https://github.com/sportstimes/f1/blob/main/db/")
+        val raceRemoteDataSource = RaceRemoteDataSource(raceService, countryService, wikipediaService, f1CalendarService)
 
         repository = RaceRepository(raceDao, raceRemoteDataSource)
         allRaces = repository.getAllRaces(viewModelScope).asLiveData()
