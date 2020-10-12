@@ -37,15 +37,16 @@ class RaceResultFragment : Fragment() {
         viewModel.race.observe(requireActivity()) { race ->
 
             binding.nameTextViewResult.text = race.raceName
-            race.datetime?.let {
-                val dateTV = binding.dateTextViewResult
-                dateTV.text =
-                    ZonedDateTime.ofInstant(it, ZoneId.systemDefault()).format(
-                        customDateTimeFormatter
-                    )
-                dateTV.typeface =
-                    if (it.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-            }
+
+
+            val dateTV = binding.dateTextViewResult
+            val raceDT = race.sessions.race
+            dateTV.text = ZonedDateTime.ofInstant(raceDT, ZoneId.systemDefault()).format(
+                customDateTimeFormatter
+            )
+            dateTV.typeface =
+                if (raceDT.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+
             race.circuit.location.flag?.let {
                 val s = "https://www.countryflags.io/$it/flat/64.png"
                 Glide

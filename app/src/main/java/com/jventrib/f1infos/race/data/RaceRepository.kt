@@ -18,7 +18,7 @@ class RaceRepository(
             Fetcher.ofFlow { season: Int ->
 //                Log.d(javaClass.name, "Get races from remoteDataSource")
                 flow {
-                    val races = raceRemoteDataSource.getRaces(season).onEach(Race::buildDatetime)
+                    val races = raceRemoteDataSource.getRaces(season)
                     //First emit with all races, no flag loaded
                     emit(races)
 

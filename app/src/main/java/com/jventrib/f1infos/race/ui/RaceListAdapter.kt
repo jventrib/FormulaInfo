@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.jventrib.f1infos.R
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
 import com.jventrib.f1infos.databinding.FragmentRaceBinding
 import com.jventrib.f1infos.race.model.Race
@@ -26,7 +25,8 @@ class RaceListAdapter internal constructor(
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var races = emptyList<Race>()
 
-    inner class RaceViewHolder(binding: FragmentRaceBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class RaceViewHolder(binding: FragmentRaceBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         val raceNameItemView: TextView = binding.nameTextView
         val raceDateItemView: TextView = binding.dateTextView
         val flagItemView: ImageView = binding.imageView
@@ -41,14 +41,14 @@ class RaceListAdapter internal constructor(
     override fun onBindViewHolder(holder: RaceViewHolder, position: Int) {
         val current = races.toList()[position]
         holder.raceNameItemView.text = current.raceName
-        current.datetime?.let {
-            holder.raceDateItemView.text =
-                ZonedDateTime.ofInstant(it, ZoneId.systemDefault()).format(
-                    customDateTimeFormatter
-                )
-            holder.raceDateItemView.typeface =
-                if (it.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-        }
+        val raceDT = current.sessions.race
+        holder.raceDateItemView.text =
+            ZonedDateTime.ofInstant(raceDT, ZoneId.systemDefault()).format(
+                customDateTimeFormatter
+            )
+        holder.raceDateItemView.typeface =
+            if (raceDT.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+
         current.circuit.location.flag?.let {
             val s = "https://www.countryflags.io/$it/flat/64.png"
             Glide

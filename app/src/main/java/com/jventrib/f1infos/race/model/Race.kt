@@ -4,7 +4,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.jventrib.f1infos.race.model.f1calendar.F1CRaces
 import java.io.Serializable
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -15,14 +14,11 @@ class Race(
     val round: Int,
     val url: String,
     val raceName: String,
-    val date: String,
-    val time: String,
-    @Expose(serialize = false, deserialize = false)
-    var datetime: Instant?,
     @SerializedName("Circuit")
     @Embedded
     val circuit: Circuit,
-    var sessions: F1CRaces.Race1.Sessions
+    @Embedded
+    var sessions: Sessions
 ): Serializable {
     data class Circuit(
         val circuitId: String,
@@ -43,16 +39,14 @@ class Race(
             val country: String,
             var flag: String?
         )
-
-        data class Sessions(
-            val fp1: String,
-            val fp2: String,
-            val fp3: String,
-            val qualifying: String,
-            val race: String
-        )
-
     }
+        data class Sessions(
+            val fp1: Instant?,
+            val fp2: Instant?,
+            val fp3: Instant?,
+            val qualifying: Instant,
+            val race: Instant
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -73,10 +67,7 @@ class Race(
     }
 
     override fun toString(): String {
-        return "Race(season=$season, round=$round, url='$url', raceName='$raceName', date='$date', time='$time', datetime=$datetime, circuit=$circuit)"
+        return "Race(season=$season, round=$round, url='$url', raceName='$raceName', circuit=$circuit, sessions=$sessions)"
     }
 
-    fun buildDatetime() {
-        datetime = ZonedDateTime.parse("${date}T${time}").toInstant()
-    }
 }

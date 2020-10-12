@@ -37,7 +37,8 @@ class RaceRepositoryTest : TestCase() {
                     "Spielberg",
                     "Austria", null
                 ),
-            "http://image1.svg")
+            "http://image1.svg"),
+            Race.Sessions("t1", "t2", "t3", "q1", "r")
         )
 
         val raceDao = mockk<RaceDao>()
