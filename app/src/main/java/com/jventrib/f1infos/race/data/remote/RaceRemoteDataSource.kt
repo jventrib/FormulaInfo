@@ -10,9 +10,12 @@ open class RaceRemoteDataSource(
     private val wikipediaService: WikipediaService,
     private val f1calendarService: F1CalendarService,
 
-) {
+    ) {
     suspend fun getRaces(season: Int): List<Race> = mrdService.getRaces(season).mrData.table.races
-        .zip(f1calendarService.getRaces(season).raceList) { (mrd, f1c) -> mrd }
+        .zip(f1calendarService.getRaces(season).races) { mrd, f1c ->
+            mrd.sessions = f1c.sessions;
+            mrd
+        }
 
     suspend fun getCountryFlag(country: String) =
         countryService.getCountry(country).last().alpha2Code.toLowerCase(Locale.ROOT)
