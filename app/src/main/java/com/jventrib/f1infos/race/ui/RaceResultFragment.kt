@@ -36,10 +36,10 @@ class RaceResultFragment : Fragment() {
         viewModel.setRace(args.race)
         viewModel.race.observe(requireActivity()) { race ->
 
-            binding.nameTextViewResult.text = race.raceName
+            binding.textRaceName.text = race.raceName
 
 
-            val dateTV = binding.dateTextViewResult
+            val dateTV = binding.textRaceDate
             val raceDT = race.sessions.race
             dateTV.text = ZonedDateTime.ofInstant(raceDT, ZoneId.systemDefault()).format(
                 customDateTimeFormatter
@@ -53,14 +53,14 @@ class RaceResultFragment : Fragment() {
                     .with(requireContext())
                     .load(s)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .into(binding.imageViewResult)
+                    .into(binding.imageFlag)
             }
             race.circuit.circuitImageUrl?.let {
                 Glide
                     .with(requireContext())
                     .load(it)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .into(binding.circuitImageViewResult)
+                    .into(binding.imageCircuitImage)
             }
         }
         return view

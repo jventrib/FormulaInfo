@@ -22,7 +22,7 @@
         style="@style/AppTheme">
 
         <ImageView
-            android:id="@+id/imageViewResult"
+            android:id="@+id/image_flag"
             android:layout_width="64dp"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
@@ -36,14 +36,14 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/nameTextViewResult"
+                android:id="@+id/text_race_name"
                 style="@style/word_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceHeadline6"/>
 
             <TextView
-                android:id="@+id/qualDateTextViewResult"
+                android:id="@+id/text_qual_date"
                 style="@style/word_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary" />
             <TextView
-                android:id="@+id/dateTextViewResult"
+                android:id="@+id/text_race_date"
                 style="@style/word_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
 
     </LinearLayout>
     <ImageView
-        android:id="@+id/circuitImageViewResult"
+        android:id="@+id/image_circuit_image"
         android:layout_width="wrap_content"
         android:layout_height="480dp"
         android:layout_marginStart="10dp"

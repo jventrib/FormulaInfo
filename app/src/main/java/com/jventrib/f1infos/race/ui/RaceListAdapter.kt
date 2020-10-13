@@ -27,9 +27,9 @@ class RaceListAdapter internal constructor(
 
     inner class RaceViewHolder(binding: FragmentRaceItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        val raceNameItemView: TextView = binding.nameTextView
-        val raceDateItemView: TextView = binding.dateTextView
-        val flagItemView: ImageView = binding.imageView
+        val raceNameItemView: TextView = binding.textRaceName
+        val raceDateItemView: TextView = binding.textRaceDate
+        val flagItemView: ImageView = binding.imageFlag
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RaceViewHolder {
