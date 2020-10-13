@@ -1,7 +1,6 @@
 package com.jventrib.f1infos.race.ui
 
 import android.app.Application
-import android.util.JsonReader
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
@@ -31,8 +30,8 @@ class RaceViewModel(application: Application) : AndroidViewModel(application) {
         val f1CalendarService: F1CalendarService = buildRetrofit("https://raw.githubusercontent.com/sportstimes/f1/main/db/")
         val raceRemoteDataSource = RaceRemoteDataSource(raceService, countryService, wikipediaService, f1CalendarService)
 
-        repository = RaceRepository(raceDao, raceRemoteDataSource)
-        allRaces = repository.getAllRaces(viewModelScope).asLiveData()
+        repository = RaceRepository(raceDao, raceRemoteDataSource,viewModelScope)
+        allRaces = repository.getAllRaces().asLiveData()
     }
 
     private inline fun <reified T> buildRetrofit(url: String): T =

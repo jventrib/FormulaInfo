@@ -1,6 +1,8 @@
 package com.jventrib.f1infos.race.data.remote
 
 import com.jventrib.f1infos.race.model.Race
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.net.URLDecoder
 import java.util.*
 
@@ -11,6 +13,22 @@ open class RaceRemoteDataSource(
     private val f1calendarService: F1CalendarService,
 
     ) {
+
+    fun getRacesFlow(season: Int): Flow<List<Race>> = flow<List<Race>> {
+        val races = getRaces(season)
+        //First emit with all races, no flag loaded
+        emit(races)
+
+        //Then load the flags
+        races.forEach {
+            it.circuit.location.flag =
+                getCountryFlag(it.circuit.location.country)
+            //Each time a flag is load, emit all the races
+            it.circuit.circuitImageUrl = getCircuitImage(it.circuit.circuitUrl)
+            emit(races)
+        }
+    }
+
     suspend fun getRaces(season: Int): List<Race> = mrdService.getRaces(season).mrData.table.races
         .zip(f1calendarService.getRaces(season).races) { mrd, f1c ->
             mrd.sessions = f1c.sessions;
