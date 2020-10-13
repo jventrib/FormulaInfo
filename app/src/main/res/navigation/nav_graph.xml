@@ -13,8 +13,11 @@
         <action
             android:id="@+id/action_raceFragment_to_raceResultFragment"
             app:destination="@id/fragment_race_detail"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_open_exit"
+            />
     </fragment>
     <fragment
         android:id="@+id/fragment_race_detail"
