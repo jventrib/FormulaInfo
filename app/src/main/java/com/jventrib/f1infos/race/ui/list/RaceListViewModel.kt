@@ -1,4 +1,4 @@
-package com.jventrib.f1infos.race.ui
+package com.jventrib.f1infos.race.ui.list
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
 import java.time.ZonedDateTime
 
-class RaceViewModel(application: Application) : AndroidViewModel(application) {
+class RaceListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: RaceRepository
     val allRaces: LiveData<StoreResponse<List<Race>>>
@@ -28,18 +28,25 @@ class RaceViewModel(application: Application) : AndroidViewModel(application) {
         val countryService: CountryService = buildRetrofit("https://restcountries.eu/rest/v2/name/")
         val wikipediaService: WikipediaService = buildRetrofit("https://en.wikipedia.org/")
         val f1CalendarService: F1CalendarService = buildRetrofit("https://raw.githubusercontent.com/sportstimes/f1/main/db/")
-        val raceRemoteDataSource = RaceRemoteDataSource(raceService, countryService, wikipediaService, f1CalendarService)
+        val raceRemoteDataSource =
+            RaceRemoteDataSource(raceService, countryService, wikipediaService, f1CalendarService)
 
-        repository = RaceRepository(raceDao, raceRemoteDataSource,viewModelScope)
+        repository = RaceRepository(raceDao, raceRemoteDataSource, viewModelScope)
         allRaces = repository.getAllRaces().asLiveData()
     }
 
     private inline fun <reified T> buildRetrofit(url: String): T =
         Retrofit.Builder()
             .baseUrl(url)
-            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().registerTypeAdapter(Instant::class.java, JsonDeserializer {
-                json, typeOfT, context ->  ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
-            }).create()))
+            .addConverterFactory(
+                GsonConverterFactory.create(
+                    GsonBuilder().registerTypeAdapter(
+                        Instant::class.java,
+                        JsonDeserializer { json, typeOfT, context ->
+                            ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
+                        }).create()
+                )
+            )
             .build()
             .create(T::class.java)
 }

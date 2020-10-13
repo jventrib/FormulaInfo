@@ -1,23 +1,24 @@
-package com.jventrib.f1infos.race.ui
+package com.jventrib.f1infos.race.ui.list
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.f1infos.R
+import com.jventrib.f1infos.race.ui.list.RaceListFragmentDirections
 
 /**
  * A fragment representing a list of Items.
  */
-class RaceFragment : Fragment() {
+class RaceListFragment : Fragment() {
 
     private var columnCount = 1
 
@@ -34,13 +35,13 @@ class RaceFragment : Fragment() {
 
         val context = requireContext()
         val adapter = RaceListAdapter(context) {
-            val action = RaceFragmentDirections.actionRaceFragmentToRaceResultFragment(it)
+            val action = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(it)
             view.findNavController().navigate(action)
         }
         view.adapter = adapter
         view.layoutManager = LinearLayoutManager(context)
 
-        var raceViewModel = ViewModelProvider(this).get(RaceViewModel::class.java)
+        var raceViewModel = ViewModelProvider(this).get(RaceListViewModel::class.java)
         raceViewModel.allRaces.observe(requireActivity(), { response ->
             when (response) {
                 is StoreResponse.Data -> {
