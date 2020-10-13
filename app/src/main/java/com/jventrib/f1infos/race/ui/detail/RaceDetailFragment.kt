@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
@@ -38,14 +39,11 @@ class RaceDetailFragment : Fragment() {
 
             binding.textRaceName.text = race.raceName
 
-
-            val dateTV = binding.textRaceDate
-            val raceDT = race.sessions.race
-            dateTV.text = ZonedDateTime.ofInstant(raceDT, ZoneId.systemDefault()).format(
-                customDateTimeFormatter
-            )
-            dateTV.typeface =
-                if (raceDT.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+            binding.textFp1Date.format(race.sessions.fp1)
+            binding.textFp2Date.format(race.sessions.fp2)
+            binding.textFp3Date.format(race.sessions.fp3)
+            binding.textQualDate.format(race.sessions.qualifying)
+            binding.textRaceDate.format(race.sessions.race)
 
             race.circuit.location.flag?.let {
                 val s = "https://www.countryflags.io/$it/flat/64.png"
@@ -62,6 +60,16 @@ class RaceDetailFragment : Fragment() {
             }
         }
         return view
+    }
+
+    private fun TextView.format(datetime: Instant?) {
+        datetime?.let {
+            text = ZonedDateTime.ofInstant(datetime, ZoneId.systemDefault()).format(
+                customDateTimeFormatter
+            )
+            typeface =
+                if (datetime.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        }
     }
 
     override fun onDestroyView() {
