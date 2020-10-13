@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
-import com.jventrib.f1infos.databinding.FragmentRaceBinding
+import com.jventrib.f1infos.databinding.FragmentRaceItemBinding
 import com.jventrib.f1infos.race.model.Race
 import java.time.Instant
 import java.time.ZoneId
@@ -25,7 +25,7 @@ class RaceListAdapter internal constructor(
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var races = emptyList<Race>()
 
-    inner class RaceViewHolder(binding: FragmentRaceBinding) :
+    inner class RaceViewHolder(binding: FragmentRaceItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val raceNameItemView: TextView = binding.nameTextView
         val raceDateItemView: TextView = binding.dateTextView
@@ -33,7 +33,7 @@ class RaceListAdapter internal constructor(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RaceViewHolder {
-        val binding = FragmentRaceBinding.inflate(inflater, parent, false)
+        val binding = FragmentRaceItemBinding.inflate(inflater, parent, false)
         return RaceViewHolder(binding)
     }
 
