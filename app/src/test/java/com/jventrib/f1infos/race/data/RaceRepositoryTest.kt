@@ -49,7 +49,7 @@ class RaceRepositoryTest : TestCase() {
         coEvery { raceRemoteDataSource.getRaces(any()) } returns listOf(race)
         coEvery { raceRemoteDataSource.getCountryFlag(any()) } returns "flag1"
 
-        val allRaces = RaceRepository(raceDao, raceRemoteDataSource).getAllRaces(testScope)
+        val allRaces = RaceRepository(raceDao, raceRemoteDataSource,).getAllRaces(testScope)
 
 
         val async = testScope.launch {

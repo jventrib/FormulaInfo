@@ -6,35 +6,23 @@ import com.jventrib.f1infos.race.data.db.RaceDao
 import com.jventrib.f1infos.race.model.Race
 import com.jventrib.f1infos.race.data.remote.RaceRemoteDataSource
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 
+@ExperimentalCoroutinesApi
+@FlowPreview
 class RaceRepository(
     private val raceDao: RaceDao,
-    private val raceRemoteDataSource: RaceRemoteDataSource
+    private val raceRemoteDataSource: RaceRemoteDataSource,
+    scope: CoroutineScope
 ) {
-
-    fun getAllRaces(scope: CoroutineScope): Flow<StoreResponse<List<Race>>> {
-        val store = StoreBuilder.from(
-            Fetcher.ofFlow { season: Int ->
-//                Log.d(javaClass.name, "Get races from remoteDataSource")
-                flow {
-                    val races = raceRemoteDataSource.getRaces(season)
-                    //First emit with all races, no flag loaded
-                    emit(races)
-
-                    //Then load the flags
-                    races.forEach {
-                        it.circuit.location.flag =
-                            raceRemoteDataSource.getCountryFlag(it.circuit.location.country)
-                        //Each time a flag is load, emit all the races
-                        it.circuit.circuitImageUrl = raceRemoteDataSource.getCircuitImage(it.circuit.circuitUrl)
-                        emit(races)
-                    }
-                }
-            },
+    private val store: Store<Int, List<Race>>
+    init {
+        store = StoreBuilder.from(
+            Fetcher.ofFlow { season -> raceRemoteDataSource.getRacesFlow(season) },
             SourceOfTruth.of(
                 reader = { season ->
-//                    Log.d(javaClass.name, "Get races from DB")
                     raceDao.getSeasonRaces(season).emptyFlowOfListToNull()
                 },
                 writer = { _: Int, races: List<Race> ->
@@ -43,6 +31,10 @@ class RaceRepository(
             )
         )
             .scope(scope).build()
+
+    }
+
+    fun getAllRaces(): Flow<StoreResponse<List<Race>>> {
         return store.stream(StoreRequest.cached(2020, false))
 //        return store.stream(StoreRequest.fresh(2020))
     }
