@@ -1,4 +1,4 @@
-package com.jventrib.f1infos.race.ui
+package com.jventrib.f1infos.race.ui.list
 
 import android.content.Context
 import android.graphics.Typeface
@@ -10,12 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
-import com.jventrib.f1infos.databinding.FragmentRaceItemBinding
+import com.jventrib.f1infos.databinding.ItemRaceBinding
 import com.jventrib.f1infos.race.model.Race
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
-
 
 class RaceListAdapter internal constructor(
     val context: Context,
@@ -25,7 +24,7 @@ class RaceListAdapter internal constructor(
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var races = emptyList<Race>()
 
-    inner class RaceViewHolder(binding: FragmentRaceItemBinding) :
+    inner class RaceViewHolder(binding: ItemRaceBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val raceNameItemView: TextView = binding.textRaceName
         val raceDateItemView: TextView = binding.textRaceDate
@@ -33,7 +32,7 @@ class RaceListAdapter internal constructor(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RaceViewHolder {
-        val binding = FragmentRaceItemBinding.inflate(inflater, parent, false)
+        val binding = ItemRaceBinding.inflate(inflater, parent, false)
         return RaceViewHolder(binding)
     }
 
@@ -51,8 +50,7 @@ class RaceListAdapter internal constructor(
 
         current.circuit.location.flag?.let {
             val s = "https://www.countryflags.io/$it/flat/64.png"
-            Glide
-                .with(context)
+            Glide.with(context)
                 .load(s)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(holder.flagItemView)

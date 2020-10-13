@@ -1,4 +1,4 @@
-package com.jventrib.f1infos.race.ui
+package com.jventrib.f1infos.race.ui.detail
 
 import android.graphics.Typeface
 import android.os.Bundle
@@ -11,16 +11,16 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
-import com.jventrib.f1infos.databinding.FragmentRaceResultBinding
+import com.jventrib.f1infos.databinding.FragmentRaceDetailBinding
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-class RaceResultFragment : Fragment() {
+class RaceDetailFragment : Fragment() {
 
-    val args: RaceResultFragmentArgs by navArgs()
+    val args: RaceDetailFragmentArgs by navArgs()
 
-    var _binding: FragmentRaceResultBinding? = null
+    var _binding: FragmentRaceDetailBinding? = null
 
     private val binding get() = _binding!!
 
@@ -29,10 +29,10 @@ class RaceResultFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentRaceResultBinding.inflate(inflater, container, false)
+        _binding = FragmentRaceDetailBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        val viewModel = ViewModelProvider(this).get(RaceResultViewModel::class.java)
+        val viewModel = ViewModelProvider(this).get(RaceDetailViewModel::class.java)
         viewModel.setRace(args.race)
         viewModel.race.observe(requireActivity()) { race ->
 
@@ -49,15 +49,13 @@ class RaceResultFragment : Fragment() {
 
             race.circuit.location.flag?.let {
                 val s = "https://www.countryflags.io/$it/flat/64.png"
-                Glide
-                    .with(requireContext())
+                Glide.with(requireContext())
                     .load(s)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(binding.imageFlag)
             }
             race.circuit.circuitImageUrl?.let {
-                Glide
-                    .with(requireContext())
+                Glide.with(requireContext())
                     .load(it)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(binding.imageCircuitImage)
