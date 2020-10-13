@@ -10,4 +10,4 @@
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context=".race.ui.RaceFragment"
-    tools:listitem="@layout/fragment_race" />
+    tools:listitem="@layout/fragment_race_item" />
