@@ -3,21 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/raceFragment">
+    app:startDestination="@id/fragment_race_list">
 
     <fragment
-        android:id="@+id/raceFragment"
+        android:id="@+id/fragment_race_list"
         android:name="com.jventrib.f1infos.race.ui.list.RaceListFragment"
         android:label="fragment_race_list"
         tools:layout="@layout/fragment_race_list" >
         <action
             android:id="@+id/action_raceFragment_to_raceResultFragment"
-            app:destination="@id/raceResultFragment"
+            app:destination="@id/fragment_race_detail"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
     <fragment
-        android:id="@+id/raceResultFragment"
+        android:id="@+id/fragment_race_detail"
         android:name="com.jventrib.f1infos.race.ui.detail.RaceDetailFragment"
         android:label="fragment_race_result"
         tools:layout="@layout/fragment_race_detail" >
