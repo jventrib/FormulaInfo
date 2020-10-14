@@ -35,18 +35,18 @@ class RaceListViewModel(application: Application) : AndroidViewModel(application
         allRaces = repository.getAllRaces().asLiveData()
     }
 
+    private val gsonConverterFactory = GsonConverterFactory.create(
+        GsonBuilder().registerTypeAdapter(
+            Instant::class.java,
+            JsonDeserializer { json, typeOfT, context ->
+                ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
+            }).create()
+    )
+
     private inline fun <reified T> buildRetrofit(url: String): T =
         Retrofit.Builder()
             .baseUrl(url)
-            .addConverterFactory(
-                GsonConverterFactory.create(
-                    GsonBuilder().registerTypeAdapter(
-                        Instant::class.java,
-                        JsonDeserializer { json, typeOfT, context ->
-                            ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
-                        }).create()
-                )
-            )
+            .addConverterFactory(gsonConverterFactory)
             .build()
             .create(T::class.java)
 }

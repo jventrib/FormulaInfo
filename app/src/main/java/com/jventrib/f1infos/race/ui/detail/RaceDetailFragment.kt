@@ -53,7 +53,7 @@ class RaceDetailFragment : Fragment() {
                     .into(binding.imageFlag)
             }
             race.circuit.circuitImageUrl?.let {
-                Glide.with(requireContext())
+                Glide.with(this)
                     .load(it)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(binding.imageCircuitImage)
