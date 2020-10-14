@@ -41,7 +41,7 @@ class RaceListFragment : Fragment() {
         view.adapter = adapter
         view.layoutManager = LinearLayoutManager(context)
 
-        var raceViewModel = ViewModelProvider(this).get(RaceListViewModel::class.java)
+        val raceViewModel = ViewModelProvider(this).get(RaceListViewModel::class.java)
         raceViewModel.allRaces.observe(requireActivity(), { response ->
             when (response) {
                 is StoreResponse.Data -> {

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
+import java.time.Instant
 
 class RaceRepositoryTest : TestCase() {
     private val testScope = TestCoroutineScope()
@@ -24,9 +25,6 @@ class RaceRepositoryTest : TestCase() {
             1,
             "http://test.com",
             "race1",
-            "2020-07-05",
-            "13:10:00Z",
-            null,
             Race.Circuit(
                 "cir1",
                 "http://circuit1.com",
@@ -37,8 +35,9 @@ class RaceRepositoryTest : TestCase() {
                     "Spielberg",
                     "Austria", null
                 ),
-            "http://image1.svg"),
-            Race.Sessions("t1", "t2", "t3", "q1", "r")
+                "http://image1.svg"
+            ),
+            Race.Sessions(Instant.now(), Instant.now(), Instant.now(), Instant.now(), Instant.now())
         )
 
         val raceDao = mockk<RaceDao>()
@@ -49,7 +48,7 @@ class RaceRepositoryTest : TestCase() {
         coEvery { raceRemoteDataSource.getRaces(any()) } returns listOf(race)
         coEvery { raceRemoteDataSource.getCountryFlag(any()) } returns "flag1"
 
-        val allRaces = RaceRepository(raceDao, raceRemoteDataSource,).getAllRaces(testScope)
+        val allRaces = RaceRepository(raceDao, raceRemoteDataSource, testScope).getAllRaces()
 
 
         val async = testScope.launch {
