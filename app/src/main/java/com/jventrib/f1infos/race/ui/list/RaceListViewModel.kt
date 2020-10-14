@@ -12,15 +12,28 @@ import com.jventrib.f1infos.race.data.RaceRepository
 import com.jventrib.f1infos.race.data.db.AppRoomDatabase
 import com.jventrib.f1infos.race.data.remote.*
 import com.jventrib.f1infos.race.model.Race
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
 import java.time.ZonedDateTime
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 class RaceListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: RaceRepository
     val allRaces: LiveData<StoreResponse<List<Race>>>
+
+    private val gsonConverterFactory = GsonConverterFactory.create(
+        GsonBuilder().registerTypeAdapter(
+            Instant::class.java,
+            JsonDeserializer { json, typeOfT, context ->
+                ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
+            }).create()
+    )
+
 
     init {
         val raceDao = AppRoomDatabase.getDatabase(application, viewModelScope).raceDao()
@@ -35,13 +48,6 @@ class RaceListViewModel(application: Application) : AndroidViewModel(application
         allRaces = repository.getAllRaces().asLiveData()
     }
 
-    private val gsonConverterFactory = GsonConverterFactory.create(
-        GsonBuilder().registerTypeAdapter(
-            Instant::class.java,
-            JsonDeserializer { json, typeOfT, context ->
-                ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
-            }).create()
-    )
 
     private inline fun <reified T> buildRetrofit(url: String): T =
         Retrofit.Builder()
