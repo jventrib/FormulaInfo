@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dropbox.android.external.store4.StoreResponse
@@ -34,9 +35,10 @@ class RaceListFragment : Fragment() {
             inflater.inflate(R.layout.fragment_race_list, container, false) as RecyclerView
 
         val context = requireContext()
-        val adapter = RaceListAdapter(context) {
-            val action = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(it)
-            view.findNavController().navigate(action)
+        val adapter = RaceListAdapter(context) { race, view ->
+            val action = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
+            val extras = FragmentNavigatorExtras(view to "race_card")
+            view.findNavController().navigate(action, extras)
         }
         view.adapter = adapter
         view.layoutManager = LinearLayoutManager(context)
@@ -51,7 +53,8 @@ class RaceListFragment : Fragment() {
                 }
                 is StoreResponse.Error.Exception -> {
                     Log.e(javaClass.name, "Error: ${response.errorMessageOrNull()}", response.error)
-                    Toast.makeText(context, response.errorMessageOrNull(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, response.errorMessageOrNull(), Toast.LENGTH_SHORT)
+                        .show()
                 }
                 is StoreResponse.Loading ->
                     Log.d(javaClass.name, "Resource.Status.LOADING")

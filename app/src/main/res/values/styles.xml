@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:background">@color/light_grey</item>
+        <item name="android:windowActivityTransitions">true</item>
     </style>
 
     <style name="word_title">
@@ -19,5 +20,4 @@
     <color name="colorPrimary">#F44336</color>
     <color name="colorPrimaryDark">#812019</color>
     <color name="colorAccent">#3F51B5</color>
-
 </resources>
