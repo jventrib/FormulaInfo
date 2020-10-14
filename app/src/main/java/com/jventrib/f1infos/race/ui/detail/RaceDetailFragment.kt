@@ -2,9 +2,11 @@ package com.jventrib.f1infos.race.ui.detail
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -21,15 +23,23 @@ class RaceDetailFragment : Fragment() {
 
     val args: RaceDetailFragmentArgs by navArgs()
 
-    var _binding: FragmentRaceDetailBinding? = null
+    private var _binding: FragmentRaceDetailBinding? = null
 
     private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+            .apply {
+                duration = 750
+                interpolator = AccelerateDecelerateInterpolator()
+            }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = FragmentRaceDetailBinding.inflate(inflater, container, false)
         val view = binding.root
 
@@ -39,11 +49,11 @@ class RaceDetailFragment : Fragment() {
 
             binding.textRaceName.text = race.raceName
 
-            binding.textFp1Date.format(race.sessions.fp1)
-            binding.textFp2Date.format(race.sessions.fp2)
-            binding.textFp3Date.format(race.sessions.fp3)
-            binding.textQualDate.format(race.sessions.qualifying)
-            binding.textRaceDate.format(race.sessions.race)
+            binding.textFp1Date.textAndFormat(race.sessions.fp1)
+            binding.textFp2Date.textAndFormat(race.sessions.fp2)
+            binding.textFp3Date.textAndFormat(race.sessions.fp3)
+            binding.textQualDate.textAndFormat(race.sessions.qualifying)
+            binding.textRaceDate.textAndFormat(race.sessions.race)
 
             race.circuit.location.flag?.let {
                 val s = "https://www.countryflags.io/$it/flat/64.png"
@@ -62,7 +72,7 @@ class RaceDetailFragment : Fragment() {
         return view
     }
 
-    private fun TextView.format(datetime: Instant?) {
+    private fun TextView.textAndFormat(datetime: Instant?) {
         datetime?.let {
             text = ZonedDateTime.ofInstant(datetime, ZoneId.systemDefault()).format(
                 customDateTimeFormatter
