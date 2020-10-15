@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
@@ -72,6 +73,16 @@ class RaceDetailFragment : Fragment() {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setTransitionName(binding.root, "race_card${args.race.round}")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun TextView.textAndFormat(datetime: Instant?) {
         datetime?.let {
             text = ZonedDateTime.ofInstant(datetime, ZoneId.systemDefault()).format(
@@ -80,10 +91,5 @@ class RaceDetailFragment : Fragment() {
             typeface =
                 if (datetime.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

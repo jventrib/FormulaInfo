@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -21,12 +22,6 @@ import com.jventrib.f1infos.race.ui.list.RaceListFragmentDirections
  */
 class RaceListFragment : Fragment() {
 
-    private var columnCount = 1
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,9 +30,11 @@ class RaceListFragment : Fragment() {
             inflater.inflate(R.layout.fragment_race_list, container, false) as RecyclerView
 
         val context = requireContext()
-        val adapter = RaceListAdapter(context) { race, view ->
+        val adapter = RaceListAdapter(context) { race, sharedView ->
+            ViewCompat.setTransitionName(sharedView, "race_card${race.round}")
+
             val action = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
-            val extras = FragmentNavigatorExtras(view to "race_card")
+            val extras = FragmentNavigatorExtras(sharedView to "race_card${race.round}")
             view.findNavController().navigate(action, extras)
         }
         view.adapter = adapter
