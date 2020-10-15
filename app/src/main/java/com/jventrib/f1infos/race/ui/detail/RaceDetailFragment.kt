@@ -32,8 +32,8 @@ class RaceDetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
             .apply {
-                duration = 750
-                interpolator = AccelerateDecelerateInterpolator()
+                duration = 500
+//                interpolator = AccelerateDecelerateInterpolator()
             }
     }
 
@@ -75,7 +75,7 @@ class RaceDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ViewCompat.setTransitionName(binding.root, "race_card${args.race.round}")
+        ViewCompat.setTransitionName(binding.cardRaceDetail, "race_card${args.race.round}")
     }
 
     override fun onDestroyView() {
