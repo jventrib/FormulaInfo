@@ -53,7 +53,7 @@ class RaceListAdapter internal constructor(
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(holder.binding.imageFlag)
         }
-        holder.itemView.setOnClickListener { listener(current, holder.binding.root) }
+        holder.itemView.setOnClickListener { listener(current, holder.binding.cardRaceItem) }
     }
 
 

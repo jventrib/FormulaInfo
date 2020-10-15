@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.f1infos.R
-import com.jventrib.f1infos.race.ui.list.RaceListFragmentDirections
 
 /**
  * A fragment representing a list of Items.
@@ -26,19 +25,24 @@ class RaceListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view: RecyclerView =
+        val raceList: RecyclerView =
             inflater.inflate(R.layout.fragment_race_list, container, false) as RecyclerView
 
         val context = requireContext()
         val adapter = RaceListAdapter(context) { race, sharedView ->
             ViewCompat.setTransitionName(sharedView, "race_card${race.round}")
 
-            val action = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
+            val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
             val extras = FragmentNavigatorExtras(sharedView to "race_card${race.round}")
-            view.findNavController().navigate(action, extras)
+            raceList.findNavController().navigate(directions, extras)
         }
-        view.adapter = adapter
-        view.layoutManager = LinearLayoutManager(context)
+        raceList.adapter = adapter
+        postponeEnterTransition()
+        raceList.viewTreeObserver.addOnPreDrawListener {
+            startPostponedEnterTransition()
+            true
+        }
+        raceList.layoutManager = LinearLayoutManager(context)
 
         val raceViewModel = ViewModelProvider(this).get(RaceListViewModel::class.java)
         raceViewModel.allRaces.observe(requireActivity(), { response ->
@@ -58,6 +62,6 @@ class RaceListFragment : Fragment() {
 //                    progress_bar.visibility = View.VISIBLE
             }
         })
-        return view
+        return raceList
     }
 }
