@@ -1,13 +1,11 @@
 package com.jventrib.f1infos.race.ui.list
 
 import android.os.Bundle
-import android.transition.Fade
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.ViewCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -16,8 +14,8 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dropbox.android.external.store4.StoreResponse
-import com.google.android.material.transition.Hold
-import com.google.android.material.transition.MaterialElevationScale
+import com.google.android.material.transition.platform.Hold
+import com.google.android.material.transition.platform.MaterialElevationScale
 import com.jventrib.f1infos.R
 
 /**
@@ -34,13 +32,14 @@ class RaceListFragment : Fragment() {
 
         val context = requireContext()
         val adapter = RaceListAdapter(context) { race, binding ->
-
-            exitTransition = Hold().apply { duration = 500 }
-            reenterTransition = Hold().apply { duration = 500 }
+            exitTransition = Hold().apply { duration = 300 }
+            reenterTransition = Hold().apply { duration = 300 }
 
             val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
             val extras = FragmentNavigatorExtras(
                 binding.root to "race_card_detail",
+                binding.imageFlag to "race_image_flag",
+                binding.textRaceDate to "text_race_date",
             )
             raceList.findNavController().navigate(directions, extras)
         }

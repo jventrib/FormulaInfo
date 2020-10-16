@@ -54,6 +54,8 @@ class RaceListAdapter internal constructor(
                 .into(holder.binding.imageFlag)
         }
         ViewCompat.setTransitionName(holder.binding.root, "race_card${current.round}")
+        ViewCompat.setTransitionName(holder.binding.imageFlag, "race_image_flag${current.round}")
+        ViewCompat.setTransitionName(holder.binding.textRaceDate, "text_race_date${current.round}")
 
         holder.itemView.setOnClickListener { listener(current, holder.binding) }
     }
