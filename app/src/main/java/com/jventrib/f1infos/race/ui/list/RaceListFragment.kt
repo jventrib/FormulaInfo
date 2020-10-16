@@ -1,12 +1,14 @@
 package com.jventrib.f1infos.race.ui.list
 
 import android.os.Bundle
+import android.transition.Fade
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.ViewCompat
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -14,6 +16,8 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dropbox.android.external.store4.StoreResponse
+import com.google.android.material.transition.Hold
+import com.google.android.material.transition.MaterialElevationScale
 import com.jventrib.f1infos.R
 
 /**
@@ -29,19 +33,18 @@ class RaceListFragment : Fragment() {
             inflater.inflate(R.layout.fragment_race_list, container, false) as RecyclerView
 
         val context = requireContext()
-        val adapter = RaceListAdapter(context) { race, sharedView ->
-            ViewCompat.setTransitionName(sharedView, "race_card${race.round}")
+        val adapter = RaceListAdapter(context) { race, binding ->
+
+            exitTransition = Hold().apply { duration = 500 }
+            reenterTransition = Hold().apply { duration = 500 }
 
             val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
-            val extras = FragmentNavigatorExtras(sharedView to "race_card${race.round}")
+            val extras = FragmentNavigatorExtras(
+                binding.root to "race_card_detail",
+            )
             raceList.findNavController().navigate(directions, extras)
         }
         raceList.adapter = adapter
-        postponeEnterTransition()
-        raceList.viewTreeObserver.addOnPreDrawListener {
-            startPostponedEnterTransition()
-            true
-        }
         raceList.layoutManager = LinearLayoutManager(context)
 
         val raceViewModel = ViewModelProvider(this).get(RaceListViewModel::class.java)
@@ -63,5 +66,11 @@ class RaceListFragment : Fragment() {
             }
         })
         return raceList
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
     }
 }

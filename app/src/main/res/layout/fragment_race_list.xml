@@ -10,4 +10,5 @@
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context=".race.ui.list.RaceListFragment"
-    tools:listitem="@layout/item_race" />
+    tools:listitem="@layout/item_race"
+    android:transitionGroup="true"/>
