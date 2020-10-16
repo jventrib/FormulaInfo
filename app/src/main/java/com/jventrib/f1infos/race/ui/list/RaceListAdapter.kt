@@ -20,7 +20,7 @@ import java.time.ZonedDateTime
 
 class RaceListAdapter internal constructor(
     val context: Context,
-    private val listener: (Race, View) -> Unit
+    private val listener: (Race, ItemRaceBinding) -> Unit
 ) : RecyclerView.Adapter<RaceListAdapter.RaceViewHolder>() {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
@@ -53,7 +53,9 @@ class RaceListAdapter internal constructor(
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(holder.binding.imageFlag)
         }
-        holder.itemView.setOnClickListener { listener(current, holder.binding.cardRaceItem) }
+        ViewCompat.setTransitionName(holder.binding.root, "race_card${current.round}")
+
+        holder.itemView.setOnClickListener { listener(current, holder.binding) }
     }
 
 

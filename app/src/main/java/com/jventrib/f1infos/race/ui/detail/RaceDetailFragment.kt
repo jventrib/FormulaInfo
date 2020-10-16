@@ -1,5 +1,6 @@
 package com.jventrib.f1infos.race.ui.detail
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.transition.TransitionInflater
@@ -14,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.transition.MaterialContainerTransform
+import com.jventrib.f1infos.R
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
 import com.jventrib.f1infos.databinding.FragmentRaceDetailBinding
 import java.time.Instant
@@ -30,11 +33,12 @@ class RaceDetailFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-            .apply {
-                duration = 500
-//                interpolator = AccelerateDecelerateInterpolator()
-            }
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = R.id.nav_host_fragment
+            scrimColor = Color.TRANSPARENT
+            duration = 500
+        }
+
     }
 
     override fun onCreateView(
@@ -70,12 +74,8 @@ class RaceDetailFragment : Fragment() {
                     .into(binding.imageCircuitImage)
             }
         }
+        ViewCompat.setTransitionName(binding.root, "race_card_detail")
         return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        ViewCompat.setTransitionName(binding.cardRaceDetail, "race_card${args.race.round}")
     }
 
     override fun onDestroyView() {
