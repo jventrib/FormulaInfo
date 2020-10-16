@@ -3,7 +3,6 @@ package com.jventrib.f1infos.race.ui.detail
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,9 +12,10 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
+import androidx.transition.TransitionInflater
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.jventrib.f1infos.R
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
 import com.jventrib.f1infos.databinding.FragmentRaceDetailBinding
@@ -33,11 +33,17 @@ class RaceDetailFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedElementEnterTransition = MaterialContainerTransform().apply {
-            drawingViewId = R.id.nav_host_fragment
-            scrimColor = Color.TRANSPARENT
-            duration = 500
-        }
+//        sharedElementEnterTransition = MaterialContainerTransform().apply {
+//            drawingViewId = R.id.nav_host_fragment
+//            scrimColor = Color.TRANSPARENT
+//            duration = 500
+//        }
+
+        sharedElementEnterTransition = android.transition.TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+            .apply {
+                duration = 300
+                interpolator = AccelerateDecelerateInterpolator()
+            }
 
     }
 
@@ -75,6 +81,8 @@ class RaceDetailFragment : Fragment() {
             }
         }
         ViewCompat.setTransitionName(binding.root, "race_card_detail")
+        ViewCompat.setTransitionName(binding.imageFlag, "race_image_flag")
+        ViewCompat.setTransitionName(binding.textRaceDate, "text_race_date")
         return view
     }
 
