@@ -1,12 +1,12 @@
 package com.jventrib.f1infos.race.data.db
 
 import android.content.Context
-import androidx.room.*
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.jventrib.f1infos.common.utils.Converters
 import com.jventrib.f1infos.race.model.Race
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Database(entities = [Race::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)

@@ -1,6 +1,5 @@
 package com.jventrib.f1infos.race.ui.detail
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,11 +11,8 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
-import androidx.transition.TransitionInflater
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.material.transition.platform.MaterialContainerTransform
-import com.jventrib.f1infos.R
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
 import com.jventrib.f1infos.databinding.FragmentRaceDetailBinding
 import java.time.Instant

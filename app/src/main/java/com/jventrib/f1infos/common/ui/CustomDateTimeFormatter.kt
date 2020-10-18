@@ -1,9 +1,7 @@
 package com.jventrib.f1infos.common.ui
 
-import java.time.chrono.IsoChronology
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
-import java.time.format.ResolverStyle
 import java.time.format.SignStyle
 import java.time.temporal.ChronoField
 import java.util.*
@@ -36,7 +34,8 @@ val customDateTimeFormatter: DateTimeFormatter?
         moy[10L] = "Oct"
         moy[11L] = "Nov"
         moy[12L] = "Dec"
-        val formatter = DateTimeFormatterBuilder()
+
+        return DateTimeFormatterBuilder()
             .parseCaseInsensitive()
             .parseLenient()
             .optionalStart()
@@ -58,8 +57,6 @@ val customDateTimeFormatter: DateTimeFormatter?
             .optionalEnd()
             .appendLiteral(' ')
             .toFormatter()
-
-        return formatter
     }
 
 

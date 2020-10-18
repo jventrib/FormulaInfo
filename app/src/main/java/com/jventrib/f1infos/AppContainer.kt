@@ -1,5 +1,6 @@
 package com.jventrib.f1infos
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.GsonBuilder
@@ -8,13 +9,17 @@ import com.jventrib.f1infos.race.data.RaceRepository
 import com.jventrib.f1infos.race.data.db.AppRoomDatabase
 import com.jventrib.f1infos.race.data.remote.*
 import com.jventrib.f1infos.race.ui.list.RaceListViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.IllegalArgumentException
 import java.time.Instant
 import java.time.ZonedDateTime
 
-class AppContainer(application: Application) {
+@FlowPreview
+@ExperimentalCoroutinesApi
+class AppContainer(context: Context) {
 
     private val gsonConverterFactory = GsonConverterFactory.create(
         GsonBuilder().registerTypeAdapter(
@@ -24,15 +29,15 @@ class AppContainer(application: Application) {
             }).create()
     )
 
-    private val raceDao = AppRoomDatabase.getDatabase(application).raceDao()
+    private val raceDao = AppRoomDatabase.getDatabase(context).raceDao()
     private val raceService: RaceService =
-        buildRetrofit("https://ergast.com/api/f1/")
+        buildRetrofit(context.getString(R.string.api_ergast))
     private val countryService: CountryService =
-        buildRetrofit("https://restcountries.eu/rest/v2/name/")
+        buildRetrofit(context.getString(R.string.api_restcountries))
     private val wikipediaService: WikipediaService =
-        buildRetrofit("https://en.wikipedia.org/")
+        buildRetrofit(context.getString(R.string.api_wikipedia))
     private val f1CalendarService: F1CalendarService =
-        buildRetrofit("https://raw.githubusercontent.com/sportstimes/f1/main/db/")
+        buildRetrofit(context.getString(R.string.api_github_raw))
     private val raceRemoteDataSource =
         RaceRemoteDataSource(raceService, countryService, wikipediaService, f1CalendarService)
     val raceRepository = RaceRepository(raceDao, raceRemoteDataSource)

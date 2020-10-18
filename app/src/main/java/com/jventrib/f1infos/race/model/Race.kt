@@ -2,11 +2,9 @@ package com.jventrib.f1infos.race.model
 
 import androidx.room.Embedded
 import androidx.room.Entity
-import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 import java.time.Instant
-import java.time.ZonedDateTime
 
 @Entity(tableName = "race", primaryKeys = ["season", "round"])
 class Race(

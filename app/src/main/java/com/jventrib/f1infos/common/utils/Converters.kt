@@ -2,7 +2,6 @@ package com.jventrib.f1infos.common.utils
 
 import androidx.room.TypeConverter
 import java.time.Instant
-import java.util.*
 
 class Converters {
     @TypeConverter
