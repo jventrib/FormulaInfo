@@ -7,7 +7,6 @@ import com.jventrib.f1infos.race.model.Race
 class RaceDetailViewModel : ViewModel() {
     val race: MutableLiveData<Race> = MutableLiveData()
 
-
     fun setRace(r: Race) {
         race.value = r
     }
