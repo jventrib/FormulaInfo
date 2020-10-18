@@ -14,7 +14,7 @@ open class RaceRemoteDataSource(
 
     ) {
 
-    fun getRacesFlow(season: Int): Flow<List<Race>> = flow<List<Race>> {
+    fun getRacesFlow(season: Int): Flow<List<Race>> = flow {
         val races = getRaces(season)
         //First emit with all races, no flag loaded
         emit(races)
@@ -31,14 +31,14 @@ open class RaceRemoteDataSource(
 
     suspend fun getRaces(season: Int): List<Race> = mrdService.getRaces(season).mrData.table.races
         .zip(f1calendarService.getRaces(season).races) { mrd, f1c ->
-            mrd.sessions = f1c.sessions;
+            mrd.sessions = f1c.sessions
             mrd
         }
 
     suspend fun getCountryFlag(country: String) =
         countryService.getCountry(country).last().alpha2Code.toLowerCase(Locale.ROOT)
 
-    suspend fun getCircuitImage(circuitUrl: String): String {
+    private suspend fun getCircuitImage(circuitUrl: String): String {
         val name = URLDecoder.decode(circuitUrl.splitToSequence("/").last(), Charsets.UTF_8.name())
         val pageImage = wikipediaService.getPageImage(name)
         val query = pageImage.query
