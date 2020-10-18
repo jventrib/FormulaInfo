@@ -69,6 +69,8 @@ class RaceListFragment : Fragment() {
                 is StoreResponse.Loading ->
                     Log.d(javaClass.name, "Resource.Status.LOADING")
 //                    progress_bar.visibility = View.VISIBLE
+                is StoreResponse.NoNewData -> TODO()
+                is StoreResponse.Error.Message -> TODO()
             }
         }
         return raceList

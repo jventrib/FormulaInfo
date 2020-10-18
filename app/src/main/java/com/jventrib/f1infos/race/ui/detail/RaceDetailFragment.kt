@@ -25,7 +25,7 @@ import java.time.ZonedDateTime
 
 class RaceDetailFragment : Fragment() {
 
-    val args: RaceDetailFragmentArgs by navArgs()
+    private val args: RaceDetailFragmentArgs by navArgs()
 
     private var _binding: FragmentRaceDetailBinding? = null
 

@@ -16,9 +16,8 @@ class RaceRepository(
     private val raceDao: RaceDao,
     private val raceRemoteDataSource: RaceRemoteDataSource
 ) {
-    private val store: Store<Int, List<Race>>
-    init {
-        store = StoreBuilder.from(
+    private val store: Store<Int, List<Race>> =
+        StoreBuilder.from(
             Fetcher.ofFlow { season -> raceRemoteDataSource.getRacesFlow(season) },
             SourceOfTruth.of(
                 reader = { season ->
@@ -28,11 +27,8 @@ class RaceRepository(
                     raceDao.insertAll(races)
                 }
             )
-        )
-//            .scope(scope)
-            .build()
+        ).build()
 
-    }
 
     fun getAllRaces(): Flow<StoreResponse<List<Race>>> {
         return store.stream(StoreRequest.cached(2020, false))
