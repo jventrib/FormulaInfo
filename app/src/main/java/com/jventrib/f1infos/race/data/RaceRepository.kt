@@ -14,8 +14,7 @@ import kotlinx.coroutines.flow.*
 @FlowPreview
 class RaceRepository(
     private val raceDao: RaceDao,
-    private val raceRemoteDataSource: RaceRemoteDataSource,
-    scope: CoroutineScope
+    private val raceRemoteDataSource: RaceRemoteDataSource
 ) {
     private val store: Store<Int, List<Race>>
     init {
@@ -30,7 +29,8 @@ class RaceRepository(
                 }
             )
         )
-            .scope(scope).build()
+//            .scope(scope)
+            .build()
 
     }
 

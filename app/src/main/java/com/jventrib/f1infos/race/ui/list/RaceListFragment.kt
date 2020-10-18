@@ -8,19 +8,23 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dropbox.android.external.store4.StoreResponse
 import com.google.android.material.transition.platform.Hold
-import com.google.android.material.transition.platform.MaterialElevationScale
+import com.jventrib.f1infos.Application
 import com.jventrib.f1infos.R
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 
 /**
  * A fragment representing a list of Items.
  */
+@ExperimentalCoroutinesApi
+@FlowPreview
 class RaceListFragment : Fragment() {
 
     override fun onCreateView(
@@ -46,8 +50,11 @@ class RaceListFragment : Fragment() {
         raceList.adapter = adapter
         raceList.layoutManager = LinearLayoutManager(context)
 
-        val raceViewModel = ViewModelProvider(this).get(RaceListViewModel::class.java)
-        raceViewModel.allRaces.observe(requireActivity(), { response ->
+        val f1IApplication = requireActivity().application as Application
+        val appContainer = f1IApplication.appContainer
+        val raceViewModel: RaceListViewModel by viewModels(factoryProducer = appContainer.getRaceListViewModelFactory())
+
+        raceViewModel.allRaces.observe(requireActivity()) { response ->
             when (response) {
                 is StoreResponse.Data -> {
                     Log.d(javaClass.name, "Resource.Status.SUCCESS: ${response.value}")
@@ -63,9 +70,10 @@ class RaceListFragment : Fragment() {
                     Log.d(javaClass.name, "Resource.Status.LOADING")
 //                    progress_bar.visibility = View.VISIBLE
             }
-        })
+        }
         return raceList
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
