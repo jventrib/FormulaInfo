@@ -21,44 +21,14 @@ abstract class AppRoomDatabase : RoomDatabase() {
         private var instance: AppRoomDatabase? = null
 
         fun getDatabase(
-            context: Context,
-            scope: CoroutineScope
+            context: Context
         ): AppRoomDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
                     context,
                     AppRoomDatabase::class.java,
                     "f1_database"
-                )
-                    .addCallback(RaceDatabaseCallback(scope))
-//                    .fallbackToDestructiveMigration()
-                    .build()
-                    .also { instance = it }
+                ).build().also { instance = it }
             }
-    }
-
-    private class RaceDatabaseCallback(
-        private val scope: CoroutineScope
-    ) : RoomDatabase.Callback() {
-
-        override fun onOpen(db: SupportSQLiteDatabase) {
-            super.onOpen(db)
-            instance?.let { database ->
-                scope.launch {
-                    populateDatabase(database.raceDao())
-                }
-            }
-        }
-
-        suspend fun populateDatabase(raceDao: RaceDao) {
-            // Delete all content here.
-//            raceDao.deleteAll()
-
-//            // Add sample words.
-//            var race = Race("2020", 1, "", "Austria", "2020-06-01")
-//            raceDao.insert(race)
-//            race = Race("2020", 2, "", "Styria", "2020-06-09")
-//            raceDao.insert(race)
-        }
     }
 }

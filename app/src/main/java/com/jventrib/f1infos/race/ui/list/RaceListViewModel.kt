@@ -1,58 +1,14 @@
 package com.jventrib.f1infos.race.ui.list
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.dropbox.android.external.store4.StoreResponse
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializer
 import com.jventrib.f1infos.race.data.RaceRepository
-import com.jventrib.f1infos.race.data.db.AppRoomDatabase
-import com.jventrib.f1infos.race.data.remote.*
 import com.jventrib.f1infos.race.model.Race
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.time.Instant
-import java.time.ZonedDateTime
 
 @FlowPreview
 @ExperimentalCoroutinesApi
-class RaceListViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository: RaceRepository
-    val allRaces: LiveData<StoreResponse<List<Race>>>
-
-    private val gsonConverterFactory = GsonConverterFactory.create(
-        GsonBuilder().registerTypeAdapter(
-            Instant::class.java,
-            JsonDeserializer { json, typeOfT, context ->
-                ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
-            }).create()
-    )
-
-
-    init {
-        val raceDao = AppRoomDatabase.getDatabase(application, viewModelScope).raceDao()
-        val raceService: RaceService = buildRetrofit("https://ergast.com/api/f1/")
-        val countryService: CountryService = buildRetrofit("https://restcountries.eu/rest/v2/name/")
-        val wikipediaService: WikipediaService = buildRetrofit("https://en.wikipedia.org/")
-        val f1CalendarService: F1CalendarService = buildRetrofit("https://raw.githubusercontent.com/sportstimes/f1/main/db/")
-        val raceRemoteDataSource =
-            RaceRemoteDataSource(raceService, countryService, wikipediaService, f1CalendarService)
-
-        repository = RaceRepository(raceDao, raceRemoteDataSource, viewModelScope)
-        allRaces = repository.getAllRaces().asLiveData()
-    }
-
-
-    private inline fun <reified T> buildRetrofit(url: String): T =
-        Retrofit.Builder()
-            .baseUrl(url)
-            .addConverterFactory(gsonConverterFactory)
-            .build()
-            .create(T::class.java)
+class RaceListViewModel(repository: RaceRepository) : ViewModel() {
+    val allRaces: LiveData<StoreResponse<List<Race>>> = repository.getAllRaces().asLiveData()
 }

@@ -7,6 +7,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -14,6 +15,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
 import java.time.Instant
 
+@ExperimentalCoroutinesApi
 class RaceRepositoryTest : TestCase() {
     private val testScope = TestCoroutineScope()
 
@@ -48,7 +50,7 @@ class RaceRepositoryTest : TestCase() {
         coEvery { raceRemoteDataSource.getRaces(any()) } returns listOf(race)
         coEvery { raceRemoteDataSource.getCountryFlag(any()) } returns "flag1"
 
-        val allRaces = RaceRepository(raceDao, raceRemoteDataSource, testScope).getAllRaces()
+        val allRaces = RaceRepository(raceDao, raceRemoteDataSource).getAllRaces()
 
 
         val async = testScope.launch {

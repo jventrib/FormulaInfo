@@ -9,9 +9,7 @@ class AppRoomDatabaseTest {
 
     @Test
     fun getDatabaseTest() {
-
-        val database = AppRoomDatabase.getDatabase(mockk(), mockk())
-
+        val database = AppRoomDatabase.getDatabase(mockk())
         Truth.assertThat(database).isNotNull()
     }
 }
