@@ -2,6 +2,7 @@ package com.jventrib.f1infos.race.model
 
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Ignore
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 import java.time.Instant
@@ -17,7 +18,11 @@ class Race(
     val circuit: Circuit,
     @Embedded
     var sessions: Sessions
-): Serializable {
+) : Serializable {
+    @SerializedName("Results")
+    @Ignore
+    var results: List<RaceResult>? = null
+
     data class Circuit(
         val circuitId: String,
         @SerializedName("url")
@@ -38,13 +43,14 @@ class Race(
             var flag: String?
         )
     }
-        data class Sessions(
-            val fp1: Instant?,
-            val fp2: Instant?,
-            val fp3: Instant?,
-            val qualifying: Instant,
-            val race: Instant
-        )
+
+    data class Sessions(
+        val fp1: Instant?,
+        val fp2: Instant?,
+        val fp3: Instant?,
+        val qualifying: Instant,
+        val race: Instant
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

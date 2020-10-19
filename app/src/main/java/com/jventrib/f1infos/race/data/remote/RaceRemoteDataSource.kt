@@ -1,6 +1,8 @@
 package com.jventrib.f1infos.race.data.remote
 
+import com.jventrib.f1infos.race.data.RaceRepository
 import com.jventrib.f1infos.race.model.Race
+import com.jventrib.f1infos.race.model.RaceResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.URLDecoder
@@ -44,4 +46,9 @@ open class RaceRemoteDataSource(
         val query = pageImage.query
         return query.pages.values.first().original.source
     }
+
+    fun getRaceResultsFlow(season: Int, round: Int): Flow<List<RaceResult>> {
+        return flow{emit(mrdService.getRaceResults(season, round).mrData.table.races.first().results!!)}
+    }
+
 }
