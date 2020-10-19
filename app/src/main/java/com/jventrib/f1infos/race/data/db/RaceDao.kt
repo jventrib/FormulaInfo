@@ -1,6 +1,9 @@
 package com.jventrib.f1infos.race.data.db
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.jventrib.f1infos.race.model.Race
 import kotlinx.coroutines.flow.Flow
 
@@ -15,7 +18,4 @@ interface RaceDao {
 
     @Query("DELETE FROM race")
     suspend fun deleteAll()
-
-    @Update
-    fun updateRaceFlag(r: Race)
 }
