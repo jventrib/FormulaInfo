@@ -1,5 +1,6 @@
 package com.jventrib.f1infos.race.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
@@ -14,37 +15,41 @@ data class RaceResult(
     val positionText: String,
     val points: Int,
     @Embedded
+    @SerializedName("Driver")
     val driver: Driver,
     @Embedded
+    @SerializedName("Constructor")
     val constructor: Constructor,
     val grid: Int,
     val laps: Int,
     val status: String,
     @Embedded
+    @SerializedName("Time")
     val time: Time,
     @Embedded
+    @SerializedName("FastestLap")
     val fastestLap: FastestLap
-): Serializable {
+) : Serializable {
     data class Driver(
         val driverId: String,
-        val permanentNumber: String,
+        val permanentNumber: Int,
         val code: String,
-        @SerializedName("url")
-        val driverUrl: String,
+        @ColumnInfo(name = "driverUrl")
+        val url: String,
         val givenName: String,
         val familyName: String,
         val dateOfBirth: String,
-        @SerializedName("nationality")
-        val driverNationality: String
+        @ColumnInfo(name = "driverNationality")
+        val nationality: String
     )
 
     data class Constructor(
         val constructorId: String,
-        @SerializedName("url")
-        val constructorUrl: String,
+        @ColumnInfo(name = "constructorUrl")
+        val url: String,
         val name: String,
-        @SerializedName("nationality")
-        val constructorNationality: String
+        @ColumnInfo(name = "constructorNationality")
+        val nationality: String
     )
 
     data class Time(
@@ -53,12 +58,14 @@ data class RaceResult(
     )
 
     data class FastestLap(
-        val fastestLapRank: Int,
-        val fastestLap: Int,
+        val rank: Int,
+        @ColumnInfo(name = "fastestLap")
+        val lap: Int,
         @Embedded(prefix = "fastest_")
-        @SerializedName("time")
-        val fastestLapTime: Time,
+        @SerializedName("Time")
+        val time: Time,
         @Embedded
+        @SerializedName("AverageSpeed")
         val averageSpeed: AverageSpeed
     ) {
         data class AverageSpeed(
