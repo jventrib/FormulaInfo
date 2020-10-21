@@ -32,7 +32,7 @@ class AppContainer(context: Context) {
     private val raceDao = AppRoomDatabase.getDatabase(context).raceDao()
     private val raceResultDao = AppRoomDatabase.getDatabase(context).raceResultDao()
 
-    private val raceService: RaceService =
+    private val mrdService: MrdService =
         buildRetrofit(context.getString(R.string.api_ergast))
     private val countryService: CountryService =
         buildRetrofit(context.getString(R.string.api_restcountries))
@@ -41,7 +41,7 @@ class AppContainer(context: Context) {
     private val f1CalendarService: F1CalendarService =
         buildRetrofit(context.getString(R.string.api_github_raw))
     private val raceRemoteDataSource =
-        RaceRemoteDataSource(raceService, countryService, wikipediaService, f1CalendarService)
+        RaceRemoteDataSource(mrdService, countryService, wikipediaService, f1CalendarService)
 
     val raceRepository = RaceRepository(raceDao, raceResultDao, raceRemoteDataSource)
 

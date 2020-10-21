@@ -63,9 +63,8 @@ class RaceDetailFragment : Fragment() {
             binding.textRaceDate.textAndFormat(race.sessions.race)
 
             race.circuit.location.flag?.let {
-                val s = "https://www.countryflags.io/$it/flat/64.png"
-                Glide.with(requireContext())
-                    .load(s)
+                Glide.with(this)
+                    .load(it)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(binding.imageFlag)
             }

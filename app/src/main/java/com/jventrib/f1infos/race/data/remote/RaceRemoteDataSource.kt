@@ -1,6 +1,5 @@
 package com.jventrib.f1infos.race.data.remote
 
-import com.jventrib.f1infos.race.data.RaceRepository
 import com.jventrib.f1infos.race.model.Race
 import com.jventrib.f1infos.race.model.RaceResult
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +8,7 @@ import java.net.URLDecoder
 import java.util.*
 
 open class RaceRemoteDataSource(
-    private val mrdService: RaceService,
+    private val mrdService: MrdService,
     private val countryService: CountryService,
     private val wikipediaService: WikipediaService,
     private val f1calendarService: F1CalendarService,
@@ -37,8 +36,10 @@ open class RaceRemoteDataSource(
             mrd
         }
 
-    suspend fun getCountryFlag(country: String) =
-        countryService.getCountry(country).last().alpha2Code.toLowerCase(Locale.ROOT)
+    suspend fun getCountryFlag(country: String): String {
+        val pageImage = wikipediaService.getPageImage(country)
+        return pageImage.query.pages.values.first().original.source
+    }
 
     private suspend fun getCircuitImage(circuitUrl: String): String {
         val name = URLDecoder.decode(circuitUrl.splitToSequence("/").last(), Charsets.UTF_8.name())
@@ -48,7 +49,12 @@ open class RaceRemoteDataSource(
     }
 
     fun getRaceResultsFlow(season: Int, round: Int): Flow<List<RaceResult>> {
-        return flow{emit(mrdService.getRaceResults(season, round).mrData.table.races.first().results!!)}
+        return flow {
+            val raceResults =
+                mrdService.getRaceResults(season, round).mrData.table.races.first().results!!
+                    .map { it.copy(season = season, round = round) }
+            emit(raceResults)
+        }
     }
 
 }
