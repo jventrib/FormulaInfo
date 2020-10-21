@@ -15,9 +15,9 @@ import java.net.HttpURLConnection
 import java.time.Instant
 import java.time.ZonedDateTime
 
-class RaceServiceTest {
+class MrdServiceTest {
     private var mockWebServer = MockWebServer()
-    private lateinit var raceService: RaceService
+    private lateinit var mrdService: MrdService
 
     @Before
     fun setup() {
@@ -30,11 +30,11 @@ class RaceServiceTest {
         )
 
         mockWebServer.start()
-        raceService = Retrofit.Builder()
+        mrdService = Retrofit.Builder()
             .baseUrl(mockWebServer.url("/"))
             .addConverterFactory(gsonConverterFactory)
             .build()
-            .create(RaceService::class.java)
+            .create(MrdService::class.java)
 
     }
 
@@ -53,7 +53,7 @@ class RaceServiceTest {
         mockWebServer.enqueue(response)
 // Act
         runBlocking {
-            val mrResponse = raceService.getRaceResults(2020, 5)
+            val mrResponse = mrdService.getRaceResults(2020, 5)
             assertThat(mrResponse.mrData.table.races).hasSize(1)
             assertThat(mrResponse.mrData.table.races.first().results!!).hasSize(20)
             val result = mrResponse.mrData.table.races.first().results!!.first()

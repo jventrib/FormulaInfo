@@ -44,11 +44,13 @@ class RaceListAdapter internal constructor(
             if (raceDT.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
 
         current.circuit.location.flag?.let {
-            val s = "https://www.countryflags.io/$it/flat/64.png"
             Glide.with(context)
-                .load(s)
+                .load(it)
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(holder.binding.imageFlag)
+        } ?: let {
+            Glide.with(context).clear(holder.binding.imageFlag)
+            holder.binding.imageFlag.setImageDrawable(null)
         }
         ViewCompat.setTransitionName(holder.binding.root, "race_card${current.round}")
         ViewCompat.setTransitionName(holder.binding.imageFlag, "race_image_flag${current.round}")

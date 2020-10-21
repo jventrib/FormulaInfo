@@ -5,7 +5,7 @@ import com.jventrib.f1infos.race.model.RaceTable
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface RaceService {
+interface MrdService {
     @GET("{season}.json")
     suspend fun getRaces(@Path("season") season: Int) : MRResponse<RaceTable>
 
