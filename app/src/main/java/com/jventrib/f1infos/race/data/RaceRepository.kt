@@ -51,6 +51,9 @@ class RaceRepository(
 //        return raceStore.stream(StoreRequest.fresh(2020))
     }
 
+
+    fun getRaceResults(season: Int, round: Int) =
+        raceResultStore.stream(StoreRequest.cached(SeasonRace(season, round), false))
     data class SeasonRace(val season: Int, val round: Int)
 
 }

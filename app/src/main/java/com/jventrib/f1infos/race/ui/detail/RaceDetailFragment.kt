@@ -9,12 +9,15 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.jventrib.f1infos.Application
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
 import com.jventrib.f1infos.databinding.FragmentRaceDetailBinding
+import com.jventrib.f1infos.race.ui.list.RaceListViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -50,7 +53,12 @@ class RaceDetailFragment : Fragment() {
         _binding = FragmentRaceDetailBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        val viewModel = ViewModelProvider(this).get(RaceDetailViewModel::class.java)
+        val f1IApplication = requireActivity().application as Application
+        val appContainer = f1IApplication.appContainer
+        val viewModel: RaceDetailViewModel by viewModels(
+            factoryProducer = appContainer.getRaceListViewModelFactory { RaceDetailViewModel(it) }
+        )
+
         viewModel.setRace(args.race)
         viewModel.race.observe(requireActivity()) { race ->
 
@@ -75,6 +83,12 @@ class RaceDetailFragment : Fragment() {
                     .into(binding.imageCircuitImage)
             }
         }
+
+        viewModel.raceResult.observe(requireActivity()) { storeResponse ->
+            storeResponse.throwIfError()
+            binding.textWinnerDriver.text = storeResponse.dataOrNull()?.get(0)?.driver?.familyName ?: "Loading"
+        }
+
         ViewCompat.setTransitionName(binding.root, "race_card_detail")
         ViewCompat.setTransitionName(binding.imageFlag, "race_image_flag")
         ViewCompat.setTransitionName(binding.textRaceDate, "text_race_date")

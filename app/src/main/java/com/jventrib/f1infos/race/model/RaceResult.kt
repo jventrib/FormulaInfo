@@ -25,10 +25,10 @@ data class RaceResult(
     val status: String,
     @Embedded
     @SerializedName("Time")
-    val time: Time,
+    val time: Time?,
     @Embedded
     @SerializedName("FastestLap")
-    val fastestLap: FastestLap
+    val fastestLap: FastestLap?
 ) : Serializable {
     data class Driver(
         val driverId: String,

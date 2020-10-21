@@ -8,7 +8,6 @@ import com.google.gson.JsonDeserializer
 import com.jventrib.f1infos.race.data.RaceRepository
 import com.jventrib.f1infos.race.data.db.AppRoomDatabase
 import com.jventrib.f1infos.race.data.remote.*
-import com.jventrib.f1infos.race.ui.list.RaceListViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import retrofit2.Retrofit
@@ -52,13 +51,17 @@ class AppContainer(context: Context) {
             .build()
             .create(T::class.java)
 
-    fun getRaceListViewModelFactory(): (() -> ViewModelProvider.Factory)? = {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-                if (modelClass.isAssignableFrom(RaceListViewModel::class.java))
-                    RaceListViewModel(raceRepository) as T
-                else
-                    throw IllegalArgumentException("Unknown ViewModel class")
+    @Suppress("UNCHECKED_CAST")
+    fun getRaceListViewModelFactory(vm: (RaceRepository) -> ViewModel): (() -> ViewModelProvider.Factory)? =
+        {
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    val viewModel = vm(raceRepository)
+                    return if (modelClass.isAssignableFrom(viewModel::class.java)) {
+                        viewModel as T
+                    } else
+                        throw IllegalArgumentException("Unknown ViewModel class")
+                }
+            }
         }
-    }
 }
