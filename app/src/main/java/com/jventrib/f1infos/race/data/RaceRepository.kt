@@ -47,8 +47,8 @@ class RaceRepository(
 
 
     fun getAllRaces(): Flow<StoreResponse<List<Race>>> {
-//        return raceStore.stream(StoreRequest.cached(2020, false))
-        return raceStore.stream(StoreRequest.fresh(2020))
+        return raceStore.stream(StoreRequest.cached(2020, false))
+//        return raceStore.stream(StoreRequest.fresh(2020))
     }
 
     data class SeasonRace(val season: Int, val round: Int)
