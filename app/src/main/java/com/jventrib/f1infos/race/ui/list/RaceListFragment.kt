@@ -52,9 +52,11 @@ class RaceListFragment : Fragment() {
 
         val f1IApplication = requireActivity().application as Application
         val appContainer = f1IApplication.appContainer
-        val raceViewModel: RaceListViewModel by viewModels(factoryProducer = appContainer.getRaceListViewModelFactory())
+        val viewModel: RaceListViewModel by viewModels(
+            factoryProducer = appContainer.getRaceListViewModelFactory { RaceListViewModel(it) }
+        )
 
-        raceViewModel.allRaces.observe(requireActivity()) { response ->
+        viewModel.allRaces.observe(requireActivity()) { response ->
             when (response) {
                 is StoreResponse.Data -> {
                     Log.d(javaClass.name, "Resource.Status.SUCCESS: ${response.value}")

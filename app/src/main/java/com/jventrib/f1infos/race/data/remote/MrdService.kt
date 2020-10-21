@@ -9,6 +9,6 @@ interface MrdService {
     @GET("{season}.json")
     suspend fun getRaces(@Path("season") season: Int) : MRResponse<RaceTable>
 
-    @GET("{season}/{round}/result.json")
+    @GET("{season}/{round}/results.json")
     suspend fun getRaceResults(@Path("season") season: Int, @Path("round") round: Int) : MRResponse<RaceTable>
 }
