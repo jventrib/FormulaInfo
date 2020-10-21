@@ -55,6 +55,7 @@ class RaceServiceTest {
         runBlocking {
             val mrResponse = raceService.getRaceResults(2020, 5)
             assertThat(mrResponse.mrData.table.races).hasSize(1)
+            assertThat(mrResponse.mrData.table.races.first().results!!).hasSize(20)
             val result = mrResponse.mrData.table.races.first().results!!.first()
             assertThat(mrResponse.mrData.table.races.first().results!!).hasSize(20)
             assertThat(result.number).isEqualTo(33)
