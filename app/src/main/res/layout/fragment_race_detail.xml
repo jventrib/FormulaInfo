@@ -41,8 +41,8 @@
                     style="@style/word_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?attr/textAppearanceHeadline6"
-                    android:padding="16dp"/>
+                    android:padding="16dp"
+                    android:textAppearance="?attr/textAppearanceHeadline6" />
 
 
                 <TableLayout
@@ -53,14 +53,15 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
+
                         <TextView
                             style="@style/word_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:padding="4dp"
                             android:text="@string/fp1"
                             android:textAppearance="?attr/textAppearanceBody2"
-                            android:textColor="?android:attr/textColorSecondary"
-                            android:padding="4dp"/>
+                            android:textColor="?android:attr/textColorSecondary" />
 
                         <TextView
                             android:id="@+id/text_fp1_date"
@@ -74,14 +75,15 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
+
                         <TextView
                             style="@style/word_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:padding="4dp"
                             android:text="@string/fp2"
                             android:textAppearance="?attr/textAppearanceBody2"
-                            android:textColor="?android:attr/textColorSecondary"
-                            android:padding="4dp"/>
+                            android:textColor="?android:attr/textColorSecondary" />
 
                         <TextView
                             android:id="@+id/text_fp2_date"
@@ -95,14 +97,15 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
+
                         <TextView
                             style="@style/word_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:padding="4dp"
                             android:text="@string/fp3"
                             android:textAppearance="?attr/textAppearanceBody2"
-                            android:textColor="?android:attr/textColorSecondary"
-                            android:padding="4dp"/>
+                            android:textColor="?android:attr/textColorSecondary" />
 
                         <TextView
                             android:id="@+id/text_fp3_date"
@@ -116,14 +119,15 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
+
                         <TextView
                             style="@style/word_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:padding="4dp"
                             android:text="@string/qualification"
                             android:textAppearance="?attr/textAppearanceBody2"
-                            android:textColor="?android:attr/textColorSecondary"
-                            android:padding="4dp"/>
+                            android:textColor="?android:attr/textColorSecondary" />
 
                         <TextView
                             android:id="@+id/text_qual_date"
@@ -137,15 +141,16 @@
                     <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
+
                         <TextView
                             style="@style/word_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
+                            android:padding="4dp"
                             android:text="@string/race"
                             android:textAppearance="?attr/textAppearanceBody2"
-                            android:textColor="?android:attr/textColorSecondary"
-                            android:padding="4dp"/>
+                            android:textColor="?android:attr/textColorSecondary" />
 
                         <TextView
                             android:id="@+id/text_race_date"
@@ -164,15 +169,20 @@
         <ImageView
             android:id="@+id/image_circuit_image"
             android:layout_width="wrap_content"
-            android:layout_height="480dp"
+            android:layout_height="200dp"
             android:layout_marginStart="10dp"
             android:contentDescription="@string/location_flag"
             app:srcCompat="@android:drawable/ic_popup_sync" />
 
-        <TextView
-            android:id="@+id/text_winner_driver"
+        <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/list_result"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            app:layoutManager="LinearLayoutManager"
+            tools:listitem="@layout/item_race_result" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

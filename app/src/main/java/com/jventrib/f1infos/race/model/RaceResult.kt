@@ -40,7 +40,9 @@ data class RaceResult(
         val familyName: String,
         val dateOfBirth: String,
         @ColumnInfo(name = "driverNationality")
-        val nationality: String
+        val nationality: String,
+        @ColumnInfo(name = "driverImage")
+        val image: String?
     )
 
     data class Constructor(

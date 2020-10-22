@@ -5,7 +5,6 @@ import com.jventrib.f1infos.race.model.RaceResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.URLDecoder
-import java.util.*
 
 open class RaceRemoteDataSource(
     private val mrdService: MrdService,
@@ -36,25 +35,39 @@ open class RaceRemoteDataSource(
             mrd
         }
 
-    suspend fun getCountryFlag(country: String): String {
-        val pageImage = wikipediaService.getPageImage(country)
-        return pageImage.query.pages.values.first().original.source
-    }
-
-    private suspend fun getCircuitImage(circuitUrl: String): String {
-        val name = URLDecoder.decode(circuitUrl.splitToSequence("/").last(), Charsets.UTF_8.name())
-        val pageImage = wikipediaService.getPageImage(name)
-        val query = pageImage.query
-        return query.pages.values.first().original.source
-    }
+    suspend fun getCountryFlag(country: String) = getWikipediaImage(country)
 
     fun getRaceResultsFlow(season: Int, round: Int): Flow<List<RaceResult>> {
         return flow {
             val raceResults =
-                mrdService.getRaceResults(season, round).mrData.table.races.first().results!!
-                    .map { it.copy(season = season, round = round) }
-            emit(raceResults)
+                mrdService.getRaceResults(season, round).mrData.table.races.firstOrNull()?.results
+                    ?.map {
+                        it.copy(
+                            season = season,
+                            round = round,
+                            driver = it.driver.copy(
+                                image = getWikipediaImageFromUrl(it.driver.url)
+                            )
+                        )
+                    }
+            raceResults?.let { emit(it) } ?: emit(listOf<RaceResult>())
         }
+    }
+
+    private suspend fun getWikipediaImageFromUrl(s: String) =
+        getWikipediaImage(getWikipediaTitle(s))
+
+    private suspend fun getWikipediaImage(name: String) =
+        wikipediaService.getPageImage(name).query.pages.values.first().original?.source
+
+    private suspend fun getCircuitImage(circuitUrl: String) =
+        getWikipediaImage(getWikipediaTitle(circuitUrl))
+
+    private fun getWikipediaTitle(circuitUrl: String): String {
+        return URLDecoder.decode(
+            circuitUrl.splitToSequence("/").last(),
+            Charsets.UTF_8.name()
+        )
     }
 
 }

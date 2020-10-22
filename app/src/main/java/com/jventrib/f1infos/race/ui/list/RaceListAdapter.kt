@@ -18,21 +18,21 @@ import java.time.ZonedDateTime
 class RaceListAdapter internal constructor(
     val context: Context,
     private val listener: (Race, ItemRaceBinding) -> Unit
-) : RecyclerView.Adapter<RaceListAdapter.RaceViewHolder>() {
+) : RecyclerView.Adapter<RaceListAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var races = emptyList<Race>()
 
-    inner class RaceViewHolder(val binding: ItemRaceBinding) :
+    inner class ViewHolder(val binding: ItemRaceBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RaceViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemRaceBinding.inflate(inflater, parent, false)
-        return RaceViewHolder(binding)
+        return ViewHolder(binding)
     }
 
 
-    override fun onBindViewHolder(holder: RaceViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val current = races.toList()[position]
         holder.binding.textRaceName.text = current.raceName
         val raceDT = current.sessions.race
