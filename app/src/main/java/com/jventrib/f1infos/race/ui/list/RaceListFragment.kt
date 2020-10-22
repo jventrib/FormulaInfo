@@ -56,7 +56,7 @@ class RaceListFragment : Fragment() {
             factoryProducer = appContainer.getRaceListViewModelFactory { RaceListViewModel(it) }
         )
 
-        viewModel.allRaces.observe(requireActivity()) { response ->
+        viewModel.allRaces.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is StoreResponse.Data -> {
                     Log.d(javaClass.name, "Resource.Status.SUCCESS: ${response.value}")

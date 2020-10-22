@@ -1,21 +1,18 @@
 package com.jventrib.f1infos.race.ui.detail
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.f1infos.race.data.RaceRepository
 import com.jventrib.f1infos.race.model.Race
 import com.jventrib.f1infos.race.model.RaceResult
 
-class RaceDetailViewModel(val repository: RaceRepository) : ViewModel() {
+class RaceDetailViewModel(private val repository: RaceRepository) : ViewModel() {
     val race: MutableLiveData<Race> = MutableLiveData()
 
-    lateinit var raceResult: LiveData<StoreResponse<List<RaceResult>>>
+    val raceResult: LiveData<StoreResponse<List<RaceResult>>> =
+        race.switchMap { repository.getRaceResults(it.season, it.round).asLiveData() }
 
     fun setRace(r: Race) {
         race.value = r
-        raceResult = repository.getRaceResults(r.season, r.round).asLiveData()
     }
 }

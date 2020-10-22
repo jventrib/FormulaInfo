@@ -10,14 +10,13 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.jventrib.f1infos.Application
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
 import com.jventrib.f1infos.databinding.FragmentRaceDetailBinding
-import com.jventrib.f1infos.race.ui.list.RaceListViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -38,7 +37,8 @@ class RaceDetailFragment : Fragment() {
 //            duration = 500
 //        }
 
-        sharedElementEnterTransition = android.transition.TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        sharedElementEnterTransition = android.transition.TransitionInflater.from(context)
+            .inflateTransition(android.R.transition.move)
             .apply {
                 duration = 300
                 interpolator = AccelerateDecelerateInterpolator()
@@ -60,7 +60,7 @@ class RaceDetailFragment : Fragment() {
         )
 
         viewModel.setRace(args.race)
-        viewModel.race.observe(requireActivity()) { race ->
+        viewModel.race.observe(viewLifecycleOwner) { race ->
 
             binding.textRaceName.text = race.raceName
 
@@ -84,9 +84,25 @@ class RaceDetailFragment : Fragment() {
             }
         }
 
-        viewModel.raceResult.observe(requireActivity()) { storeResponse ->
+        val raceResultList: RecyclerView = binding.listResult
+
+        val context = requireContext()
+        val adapter = RaceResultListAdapter(context) { race, binding ->
+
+//TODO navigate to driver fragment
+//            val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
+//            val extras = FragmentNavigatorExtras(
+//                binding.root to "race_card_detail",
+//                binding.imageFlag to "race_image_flag",
+//                binding.textRaceDate to "text_race_date",
+//            )
+//            raceList.findNavController().navigate(directions, extras)
+        }
+        raceResultList.adapter = adapter
+
+        viewModel.raceResult.observe(viewLifecycleOwner) { storeResponse ->
             storeResponse.throwIfError()
-            binding.textWinnerDriver.text = storeResponse.dataOrNull()?.get(0)?.driver?.familyName ?: "Loading"
+            storeResponse.dataOrNull()?.let { adapter.setRaceResult(it) }
         }
 
         ViewCompat.setTransitionName(binding.root, "race_card_detail")
@@ -94,6 +110,7 @@ class RaceDetailFragment : Fragment() {
         ViewCompat.setTransitionName(binding.textRaceDate, "text_race_date")
         return view
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
