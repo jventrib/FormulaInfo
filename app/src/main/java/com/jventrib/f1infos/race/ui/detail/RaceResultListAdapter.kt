@@ -5,12 +5,15 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import coil.clear
+import coil.load
+import coil.size.Scale
+import coil.transform.CircleCropTransformation
+import com.jventrib.f1infos.AppContainer
+import com.jventrib.f1infos.common.ui.OffsetCircleCropTransformation
 import com.jventrib.f1infos.databinding.ItemRaceResultBinding
 import com.jventrib.f1infos.race.model.Race
 import com.jventrib.f1infos.race.model.db.RaceResultWithDriver
-import com.jventrib.f1infos.race.model.remote.RaceResultRemote
 
 class RaceResultListAdapter internal constructor(
     private val context: Context,
@@ -37,13 +40,12 @@ class RaceResultListAdapter internal constructor(
 //        holder.binding.textConstructor.text = current.constructor.name
 
         current.driver.image?.let {
-        Glide.with(context)
-                .load(it)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .into(holder.binding.imageDriver)
+            holder.binding.imageDriver.load(it) {
+                transformations(listOf(OffsetCircleCropTransformation()))
+            }
 
         } ?: let {
-            Glide.with(context).clear(holder.binding.imageDriver)
+            holder.binding.imageDriver.clear()
             holder.binding.imageDriver.setImageDrawable(null)
         }
 //        ViewCompat.setTransitionName(holder.binding.root, "race_card${current.round}")

@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import coil.clear
+import coil.load
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
 import com.jventrib.f1infos.databinding.ItemRaceBinding
 import com.jventrib.f1infos.race.model.Race
@@ -44,12 +44,9 @@ class RaceListAdapter internal constructor(
             if (raceDT.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
 
         current.circuit.location.flag?.let {
-            Glide.with(context)
-                .load(it)
-                .diskCacheStrategy(DiskCacheStrategy.DATA)
-                .into(holder.binding.imageFlag)
+            holder.binding.imageFlag.load(it)
         } ?: let {
-            Glide.with(context).clear(holder.binding.imageFlag)
+            holder.binding.imageFlag.clear()
             holder.binding.imageFlag.setImageDrawable(null)
         }
         ViewCompat.setTransitionName(holder.binding.root, "race_card${current.round}")
