@@ -35,6 +35,9 @@ class RaceListFragment : Fragment() {
             inflater.inflate(R.layout.fragment_race_list, container, false) as RecyclerView
 
         val context = requireContext()
+        val application = requireActivity().application as Application
+        val appContainer = application.appContainer
+
         val adapter = RaceListAdapter(context) { race, binding ->
             exitTransition = Hold().apply { duration = 300 }
             reenterTransition = Hold().apply { duration = 300 }
@@ -50,8 +53,6 @@ class RaceListFragment : Fragment() {
         raceList.adapter = adapter
         raceList.layoutManager = LinearLayoutManager(context)
 
-        val f1IApplication = requireActivity().application as Application
-        val appContainer = f1IApplication.appContainer
         val viewModel: RaceListViewModel by viewModels(
             factoryProducer = appContainer.getRaceListViewModelFactory { RaceListViewModel(it) }
         )

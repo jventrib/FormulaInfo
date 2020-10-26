@@ -3,6 +3,9 @@ package com.jventrib.f1infos
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import coil.imageLoader
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.jventrib.f1infos.race.data.RaceRepository

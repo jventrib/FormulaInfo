@@ -2,7 +2,6 @@ package com.jventrib.f1infos.race.ui.detail
 
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import coil.imageLoader
+import coil.load
 import com.jventrib.f1infos.Application
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
 import com.jventrib.f1infos.databinding.FragmentRaceDetailBinding
@@ -54,8 +53,8 @@ class RaceDetailFragment : Fragment() {
         _binding = FragmentRaceDetailBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        val f1IApplication = requireActivity().application as Application
-        val appContainer = f1IApplication.appContainer
+        val application = requireActivity().application as Application
+        val appContainer = application.appContainer
         val viewModel: RaceDetailViewModel by viewModels(
             factoryProducer = appContainer.getRaceListViewModelFactory { RaceDetailViewModel(it) }
         )
@@ -72,16 +71,10 @@ class RaceDetailFragment : Fragment() {
             binding.textRaceDate.textAndFormat(race.sessions.race)
 
             race.circuit.location.flag?.let {
-                Glide.with(this)
-                    .load(it)
-                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .into(binding.imageFlag)
+                binding.imageFlag.load(it)
             }
             race.circuit.circuitImageUrl?.let {
-                Glide.with(this)
-                    .load(it)
-                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .into(binding.imageCircuitImage)
+                binding.imageCircuitImage.load(it)
             }
         }
 
