@@ -10,7 +10,6 @@ const val DEFAULT_IMAGE_SIZE = 100
 
 open class RaceRemoteDataSource(
     private val mrdService: MrdService,
-    private val countryService: CountryService,
     private val wikipediaService: WikipediaService,
     private val f1calendarService: F1CalendarService,
 
