@@ -2,6 +2,7 @@ package com.jventrib.f1infos.race.ui.detail
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -100,7 +101,7 @@ class RaceDetailFragment : Fragment() {
         }
         raceResultList.adapter = adapter
 
-        viewModel.raceResult.observe(viewLifecycleOwner) { storeResponse ->
+        viewModel.raceResultRemote.observe(viewLifecycleOwner) { storeResponse ->
             storeResponse.throwIfError()
             storeResponse.dataOrNull()?.let { adapter.setRaceResult(it) }
         }

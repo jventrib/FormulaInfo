@@ -4,6 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Ignore
 import com.google.gson.annotations.SerializedName
+import com.jventrib.f1infos.race.model.remote.RaceResultRemote
 import java.io.Serializable
 import java.time.Instant
 
@@ -21,7 +22,7 @@ class Race(
 ) : Serializable {
     @SerializedName("Results")
     @Ignore
-    var results: List<RaceResult>? = null
+    var resultRemotes: List<RaceResultRemote>? = null
 
     data class Circuit(
         val circuitId: String,
@@ -32,7 +33,7 @@ class Race(
         @Embedded
         val location: Location,
         var circuitImageUrl: String?
-    ) {
+    ): Serializable {
         data class Location(
             @SerializedName("lat")
             val latitude: Float,

@@ -55,9 +55,9 @@ class MrdServiceTest {
         runBlocking {
             val mrResponse = mrdService.getRaceResults(2020, 5)
             assertThat(mrResponse.mrData.table.races).hasSize(1)
-            assertThat(mrResponse.mrData.table.races.first().results!!).hasSize(20)
-            val result = mrResponse.mrData.table.races.first().results!!.first()
-            assertThat(mrResponse.mrData.table.races.first().results!!).hasSize(20)
+            assertThat(mrResponse.mrData.table.races.first().resultRemotes!!).hasSize(20)
+            val result = mrResponse.mrData.table.races.first().resultRemotes!!.first()
+            assertThat(mrResponse.mrData.table.races.first().resultRemotes!!).hasSize(20)
             assertThat(result.number).isEqualTo(33)
             assertThat(result.position).isEqualTo(1)
             assertThat(result.positionText).isEqualTo("1")
@@ -78,15 +78,15 @@ class MrdServiceTest {
             assertThat(result.laps).isEqualTo(52)
             assertThat(result.status).isEqualTo("Finished")
 
-            assertThat(result.time.millis).isEqualTo(4781993)
-            assertThat(result.time.time).isEqualTo("1:19:41.993")
+            assertThat(result.time!!.millis).isEqualTo(4781993)
+            assertThat(result.time!!.time).isEqualTo("1:19:41.993")
 
-            assertThat(result.fastestLap.rank).isEqualTo(2)
-            assertThat(result.fastestLap.lap).isEqualTo(46)
-            assertThat(result.fastestLap.time.time).isEqualTo("1:29.465")
+            assertThat(result.fastestLap!!.rank).isEqualTo(2)
+            assertThat(result.fastestLap!!.lap).isEqualTo(46)
+            assertThat(result.fastestLap!!.time.time).isEqualTo("1:29.465")
 
-            assertThat(result.fastestLap.averageSpeed.units).isEqualTo("kph")
-            assertThat(result.fastestLap.averageSpeed.speed).isEqualTo(237.049f)
+            assertThat(result.fastestLap!!.averageSpeed.units).isEqualTo("kph")
+            assertThat(result.fastestLap!!.averageSpeed.speed).isEqualTo(237.049f)
         }
 // Assert
 
