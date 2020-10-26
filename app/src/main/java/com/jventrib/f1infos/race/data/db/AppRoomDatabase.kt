@@ -7,14 +7,16 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.jventrib.f1infos.common.utils.Converters
 import com.jventrib.f1infos.race.model.Race
-import com.jventrib.f1infos.race.model.RaceResult
+import com.jventrib.f1infos.race.model.db.Driver
+import com.jventrib.f1infos.race.model.db.RaceResult
 
-@Database(entities = [Race::class, RaceResult::class], version = 1, exportSchema = false)
+@Database(entities = [Race::class, RaceResult::class, Driver::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppRoomDatabase : RoomDatabase() {
 
     abstract fun raceDao(): RaceDao
     abstract fun raceResultDao(): RaceResultDao
+    abstract fun driverDao(): DriverDao
 
     companion object {
         // Singleton prevents multiple instances of database opening at the

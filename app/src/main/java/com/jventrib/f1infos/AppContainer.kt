@@ -30,6 +30,7 @@ class AppContainer(context: Context) {
 
     private val raceDao = AppRoomDatabase.getDatabase(context).raceDao()
     private val raceResultDao = AppRoomDatabase.getDatabase(context).raceResultDao()
+    private val driverDao = AppRoomDatabase.getDatabase(context).driverDao()
 
     private val mrdService: MrdService =
         buildRetrofit(context.getString(R.string.api_ergast))
@@ -42,7 +43,7 @@ class AppContainer(context: Context) {
     private val raceRemoteDataSource =
         RaceRemoteDataSource(mrdService, countryService, wikipediaService, f1CalendarService)
 
-    val raceRepository = RaceRepository(raceDao, raceResultDao, raceRemoteDataSource)
+    val raceRepository = RaceRepository(raceDao, raceResultDao, driverDao, raceRemoteDataSource)
 
     private inline fun <reified T> buildRetrofit(url: String): T =
         Retrofit.Builder()

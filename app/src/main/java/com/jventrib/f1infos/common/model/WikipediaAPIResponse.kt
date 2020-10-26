@@ -7,9 +7,10 @@ data class WikipediaAPIResponse(
         val pages: Map<Int, Page>
     ) {
         data class Page(
-            val original: Original?
+            val original: Image?,
+            val thumbnail: Image?
         ) {
-            data class Original(
+            data class Image(
                 val source: String
             )
         }

@@ -1,5 +1,6 @@
 package com.jventrib.f1infos.race.ui.detail
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,7 +9,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.jventrib.f1infos.databinding.ItemRaceResultBinding
 import com.jventrib.f1infos.race.model.Race
-import com.jventrib.f1infos.race.model.RaceResult
+import com.jventrib.f1infos.race.model.db.RaceResultWithDriver
+import com.jventrib.f1infos.race.model.remote.RaceResultRemote
 
 class RaceResultListAdapter internal constructor(
     private val context: Context,
@@ -16,7 +18,7 @@ class RaceResultListAdapter internal constructor(
 ) : RecyclerView.Adapter<RaceResultListAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
-    private var raceResults = emptyList<RaceResult>()
+    private var raceResults = emptyList<RaceResultWithDriver>()
 
     inner class ViewHolder(val binding: ItemRaceResultBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -27,11 +29,12 @@ class RaceResultListAdapter internal constructor(
     }
 
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val current = raceResults.toList()[position]
         holder.binding.textDriverName.text =
-            "${current.position}: ${current.driver.givenName} ${current.driver.familyName}"
-        holder.binding.textConstructor.text = current.constructor.name
+            "${current.raceResult.position}: ${current.driver.givenName} ${current.driver.familyName}"
+//        holder.binding.textConstructor.text = current.constructor.name
 
         current.driver.image?.let {
         Glide.with(context)
@@ -51,7 +54,7 @@ class RaceResultListAdapter internal constructor(
     }
 
 
-    internal fun setRaceResult(list: List<RaceResult>) {
+    internal fun setRaceResult(list: List<RaceResultWithDriver>) {
         this.raceResults = list
         notifyDataSetChanged()
     }
