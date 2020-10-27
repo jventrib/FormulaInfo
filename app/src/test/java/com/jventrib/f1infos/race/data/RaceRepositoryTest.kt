@@ -1,5 +1,6 @@
 package com.jventrib.f1infos.race.data
 
+import com.jventrib.f1infos.race.data.db.DriverDao
 import com.jventrib.f1infos.race.data.db.RaceDao
 import com.jventrib.f1infos.race.data.db.RaceResultDao
 import com.jventrib.f1infos.race.data.remote.RaceRemoteDataSource
@@ -9,6 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -16,6 +18,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
 import java.time.Instant
 
+@FlowPreview
 @ExperimentalCoroutinesApi
 class RaceRepositoryTest : TestCase() {
     private val testScope = TestCoroutineScope()
@@ -45,6 +48,7 @@ class RaceRepositoryTest : TestCase() {
 
         val raceDao = mockk<RaceDao>()
         val raceResultDao = mockk<RaceResultDao>()
+        val driverDao = mockk<DriverDao>()
         val raceRemoteDataSource = mockk<RaceRemoteDataSource>()
 
         every { raceDao.getSeasonRaces(any()) } returns flowOf(listOf(race))
@@ -52,7 +56,7 @@ class RaceRepositoryTest : TestCase() {
         coEvery { raceRemoteDataSource.getRaces(any()) } returns listOf(race)
         coEvery { raceRemoteDataSource.getCountryFlag(any()) } returns "flag1"
 
-        val allRaces = RaceRepository(raceDao, raceResultDao, raceRemoteDataSource).getAllRaces()
+        val allRaces = RaceRepository(raceDao, raceResultDao, driverDao, raceRemoteDataSource).getAllRaces()
 
 
         testScope.launch {

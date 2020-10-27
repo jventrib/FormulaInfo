@@ -9,6 +9,7 @@ import coil.clear
 import coil.load
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
+import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformation
 import com.jventrib.f1infos.AppContainer
 import com.jventrib.f1infos.common.ui.OffsetCircleCropTransformation
 import com.jventrib.f1infos.databinding.ItemRaceResultBinding
@@ -16,7 +17,7 @@ import com.jventrib.f1infos.race.model.Race
 import com.jventrib.f1infos.race.model.db.RaceResultWithDriver
 
 class RaceResultListAdapter internal constructor(
-    private val context: Context,
+    context: Context,
     private val listener: (Race, ItemRaceResultBinding) -> Unit
 ) : RecyclerView.Adapter<RaceResultListAdapter.ViewHolder>() {
 
@@ -41,7 +42,7 @@ class RaceResultListAdapter internal constructor(
 
         current.driver.image?.let {
             holder.binding.imageDriver.load(it) {
-                transformations(listOf(OffsetCircleCropTransformation()))
+                transformations(listOf(CenterOnFaceTransformation(zoom = 80), CircleCropTransformation()))
             }
 
         } ?: let {

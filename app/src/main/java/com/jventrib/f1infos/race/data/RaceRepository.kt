@@ -68,7 +68,7 @@ class RaceRepository(
         val copy = raceResultWithDriver.copy(
             driver = raceResultWithDriver.driver.copy(
                 image = raceRemoteDataSource.getWikipediaImageFromUrl(
-                    raceResultWithDriver.driver.url,
+                    raceResultWithDriver.driver.url,200
                 ) ?: "NONE"
             )
         )
