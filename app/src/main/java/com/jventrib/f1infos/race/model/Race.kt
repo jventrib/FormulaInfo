@@ -42,7 +42,7 @@ class Race(
             val locality: String,
             val country: String,
             var flag: String?
-        )
+        ): Serializable
     }
 
     data class Sessions(
@@ -51,7 +51,7 @@ class Race(
         val fp3: Instant?,
         val qualifying: Instant,
         val race: Instant
-    )
+    ): Serializable
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
