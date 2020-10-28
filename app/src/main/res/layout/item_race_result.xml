@@ -14,6 +14,11 @@
         android:orientation="horizontal"
         style="@style/AppTheme">
 
+        <View
+            android:id="@+id/space_constructor_color"
+            android:layout_width="8dp"
+            android:layout_height="match_parent" />
+
         <ImageView
             android:id="@+id/image_driver"
             android:layout_width="64dp"
@@ -23,7 +28,7 @@
             app:srcCompat="@android:drawable/ic_popup_sync" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="12dp"
             android:orientation="vertical">
@@ -44,6 +49,16 @@
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/text_driver_points"
+            android:padding="12dp"
+
+            style="@style/word_title"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

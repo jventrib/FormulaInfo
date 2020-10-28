@@ -1,5 +1,6 @@
 package com.jventrib.f1infos.race.model.mapper
 
+import com.jventrib.f1infos.race.model.db.Constructor
 import com.jventrib.f1infos.race.model.db.Driver
 import com.jventrib.f1infos.race.model.db.RaceResult
 import com.jventrib.f1infos.race.model.remote.RaceResultRemote
@@ -47,7 +48,17 @@ object RaceResultMapper {
             driver.familyName,
             driver.dateOfBirth,
             driver.nationality,
-            driver.image,
+            null,
         )
     }
+
+    fun toConstructorEntity(raceResultRemotes: List<RaceResultRemote>) =
+        raceResultRemotes.map { toConstructorEntity(it) }
+
+    fun toConstructorEntity(raceResultRemotes: RaceResultRemote) =
+        raceResultRemotes.constructor.let {
+            Constructor(it.constructorId, it.url, it.name, it.nationality, null)
+        }
+
+
 }

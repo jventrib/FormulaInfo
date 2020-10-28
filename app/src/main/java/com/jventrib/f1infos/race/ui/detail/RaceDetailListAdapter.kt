@@ -2,27 +2,29 @@ package com.jventrib.f1infos.race.ui.detail
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.clear
+import coil.imageLoader
 import coil.load
-import coil.size.Scale
+import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformation
-import com.jventrib.f1infos.AppContainer
-import com.jventrib.f1infos.common.ui.OffsetCircleCropTransformation
+import com.jventrib.f1infos.common.ui.getColorWithAlpha
 import com.jventrib.f1infos.databinding.ItemRaceResultBinding
 import com.jventrib.f1infos.race.model.Race
-import com.jventrib.f1infos.race.model.db.RaceResultWithDriver
+import com.jventrib.f1infos.race.model.db.RaceResultFull
 
 class RaceResultListAdapter internal constructor(
-    context: Context,
+    val context: Context,
     private val listener: (Race, ItemRaceResultBinding) -> Unit
 ) : RecyclerView.Adapter<RaceResultListAdapter.ViewHolder>() {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
-    private var raceResults = emptyList<RaceResultWithDriver>()
+    private var raceResults = emptyList<RaceResultFull>()
 
     inner class ViewHolder(val binding: ItemRaceResultBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -38,11 +40,34 @@ class RaceResultListAdapter internal constructor(
         val current = raceResults.toList()[position]
         holder.binding.textDriverName.text =
             "${current.raceResult.position}: ${current.driver.givenName} ${current.driver.familyName}"
-//        holder.binding.textConstructor.text = current.constructor.name
+        holder.binding.textConstructor.text = current.constructor.name
+        holder.binding.textDriverPoints.text = current.raceResult.points.toString()
+
+//        if (current.constructor.image != null && current.constructor.image != "NONE") {
+//            holder.binding.textConstructor.loadBackground(current.constructor.image)
+//        } else
+//            holder.binding.textConstructor.background = null
+
+
+        var colorId = context.resources.getIdentifier(
+            current.constructor.id,
+            "color",
+            context.packageName
+        )
+
+        val color = context.resources.getString(colorId)
+        val parseColor = Color.parseColor(color)
+        val colorWithAlpha = getColorWithAlpha(parseColor, 0.9f)
+        holder.binding.spaceConstructorColor.setBackgroundColor(parseColor)
 
         current.driver.image?.let {
             holder.binding.imageDriver.load(it) {
-                transformations(listOf(CenterOnFaceTransformation(zoom = 80), CircleCropTransformation()))
+                transformations(
+                    listOf(
+                        CenterOnFaceTransformation(zoom = 80),
+                        CircleCropTransformation()
+                    )
+                )
             }
 
         } ?: let {
@@ -57,10 +82,16 @@ class RaceResultListAdapter internal constructor(
     }
 
 
-    internal fun setRaceResult(list: List<RaceResultWithDriver>) {
+    internal fun setRaceResult(list: List<RaceResultFull>) {
         this.raceResults = list
         notifyDataSetChanged()
     }
 
     override fun getItemCount() = raceResults.size
+}
+
+private fun View.loadBackground(image: String?) {
+    ImageRequest.Builder(this.context).data(image).target { this.background = it }.build().also {
+        this.context.imageLoader.enqueue(it)
+    }
 }

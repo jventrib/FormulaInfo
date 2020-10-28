@@ -6,7 +6,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface WikipediaService {
-    @GET("w/api.php?action=query&prop=pageimages&format=json&piprop=thumbnail&redirects=true")
+    @GET("w/api.php?action=query&prop=pageimages&format=json&piprop=thumbnail&redirects=true&pilicense=any")
     suspend fun getPageImage(
         @Query("titles") name: String,
         @Query("pithumbsize") size: Int = 100

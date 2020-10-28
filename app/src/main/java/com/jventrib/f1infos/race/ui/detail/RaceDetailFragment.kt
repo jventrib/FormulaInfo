@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
-import coil.imageLoader
 import coil.load
 import com.jventrib.f1infos.Application
 import com.jventrib.f1infos.common.ui.customDateTimeFormatter
@@ -94,7 +93,7 @@ class RaceDetailFragment : Fragment() {
         }
         raceResultList.adapter = adapter
 
-        viewModel.raceResultRemote.observe(viewLifecycleOwner) { storeResponse ->
+        viewModel.raceResultRemoteAndConstructor.observe(viewLifecycleOwner) { storeResponse ->
             storeResponse.throwIfError()
             storeResponse.dataOrNull()?.let { adapter.setRaceResult(it) }
         }

@@ -1,5 +1,6 @@
 package com.jventrib.f1infos.race.data
 
+import com.jventrib.f1infos.race.data.db.ConstructorDao
 import com.jventrib.f1infos.race.data.db.DriverDao
 import com.jventrib.f1infos.race.data.db.RaceDao
 import com.jventrib.f1infos.race.data.db.RaceResultDao
@@ -49,6 +50,7 @@ class RaceRepositoryTest : TestCase() {
         val raceDao = mockk<RaceDao>()
         val raceResultDao = mockk<RaceResultDao>()
         val driverDao = mockk<DriverDao>()
+        val constructorDao = mockk<ConstructorDao>()
         val raceRemoteDataSource = mockk<RaceRemoteDataSource>()
 
         every { raceDao.getSeasonRaces(any()) } returns flowOf(listOf(race))
@@ -56,7 +58,7 @@ class RaceRepositoryTest : TestCase() {
         coEvery { raceRemoteDataSource.getRaces(any()) } returns listOf(race)
         coEvery { raceRemoteDataSource.getCountryFlag(any()) } returns "flag1"
 
-        val allRaces = RaceRepository(raceDao, raceResultDao, driverDao, raceRemoteDataSource).getAllRaces()
+        val allRaces = RaceRepository(raceDao, raceResultDao, driverDao, constructorDao, raceRemoteDataSource).getAllRaces()
 
 
         testScope.launch {
