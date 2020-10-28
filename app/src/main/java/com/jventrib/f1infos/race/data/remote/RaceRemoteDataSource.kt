@@ -36,8 +36,6 @@ open class RaceRemoteDataSource(
             mrd
         }
 
-    suspend fun getCountryFlag(country: String) = getWikipediaImage(country, DEFAULT_IMAGE_SIZE)
-
     fun getRaceResultsFlow(season: Int, round: Int): Flow<List<RaceResultRemote>> {
         return flow {
             val raceResults =
@@ -48,15 +46,25 @@ open class RaceRemoteDataSource(
         }
     }
 
-    suspend fun getWikipediaImageFromUrl(s: String, size: Int = DEFAULT_IMAGE_SIZE) =
-        getWikipediaImage(getWikipediaTitle(s), size)
-
-    private suspend fun getWikipediaImage(name: String, size: Int = DEFAULT_IMAGE_SIZE) =
-        wikipediaService.getPageImage(name, size).query.pages.values.first()
-            .let { it.original?.source ?: it.thumbnail?.source }
+    suspend fun getCountryFlag(country: String) = getWikipediaImage(country, DEFAULT_IMAGE_SIZE, WikipediaService.Licence.FREE)
 
     private suspend fun getCircuitImage(circuitUrl: String, size: Int = DEFAULT_IMAGE_SIZE) =
-        getWikipediaImage(getWikipediaTitle(circuitUrl), size)
+        getWikipediaImage(getWikipediaTitle(circuitUrl), size, WikipediaService.Licence.FREE)
+
+    suspend fun getWikipediaImageFromUrl(
+        s: String,
+        size: Int = DEFAULT_IMAGE_SIZE,
+        license: WikipediaService.Licence = WikipediaService.Licence.ANY
+    ) =
+        getWikipediaImage(getWikipediaTitle(s), size, license)
+
+    private suspend fun getWikipediaImage(
+        name: String,
+        size: Int = DEFAULT_IMAGE_SIZE,
+        license: WikipediaService.Licence = WikipediaService.Licence.ANY
+    ) =
+        wikipediaService.getPageImage(name, size, license.param).query?.pages?.values?.first()
+            ?.let { it.original?.source ?: it.thumbnail?.source }
 
     private fun getWikipediaTitle(circuitUrl: String): String {
         return URLDecoder.decode(
