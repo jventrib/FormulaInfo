@@ -172,6 +172,7 @@
             android:layout_height="200dp"
             android:layout_marginStart="10dp"
             android:contentDescription="@string/location_flag"
+            android:layout_gravity="center"
             app:srcCompat="@android:drawable/ic_popup_sync" />
 
         <androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"

@@ -29,10 +29,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:text="points"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/text_driver_name" />
+            app:layout_constraintTop_toTopOf="@+id/text_driver_name"
+            tools:text="points" />
 
         <ImageView
             android:id="@+id/image_driver"
@@ -49,11 +49,11 @@
             style="@style/word_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="driver"
+            android:layout_marginStart="2dp"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintStart_toEndOf="@+id/text_position"
-            app:layout_constraintTop_toTopOf="@+id/text_position" />
+            app:layout_constraintTop_toTopOf="@+id/text_position"
+            tools:text="driver" />
 
         <TextView
             android:id="@+id/text_constructor"
@@ -61,22 +61,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="constructor"
             android:textAppearance="?attr/textAppearanceBody2"
             android:textColor="?android:attr/textColorSecondary"
             app:layout_constraintStart_toStartOf="@+id/text_driver_name"
-            app:layout_constraintTop_toBottomOf="@+id/text_driver_name" />
+            app:layout_constraintTop_toBottomOf="@+id/text_driver_name"
+            tools:text="constructor" />
 
         <TextView
             android:id="@+id/text_position"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="1:"
             android:textAppearance="?attr/textAppearanceHeadline6"
-
             app:layout_constraintStart_toEndOf="@+id/image_driver"
-            app:layout_constraintTop_toTopOf="@+id/image_driver" />
+            app:layout_constraintTop_toTopOf="@+id/image_driver"
+            tools:text="1:" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
