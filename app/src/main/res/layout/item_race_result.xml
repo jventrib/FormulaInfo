@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_race_result_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,57 +9,75 @@
     android:clickable="true"
     app:cardElevation="4dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/AppTheme"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="@style/AppTheme">
+        android:layout_height="76dp">
 
         <View
             android:id="@+id/space_constructor_color"
             android:layout_width="8dp"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:background="@color/mercedes"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/text_driver_points"
+            style="@style/word_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="points"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/text_driver_name" />
 
         <ImageView
             android:id="@+id/image_driver"
             android:layout_width="64dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
+            android:layout_height="64dp"
+            android:layout_margin="6dp"
             android:contentDescription="@string/location_flag"
+            app:layout_constraintStart_toEndOf="@+id/space_constructor_color"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:drawable/ic_popup_sync" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/text_driver_name"
+            style="@style/word_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/text_driver_name"
-                style="@style/word_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceHeadline6"/>
-
-            <TextView
-                android:id="@+id/text_constructor"
-                style="@style/word_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?android:attr/textColorSecondary" />
-        </LinearLayout>
+            android:layout_marginStart="8dp"
+            android:text="driver"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            app:layout_constraintStart_toEndOf="@+id/text_position"
+            app:layout_constraintTop_toTopOf="@+id/text_position" />
 
         <TextView
-            android:id="@+id/text_driver_points"
-            android:padding="12dp"
-
+            android:id="@+id/text_constructor"
             style="@style/word_title"
-            android:layout_width="50dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceHeadline6" />
+            android:layout_marginTop="4dp"
+            android:text="constructor"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textColor="?android:attr/textColorSecondary"
+            app:layout_constraintStart_toStartOf="@+id/text_driver_name"
+            app:layout_constraintTop_toBottomOf="@+id/text_driver_name" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/text_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="1:"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+
+            app:layout_constraintStart_toEndOf="@+id/image_driver"
+            app:layout_constraintTop_toTopOf="@+id/image_driver" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

@@ -38,10 +38,11 @@ class RaceResultListAdapter internal constructor(
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val current = raceResults.toList()[position]
+        holder.binding.textPosition.text = "${current.raceResult.position}:"
         holder.binding.textDriverName.text =
-            "${current.raceResult.position}: ${current.driver.givenName} ${current.driver.familyName}"
+            "${current.driver.givenName} ${current.driver.familyName}"
         holder.binding.textConstructor.text = current.constructor.name
-        holder.binding.textDriverPoints.text = current.raceResult.points.toString()
+        holder.binding.textDriverPoints.text = "${current.raceResult.points} pts"
 
 //        if (current.constructor.image != null && current.constructor.image != "NONE") {
 //            holder.binding.textConstructor.loadBackground(current.constructor.image)

@@ -7,6 +7,7 @@ import com.jventrib.f1infos.race.data.db.DriverDao
 import com.jventrib.f1infos.race.data.db.RaceDao
 import com.jventrib.f1infos.race.data.db.RaceResultDao
 import com.jventrib.f1infos.race.data.remote.RaceRemoteDataSource
+import com.jventrib.f1infos.race.data.remote.WikipediaService
 import com.jventrib.f1infos.race.model.Race
 import com.jventrib.f1infos.race.model.db.Constructor
 import com.jventrib.f1infos.race.model.db.Driver
@@ -55,7 +56,7 @@ class RaceRepository(
                             emit(list)
                             list.firstOrNull { result -> result.driver.image == null }
                                 ?.let { result ->
-                                    val copy = getRaceResultWithDriverImage(result)
+                                    val copy = getDriverWithImage(result)
                                     driverDao.insert(copy)
                                 }
                             list.firstOrNull { result -> result.constructor.image == null }
@@ -73,20 +74,17 @@ class RaceRepository(
             )
         ).build()
 
-    private suspend fun getRaceResultWithDriverImage(raceResultFull: RaceResultFull): Driver {
-            val driver = raceResultFull.driver.copy(
-                image = raceRemoteDataSource.getWikipediaImageFromUrl(
-                    raceResultFull.driver.url, 200
-                ) ?: "NONE"
-            )
-        return driver
-    }
+    private suspend fun getDriverWithImage(raceResultFull: RaceResultFull) =
+        raceResultFull.driver.copy(
+            image = raceRemoteDataSource.getWikipediaImageFromUrl(
+                raceResultFull.driver.url, 200, WikipediaService.Licence.FREE
+            ) ?: "NONE"
+        )
 
-    private suspend fun getConstructorWithImage(result: RaceResultFull): Constructor {
-        return result.constructor.copy(image = raceRemoteDataSource.getWikipediaImageFromUrl(
-            result.constructor.url, 200
+    private suspend fun getConstructorWithImage(result: RaceResultFull) =
+        result.constructor.copy(image = raceRemoteDataSource.getWikipediaImageFromUrl(
+            result.constructor.url, 200,
         ) ?: "NONE")
-    }
 
 
     fun getAllRaces(): Flow<StoreResponse<List<Race>>> {
