@@ -33,8 +33,7 @@ data class RaceResultRemote(
         val givenName: String,
         val familyName: String,
         val dateOfBirth: String,
-        val nationality: String,
-        val image: String?
+        val nationality: String
     )
 
     data class Constructor(
