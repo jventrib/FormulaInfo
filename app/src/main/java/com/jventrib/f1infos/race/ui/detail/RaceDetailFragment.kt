@@ -75,6 +75,8 @@ class RaceDetailFragment : Fragment() {
             race.circuit.circuitImageUrl?.let {
                 binding.imageCircuitImage.load(it)
             }
+
+            binding.textCircuitName.text = race.circuit.circuitName
         }
 
         val raceResultList: RecyclerView = binding.listResult
