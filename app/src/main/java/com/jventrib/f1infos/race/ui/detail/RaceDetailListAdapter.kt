@@ -43,6 +43,21 @@ class RaceResultListAdapter internal constructor(
             "${current.driver.givenName} ${current.driver.familyName}"
         holder.binding.textConstructor.text = current.constructor.name
         holder.binding.textDriverPoints.text = "${current.raceResult.points} pts"
+        holder.binding.textDriverGrid.text = "Started " + (current.raceResult.grid).toString()
+        val positionGain = current.raceResult.grid - current.raceResult.position
+        val positionGainString = (when {
+            positionGain > 0 -> "+$positionGain"
+            positionGain < 0 -> positionGain
+            else -> "-"
+        })
+        val positionGainColor =
+            when {
+                positionGain > 0 -> Color.GREEN
+                positionGain < 0 -> Color.RED
+                else -> Color.BLACK
+            }
+        holder.binding.textDriverGainLoss.text = "($positionGainString)"
+        holder.binding.textDriverGainLoss.setTextColor(positionGainColor)
 
 //        if (current.constructor.image != null && current.constructor.image != "NONE") {
 //            holder.binding.textConstructor.loadBackground(current.constructor.image)
