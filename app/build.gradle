@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.jventrib.f1infos"
+        applicationId "com.jventrib.formulainfo"
         minSdkVersion 26
         targetSdkVersion 30
         versionCode 1
