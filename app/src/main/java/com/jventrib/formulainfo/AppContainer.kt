@@ -52,7 +52,7 @@ class AppContainer(context: Context) {
             .create(T::class.java)
 
     @Suppress("UNCHECKED_CAST")
-    fun getRaceListViewModelFactory(vm: (RaceRepository) -> ViewModel): (() -> ViewModelProvider.Factory)? =
+    fun getViewModelFactory(vm: (RaceRepository) -> ViewModel): (() -> ViewModelProvider.Factory)? =
         {
             object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {

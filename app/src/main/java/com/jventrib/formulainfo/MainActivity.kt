@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuItemCompat
-import com.jventrib.formulainfo.season.model.Season
 
 
 class MainActivity : AppCompatActivity() {
@@ -17,6 +16,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.my_toolbar))
+
+        val application = application as Application
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -27,12 +28,7 @@ class MainActivity : AppCompatActivity() {
         val spinner = MenuItemCompat.getActionView(item) as Spinner // get the spinner
 
         spinner.adapter = ArrayAdapter(
-            applicationContext, R.layout.spinner_season, listOf(
-                Season(2017),
-                Season(2018),
-                Season(2019),
-                Season(2020)
-            )
+            applicationContext, R.layout.spinner_season, (1950..2020).toList().reversed()
         ).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }

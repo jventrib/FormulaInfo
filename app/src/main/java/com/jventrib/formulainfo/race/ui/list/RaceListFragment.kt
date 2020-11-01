@@ -54,7 +54,7 @@ class RaceListFragment : Fragment() {
         raceList.layoutManager = LinearLayoutManager(context)
 
         val viewModel: RaceListViewModel by viewModels(
-            factoryProducer = appContainer.getRaceListViewModelFactory(::RaceListViewModel)
+            factoryProducer = appContainer.getViewModelFactory(::RaceListViewModel)
         )
 
         viewModel.allRaces.observe(viewLifecycleOwner) { response ->

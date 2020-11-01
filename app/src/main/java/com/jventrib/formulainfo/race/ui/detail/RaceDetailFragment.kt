@@ -55,7 +55,7 @@ class RaceDetailFragment : Fragment() {
         val application = requireActivity().application as Application
         val appContainer = application.appContainer
         val viewModel: RaceDetailViewModel by viewModels(
-            factoryProducer = appContainer.getRaceListViewModelFactory { RaceDetailViewModel(it) }
+            factoryProducer = appContainer.getViewModelFactory { RaceDetailViewModel(it) }
         )
 
         viewModel.setRace(args.race)
