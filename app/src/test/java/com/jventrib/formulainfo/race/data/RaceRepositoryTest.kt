@@ -32,6 +32,9 @@ class RaceRepositoryTest : TestCase() {
             1,
             "http://test.com",
             "race1",
+            "2020-07-05",
+            "13:10:00Z",
+            null,
             Race.Circuit(
                 "cir1",
                 "http://circuit1.com",
@@ -58,7 +61,7 @@ class RaceRepositoryTest : TestCase() {
         coEvery { raceRemoteDataSource.getRaces(any()) } returns listOf(race)
         coEvery { raceRemoteDataSource.getCountryFlag(any()) } returns "flag1"
 
-        val allRaces = RaceRepository(raceDao, raceResultDao, driverDao, constructorDao, raceRemoteDataSource).getAllRaces()
+        val allRaces = RaceRepository(raceDao, raceResultDao, driverDao, constructorDao, raceRemoteDataSource).getAllRaces(2020)
 
 
         testScope.launch {

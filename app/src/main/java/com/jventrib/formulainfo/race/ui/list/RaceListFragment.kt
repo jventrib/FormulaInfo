@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -54,10 +55,9 @@ class RaceListFragment : Fragment() {
         raceList.adapter = adapter
         raceList.layoutManager = LinearLayoutManager(context)
 
-        val viewModel: MainViewModel by viewModels(
-            factoryProducer = appContainer.getViewModelFactory(::MainViewModel)
-        )
-//        viewModel.setSeason(2018)
+        val viewModel: MainViewModel by activityViewModels {
+            appContainer.getViewModelFactory(::MainViewModel)
+        }
 
         viewModel.seasonRaces.observe(viewLifecycleOwner) { response ->
             when (response) {

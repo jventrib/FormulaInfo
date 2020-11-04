@@ -5,6 +5,7 @@ import com.jventrib.formulainfo.race.model.remote.RaceResultRemote
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.URLDecoder
+import java.time.ZonedDateTime
 
 const val DEFAULT_IMAGE_SIZE = 100
 
@@ -30,11 +31,21 @@ open class RaceRemoteDataSource(
         }
     }
 
-    suspend fun getRaces(season: Int): List<Race> = mrdService.getRaces(season).mrData.table.races
-        .zip(f1calendarService.getRaces(season).races) { mrd, f1c ->
-            mrd.sessions = f1c.sessions
-            mrd
+    suspend fun getRaces(season: Int): List<Race> {
+
+        val races = mrdService.getRaces(season).mrData.table.races
+        return try {
+            races.zip(f1calendarService.getRaces(season).races) { mrd, f1c ->
+                mrd.sessions = f1c.sessions
+                mrd
+            }
+        } catch (e: Exception) {
+            races.onEach {
+                it.sessions =
+                    Race.Sessions(race = ZonedDateTime.parse("${it.date}T${it.time}").toInstant())
+            }
         }
+    }
 
     fun getRaceResultsFlow(season: Int, round: Int): Flow<List<RaceResultRemote>> {
         return flow {
@@ -46,7 +57,8 @@ open class RaceRemoteDataSource(
         }
     }
 
-    suspend fun getCountryFlag(country: String) = getWikipediaImage(country, DEFAULT_IMAGE_SIZE, WikipediaService.Licence.FREE)
+    suspend fun getCountryFlag(country: String) =
+        getWikipediaImage(country, DEFAULT_IMAGE_SIZE, WikipediaService.Licence.FREE)
 
     private suspend fun getCircuitImage(circuitUrl: String, size: Int = DEFAULT_IMAGE_SIZE) =
         getWikipediaImage(getWikipediaTitle(circuitUrl), size, WikipediaService.Licence.FREE)
