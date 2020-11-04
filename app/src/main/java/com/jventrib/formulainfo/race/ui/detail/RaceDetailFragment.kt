@@ -14,6 +14,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.jventrib.formulainfo.Application
+import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
 import com.jventrib.formulainfo.databinding.FragmentRaceDetailBinding
 import java.time.Instant
@@ -54,8 +55,8 @@ class RaceDetailFragment : Fragment() {
 
         val application = requireActivity().application as Application
         val appContainer = application.appContainer
-        val viewModel: RaceDetailViewModel by viewModels(
-            factoryProducer = appContainer.getViewModelFactory { RaceDetailViewModel(it) }
+        val viewModel: MainViewModel by viewModels(
+            factoryProducer = appContainer.getViewModelFactory { MainViewModel(it) }
         )
 
         viewModel.setRace(args.race)
@@ -95,7 +96,7 @@ class RaceDetailFragment : Fragment() {
         }
         raceResultList.adapter = adapter
 
-        viewModel.raceResultRemoteAndConstructor.observe(viewLifecycleOwner) { storeResponse ->
+        viewModel.raceResults.observe(viewLifecycleOwner) { storeResponse ->
             storeResponse.throwIfError()
             storeResponse.dataOrNull()?.let { adapter.setRaceResult(it) }
         }
