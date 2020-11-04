@@ -19,13 +19,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.my_toolbar))
-
-        val application = application as Application
-        val viewModel: MainViewModel by viewModels(
-            factoryProducer = application.appContainer.getViewModelFactory(::MainViewModel)
-        )
-        viewModel.setSeason(2018)
-
     }
 
     private val seasonList = (1950..2020).toList().reversed()
@@ -43,22 +36,28 @@ class MainActivity : AppCompatActivity() {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
 
+        val application = application as Application
+        val viewModel: MainViewModel by viewModels {
+            application.appContainer.getViewModelFactory(::MainViewModel)
+        }
+        viewModel.setSeason(2018)
 
-//        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onItemSelected(
-//                parent: AdapterView<*>?,
-//                view: View?,
-//                position: Int,
-//                id: Long
-//            ) {
-//                viewModel.setSeason(seasonList[position])
-//            }
-//
-//            override fun onNothingSelected(parent: AdapterView<*>?) {
-//                TODO("Not yet implemented")
-//            }
-//
-//        }
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                viewModel.setSeason(seasonList[position])
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+        }
 
 
         return true

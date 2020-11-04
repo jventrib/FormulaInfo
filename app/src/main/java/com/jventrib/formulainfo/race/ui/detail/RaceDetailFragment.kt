@@ -9,6 +9,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
@@ -55,9 +56,9 @@ class RaceDetailFragment : Fragment() {
 
         val application = requireActivity().application as Application
         val appContainer = application.appContainer
-        val viewModel: MainViewModel by viewModels(
-            factoryProducer = appContainer.getViewModelFactory { MainViewModel(it) }
-        )
+        val viewModel: MainViewModel by activityViewModels {
+            appContainer.getViewModelFactory { MainViewModel(it) }
+        }
 
         viewModel.setRace(args.race)
         viewModel.race.observe(viewLifecycleOwner) { race ->
