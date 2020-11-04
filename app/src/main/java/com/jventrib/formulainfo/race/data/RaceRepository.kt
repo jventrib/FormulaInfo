@@ -85,8 +85,8 @@ class RaceRepository(
         ) ?: "NONE")
 
 
-    fun getAllRaces(): Flow<StoreResponse<List<Race>>> {
-        return raceStore.stream(StoreRequest.cached(2020, false))
+    fun getAllRaces(season: Int): Flow<StoreResponse<List<Race>>> {
+        return raceStore.stream(StoreRequest.cached(season, false))
 //        return raceStore.stream(StoreRequest.fresh(2020))
     }
 

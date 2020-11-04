@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dropbox.android.external.store4.StoreResponse
 import com.google.android.material.transition.platform.Hold
 import com.jventrib.formulainfo.Application
+import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -53,11 +54,12 @@ class RaceListFragment : Fragment() {
         raceList.adapter = adapter
         raceList.layoutManager = LinearLayoutManager(context)
 
-        val viewModel: RaceListViewModel by viewModels(
-            factoryProducer = appContainer.getViewModelFactory(::RaceListViewModel)
+        val viewModel: MainViewModel by viewModels(
+            factoryProducer = appContainer.getViewModelFactory(::MainViewModel)
         )
+//        viewModel.setSeason(2018)
 
-        viewModel.allRaces.observe(viewLifecycleOwner) { response ->
+        viewModel.seasonRaces.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is StoreResponse.Data -> {
                     Log.d(javaClass.name, "Resource.Status.SUCCESS: ${response.value}")
