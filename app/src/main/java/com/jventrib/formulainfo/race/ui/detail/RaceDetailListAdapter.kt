@@ -2,7 +2,9 @@ package com.jventrib.formulainfo.race.ui.detail
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +15,7 @@ import coil.load
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformation
+import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.getColorWithAlpha
 import com.jventrib.formulainfo.databinding.ItemRaceResultBinding
 import com.jventrib.formulainfo.race.model.Race
@@ -71,10 +74,19 @@ class RaceResultListAdapter internal constructor(
             context.packageName
         )
 
-        val color = context.resources.getString(colorId)
-        val parseColor = Color.parseColor(color)
-        val colorWithAlpha = getColorWithAlpha(parseColor, 0.9f)
-        holder.binding.spaceConstructorColor.setBackgroundColor(parseColor)
+        try {
+            val color = context.resources.getColor(colorId, null)
+            val colorWithAlpha = getColorWithAlpha(color, 0.9f)
+            holder.binding.spaceConstructorColor.setBackgroundColor(color)
+        } catch (e: Resources.NotFoundException) {
+            val color = context.resources.getColor(R.color.light_grey, null)
+            holder.binding.spaceConstructorColor.setBackgroundColor(color)
+            Log.i(
+                this.javaClass.name,
+                "Constructor ${current.constructor.id} color resource not found"
+            )
+
+        }
 
         current.driver.image?.let {
             holder.binding.imageDriver.load(it) {

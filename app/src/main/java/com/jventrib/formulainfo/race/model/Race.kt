@@ -16,19 +16,23 @@ class Race(
     val round: Int,
     val url: String,
     val raceName: String,
-    val date: String,
-    val time: String,
-    @Expose(serialize = false, deserialize = false)
-    var datetime: Instant?,
     @SerializedName("Circuit")
     @Embedded
     val circuit: Circuit,
     @Embedded
     var sessions: Sessions
 ) : Serializable {
+    @Ignore
+    lateinit var time: String
+
+    @Ignore
+    lateinit var date: String
+
     @SerializedName("Results")
     @Ignore
     var resultRemotes: List<RaceResultRemote>? = null
+
+    val timeInitialized get() = ::time.isInitialized
 
     data class Circuit(
         val circuitId: String,
@@ -79,10 +83,6 @@ class Race(
 
     override fun toString(): String {
         return "Race(season=$season, round=$round, url='$url', raceName='$raceName', circuit=$circuit, sessions=$sessions)"
-    }
-
-    fun buildDatetime() {
-        datetime = ZonedDateTime.parse("${date}T${time}").toInstant()
     }
 
 }

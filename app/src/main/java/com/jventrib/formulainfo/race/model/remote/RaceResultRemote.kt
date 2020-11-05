@@ -25,7 +25,7 @@ data class RaceResultRemote(
     data class Driver(
         val driverId: String,
         val permanentNumber: Int,
-        val code: String,
+        val code: String?,
         val url: String,
         val givenName: String,
         val familyName: String,

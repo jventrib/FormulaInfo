@@ -9,7 +9,7 @@ data class Driver(
     @PrimaryKey
     val driverId: String,
     val permanentNumber: Int,
-    val code: String,
+    val code: String?,
     @ColumnInfo(name = "driverUrl")
     val url: String,
     val givenName: String,
