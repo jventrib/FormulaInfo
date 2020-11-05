@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
 
         val item: MenuItem = menu!!.findItem(R.id.spinner)
         val spinner = MenuItemCompat.getActionView(item) as Spinner // get the spinner
-
         spinner.adapter = ArrayAdapter(
             applicationContext, R.layout.spinner_season, seasonList
         ).apply {

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.URLDecoder
 import java.time.ZonedDateTime
+import java.time.format.DateTimeParseException
 
 const val DEFAULT_IMAGE_SIZE = 100
 
@@ -41,8 +42,13 @@ open class RaceRemoteDataSource(
             }
         } catch (e: Exception) {
             races.onEach {
+                val raceDateTime = if (it.timeInitialized) {
+                    ZonedDateTime.parse("${it.date}T${it.time}").toInstant()
+                } else {
+                    ZonedDateTime.parse("${it.date}T15:00:00Z").toInstant()
+                }
                 it.sessions =
-                    Race.Sessions(race = ZonedDateTime.parse("${it.date}T${it.time}").toInstant())
+                    Race.Sessions(race = raceDateTime)
             }
         }
     }

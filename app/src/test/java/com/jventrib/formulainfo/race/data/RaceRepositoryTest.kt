@@ -32,9 +32,6 @@ class RaceRepositoryTest : TestCase() {
             1,
             "http://test.com",
             "race1",
-            "2020-07-05",
-            "13:10:00Z",
-            null,
             Race.Circuit(
                 "cir1",
                 "http://circuit1.com",
