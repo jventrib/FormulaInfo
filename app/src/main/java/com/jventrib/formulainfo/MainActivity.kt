@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MenuItemCompat
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         inflater.inflate(R.menu.menu, menu)
 
         val item: MenuItem = menu!!.findItem(R.id.spinner)
-        val spinner = MenuItemCompat.getActionView(item) as Spinner // get the spinner
+        val spinner = item.actionView as Spinner
         spinner.adapter = ArrayAdapter(
             applicationContext, R.layout.spinner_season, seasonList
         ).apply {
