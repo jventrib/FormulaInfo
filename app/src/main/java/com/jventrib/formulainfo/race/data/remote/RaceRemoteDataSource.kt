@@ -1,12 +1,12 @@
 package com.jventrib.formulainfo.race.data.remote
 
-import com.jventrib.formulainfo.race.model.Race
+import com.jventrib.formulainfo.race.model.db.Race
+import com.jventrib.formulainfo.race.model.remote.RaceRemote
 import com.jventrib.formulainfo.race.model.remote.RaceResultRemote
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.URLDecoder
 import java.time.ZonedDateTime
-import java.time.format.DateTimeParseException
 
 const val DEFAULT_IMAGE_SIZE = 100
 
@@ -17,22 +17,22 @@ open class RaceRemoteDataSource(
 
     ) {
 
-    fun getRacesFlow(season: Int): Flow<List<Race>> = flow {
+    fun getRacesFlow(season: Int): Flow<List<RaceRemote>> = flow {
         val races = getRaces(season)
         //First emit with all races, no flag loaded
         emit(races)
 
         //Then load the flags
-        races.forEach {
-            it.circuit.location.flag =
-                getCountryFlag(it.circuit.location.country)
+//        races.forEach {
+//            it.circuit.location.flag =
+//                getCountryFlag(it.circuit.location.country)
             //Each time a flag is load, emit all the races
-            it.circuit.circuitImageUrl = getCircuitImage(it.circuit.circuitUrl, 500)
-            emit(races)
-        }
+//            it.circuit.circuitImageUrl = getCircuitImage(it.circuit.circuitUrl, 500)
+//            emit(races)
+//        }
     }
 
-    suspend fun getRaces(season: Int): List<Race> {
+    suspend fun getRaces(season: Int): List<RaceRemote> {
 
         val races = mrdService.getRaces(season).mrData.table.races
         return try {
@@ -47,8 +47,7 @@ open class RaceRemoteDataSource(
                 } else {
                     ZonedDateTime.parse("${it.date}T15:00:00Z").toInstant()
                 }
-                it.sessions =
-                    Race.Sessions(race = raceDateTime)
+                it.sessions = RaceRemote.Sessions(race = raceDateTime)
             }
         }
     }
@@ -66,7 +65,7 @@ open class RaceRemoteDataSource(
     suspend fun getCountryFlag(country: String) =
         getWikipediaImage(country, DEFAULT_IMAGE_SIZE, WikipediaService.Licence.FREE)
 
-    private suspend fun getCircuitImage(circuitUrl: String, size: Int = DEFAULT_IMAGE_SIZE) =
+    suspend fun getCircuitImage(circuitUrl: String, size: Int = DEFAULT_IMAGE_SIZE) =
         getWikipediaImage(getWikipediaTitle(circuitUrl), size, WikipediaService.Licence.FREE)
 
     suspend fun getWikipediaImageFromUrl(

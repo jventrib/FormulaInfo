@@ -6,16 +6,24 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.jventrib.formulainfo.common.utils.Converters
-import com.jventrib.formulainfo.race.model.Race
-import com.jventrib.formulainfo.race.model.db.Constructor
-import com.jventrib.formulainfo.race.model.db.Driver
-import com.jventrib.formulainfo.race.model.db.RaceResult
+import com.jventrib.formulainfo.race.model.db.*
 
-@Database(entities = [Race::class, RaceResult::class, Driver::class, Constructor::class], version = 1, exportSchema = false)
+@Database(
+    entities = [
+        Race::class,
+        Circuit::class,
+        RaceResult::class,
+        Driver::class,
+        Constructor::class
+    ],
+    version = 1,
+    exportSchema = false
+)
 @TypeConverters(Converters::class)
 abstract class AppRoomDatabase : RoomDatabase() {
 
     abstract fun raceDao(): RaceDao
+    abstract fun circuitDao(): CircuitDao
     abstract fun raceResultDao(): RaceResultDao
     abstract fun driverDao(): DriverDao
     abstract fun constructorDao(): ConstructorDao
