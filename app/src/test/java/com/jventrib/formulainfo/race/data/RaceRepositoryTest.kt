@@ -5,7 +5,8 @@ import com.jventrib.formulainfo.race.data.db.DriverDao
 import com.jventrib.formulainfo.race.data.db.RaceDao
 import com.jventrib.formulainfo.race.data.db.RaceResultDao
 import com.jventrib.formulainfo.race.data.remote.RaceRemoteDataSource
-import com.jventrib.formulainfo.race.model.Race
+import com.jventrib.formulainfo.race.model.db.Circuit
+import com.jventrib.formulainfo.race.model.db.Race
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -32,11 +33,11 @@ class RaceRepositoryTest : TestCase() {
             1,
             "http://test.com",
             "race1",
-            Race.Circuit(
+            Circuit(
                 "cir1",
                 "http://circuit1.com",
                 "Circuit 1 ",
-                Race.Circuit.Location(
+                Circuit.Location(
                     47.2197F,
                     14.7647F,
                     "Spielberg",

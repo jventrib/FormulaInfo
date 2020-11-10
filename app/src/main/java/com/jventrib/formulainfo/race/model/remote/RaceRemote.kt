@@ -1,35 +1,24 @@
-package com.jventrib.formulainfo.race.model
+package com.jventrib.formulainfo.race.model.remote
 
 import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.Ignore
-import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.jventrib.formulainfo.race.model.remote.RaceResultRemote
 import java.io.Serializable
 import java.time.Instant
-import java.time.ZonedDateTime
 
-@Entity(tableName = "race", primaryKeys = ["season", "round"])
-class Race(
+class RaceRemote(
     val season: Int,
     val round: Int,
     val url: String,
     val raceName: String,
     @SerializedName("Circuit")
-    @Embedded
     val circuit: Circuit,
-    @Embedded
     var sessions: Sessions
 ) : Serializable {
-    @Ignore
     lateinit var time: String
 
-    @Ignore
     lateinit var date: String
 
     @SerializedName("Results")
-    @Ignore
     var resultRemotes: List<RaceResultRemote>? = null
 
     val timeInitialized get() = ::time.isInitialized
@@ -40,7 +29,6 @@ class Race(
         val circuitUrl: String,
         val circuitName: String,
         @SerializedName("Location")
-        @Embedded
         val location: Location,
         var circuitImageUrl: String?
     ): Serializable {
@@ -67,7 +55,7 @@ class Race(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Race
+        other as RaceRemote
 
         if (season != other.season) return false
         if (round != other.round) return false

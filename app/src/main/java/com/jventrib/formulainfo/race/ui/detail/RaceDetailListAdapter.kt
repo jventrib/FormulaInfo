@@ -18,7 +18,7 @@ import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformatio
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.getColorWithAlpha
 import com.jventrib.formulainfo.databinding.ItemRaceResultBinding
-import com.jventrib.formulainfo.race.model.Race
+import com.jventrib.formulainfo.race.model.db.Race
 import com.jventrib.formulainfo.race.model.db.RaceResultFull
 
 class RaceResultListAdapter internal constructor(

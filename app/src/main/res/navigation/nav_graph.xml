@@ -26,6 +26,6 @@
         tools:layout="@layout/fragment_race_detail" >
         <argument
             android:name="race"
-            app:argType="com.jventrib.formulainfo.race.model.Race" />
+            app:argType="com.jventrib.formulainfo.race.model.db.RaceFull" />
     </fragment>
 </navigation>

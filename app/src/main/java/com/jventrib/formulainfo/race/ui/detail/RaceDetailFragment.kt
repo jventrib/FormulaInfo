@@ -61,7 +61,7 @@ class RaceDetailFragment : Fragment() {
         }
 
         viewModel.setRace(args.race)
-        viewModel.race.observe(viewLifecycleOwner) { race ->
+        viewModel.race.observe(viewLifecycleOwner) { (race, circuit) ->
 
             binding.textRaceName.text = race.raceName
 
@@ -71,14 +71,14 @@ class RaceDetailFragment : Fragment() {
             binding.textQualDate.textAndFormat(race.sessions.qualifying)
             binding.textRaceDate.textAndFormat(race.sessions.race)
 
-            race.circuit.location.flag?.let {
+            circuit.location.flag?.let {
                 binding.imageFlag.load(it)
             }
-            race.circuit.circuitImageUrl?.let {
+            circuit.imageUrl?.let {
                 binding.imageCircuitImage.load(it)
             }
 
-            binding.textCircuitName.text = race.circuit.circuitName
+            binding.textCircuitName.text = circuit.name
         }
 
         val raceResultList: RecyclerView = binding.listResult
