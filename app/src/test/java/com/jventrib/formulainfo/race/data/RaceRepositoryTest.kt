@@ -1,12 +1,11 @@
 package com.jventrib.formulainfo.race.data
 
-import com.jventrib.formulainfo.race.data.db.ConstructorDao
-import com.jventrib.formulainfo.race.data.db.DriverDao
-import com.jventrib.formulainfo.race.data.db.RaceDao
-import com.jventrib.formulainfo.race.data.db.RaceResultDao
+import com.jventrib.formulainfo.race.data.db.*
 import com.jventrib.formulainfo.race.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.race.model.db.Circuit
 import com.jventrib.formulainfo.race.model.db.Race
+import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.model.remote.RaceRemote
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -27,12 +26,21 @@ class RaceRepositoryTest : TestCase() {
 
     @Test
     fun testGetAllRaces_whenDBIsEmpty() {
-
-        val race = Race(
-            2020,
-            1,
-            "http://test.com",
-            "race1",
+        val race = RaceFull(
+            Race(
+                2020,
+                1,
+                "http://test.com",
+                "race1",
+                "cir1",
+                Race.Sessions(
+                    Instant.now(),
+                    Instant.now(),
+                    Instant.now(),
+                    Instant.now(),
+                    Instant.now()
+                )
+            ),
             Circuit(
                 "cir1",
                 "http://circuit1.com",
@@ -45,10 +53,37 @@ class RaceRepositoryTest : TestCase() {
                 ),
                 "http://image1.svg"
             ),
-            Race.Sessions(Instant.now(), Instant.now(), Instant.now(), Instant.now(), Instant.now())
-        )
 
+            )
+
+
+        val raceRemote = RaceRemote(
+            2020,
+            1,
+            "http://test.com",
+            "race1",
+            RaceRemote.Circuit(
+                "cir1",
+                "http://circuit1.com",
+                "Circuit 1 ",
+                RaceRemote.Circuit.Location(
+                    47.2197F,
+                    14.7647F,
+                    "Spielberg",
+                    "Austria", null
+                ),
+                "http://image1.svg"
+            ),
+            RaceRemote.Sessions(
+                Instant.now(),
+                Instant.now(),
+                Instant.now(),
+                Instant.now(),
+                Instant.now()
+            )
+        )
         val raceDao = mockk<RaceDao>()
+        val circuitDao = mockk<CircuitDao>()
         val raceResultDao = mockk<RaceResultDao>()
         val driverDao = mockk<DriverDao>()
         val constructorDao = mockk<ConstructorDao>()
@@ -56,10 +91,17 @@ class RaceRepositoryTest : TestCase() {
 
         every { raceDao.getSeasonRaces(any()) } returns flowOf(listOf(race))
         coEvery { raceDao.insertAll(any()) } returns Unit
-        coEvery { raceRemoteDataSource.getRaces(any()) } returns listOf(race)
+        coEvery { raceRemoteDataSource.getRacesFlow(any()) } returns flowOf(listOf(raceRemote))
         coEvery { raceRemoteDataSource.getCountryFlag(any()) } returns "flag1"
 
-        val allRaces = RaceRepository(raceDao, raceResultDao, driverDao, constructorDao, raceRemoteDataSource).getAllRaces(2020)
+        val allRaces = RaceRepository(
+            raceDao,
+            circuitDao,
+            raceResultDao,
+            driverDao,
+            constructorDao,
+            raceRemoteDataSource
+        ).getAllRaces(2020)
 
 
         testScope.launch {
