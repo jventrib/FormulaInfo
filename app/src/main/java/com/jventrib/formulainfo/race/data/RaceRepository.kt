@@ -1,7 +1,8 @@
 package com.jventrib.formulainfo.race.data
 
+import android.util.Log
 import com.dropbox.android.external.store4.*
-import com.jventrib.formulainfo.common.utils.emptyFlowOfListToNull
+import com.jventrib.formulainfo.common.utils.emptyListToNull
 import com.jventrib.formulainfo.race.data.db.*
 import com.jventrib.formulainfo.race.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.race.data.remote.WikipediaService
@@ -30,10 +31,10 @@ class RaceRepository(
             SourceOfTruth.of(
                 reader = { season ->
                     raceDao.getSeasonRaces(season)
-                        .enrich({ it.circuit.location.flag }) {
+                        .complete({ it.circuit.location.flag }) {
                             circuitDao.insert(getCircuitWithFlag(it))
                         }
-                        .emptyFlowOfListToNull()
+                        .emptyListToNull()
 
                 },
                 writer = { _: Int, races: List<RaceRemote> ->
@@ -43,7 +44,7 @@ class RaceRepository(
             )
         ).build()
 
-    fun getRace(r: RaceFull) = flow<RaceFull> {
+    fun getRace(r: RaceFull) = flow {
         emit(r)
         if (r.circuit.imageUrl == null) {
             val circuitWithImage = r.circuit.copy(
@@ -68,13 +69,13 @@ class RaceRepository(
             SourceOfTruth.of(
                 reader = { seasonRace ->
                     raceResultDao.getRaceResultsFull(seasonRace.season, seasonRace.round)
-                        .enrich({ it.driver.image }) {
+                        .complete({ it.driver.image }) {
                             driverDao.insert(getDriverWithImage(it))
                         }
-                        .enrich({ it.constructor.image }) {
+                        .complete({ it.constructor.image }) {
                             constructorDao.insert(getConstructorWithImage(it))
                         }
-                        .emptyFlowOfListToNull()
+                        .emptyListToNull()
                 },
                 writer = { _: SeasonRace, raceResultRemotes: List<RaceResultRemote> ->
                     driverDao.insertAll(RaceResultDriverMapper.toEntity(raceResultRemotes))
@@ -85,15 +86,15 @@ class RaceRepository(
         ).build()
 
 
-    private fun <T : List<U>, U> Flow<T>.enrich(
+    private fun <T : List<U>, U> Flow<T>.complete(
         attr: (U) -> Any?,
         action: suspend (U) -> Unit
     ): Flow<T> =
-        this.transform<T, T> {
+        this.transform {
             emit(it)
             it.firstOrNull { attr.invoke(it) == null }
                 ?.let { action.invoke(it) }
-        }
+        }.distinctUntilChanged()
 
 
     private suspend fun getCircuitWithFlag(raceFull: RaceFull) = raceFull.circuit.copy(
@@ -118,27 +119,20 @@ class RaceRepository(
             ) ?: "NONE"
         )
 
-
     fun getAllRaces(season: Int): Flow<StoreResponse<List<RaceFull>>> {
         return raceStore.stream(StoreRequest.cached(season, false))
 //        return raceStore.stream(StoreRequest.fresh(2020))
     }
-
 
     fun getRaceResults(
         season: Int,
         round: Int
     ): Flow<StoreResponse<List<RaceResultFull>>> =
         raceResultRemoteStoreAndConstructor.stream(
-            StoreRequest.cached(
-                SeasonRace(season, round),
-                false
-            )
+            StoreRequest.cached(SeasonRace(season, round), false)
         )
-
 //        raceResultRemoteStore.stream(StoreRequest.fresh(SeasonRace(season, round)))
 
     data class SeasonRace(val season: Int, val round: Int)
-
 }
 

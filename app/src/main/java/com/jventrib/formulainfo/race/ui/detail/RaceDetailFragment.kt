@@ -8,14 +8,15 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import androidx.core.view.ViewCompat
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
+import com.jventrib.formulainfo.common.ui.beforeTransition
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
 import com.jventrib.formulainfo.databinding.FragmentRaceDetailBinding
 import java.time.Instant
@@ -85,7 +86,6 @@ class RaceDetailFragment : Fragment() {
 
         val context = requireContext()
         val adapter = RaceResultListAdapter(context) { race, binding ->
-
 //TODO navigate to driver fragment
 //            val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
 //            val extras = FragmentNavigatorExtras(
@@ -99,12 +99,20 @@ class RaceDetailFragment : Fragment() {
 
         viewModel.raceResults.observe(viewLifecycleOwner) { storeResponse ->
             storeResponse.throwIfError()
-            storeResponse.dataOrNull()?.let { adapter.setRaceResult(it) }
+            storeResponse.dataOrNull()?.let {
+                adapter.setRaceResult(it)
+            } ?: let { adapter.setRaceResult(listOf()) }
         }
 
         ViewCompat.setTransitionName(binding.root, "race_card_detail")
         ViewCompat.setTransitionName(binding.imageFlag, "race_image_flag")
         ViewCompat.setTransitionName(binding.textRaceDate, "text_race_date")
+
+        //Reset the adapter before transition to avoid glitch with previous race result
+        beforeTransition(view) {
+            adapter.setRaceResult(listOf())
+        }
+
         return view
     }
 

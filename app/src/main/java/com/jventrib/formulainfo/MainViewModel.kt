@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.race.data.RaceRepository
@@ -8,6 +9,7 @@ import com.jventrib.formulainfo.race.model.db.RaceFull
 import com.jventrib.formulainfo.race.model.db.RaceResultFull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.onEach
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -22,7 +24,8 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
     val seasonRaces: LiveData<StoreResponse<List<RaceFull>>> =
         season.switchMap { repository.getAllRaces(it).asLiveData() }
 
-    val raceFromList: MutableLiveData<RaceFull> = MutableLiveData()
+    private val raceFromList: MutableLiveData<RaceFull> = MutableLiveData()
+
     val race: LiveData<RaceFull> = raceFromList.switchMap { repository.getRace(it).asLiveData() }
 
     fun setRace(r: RaceFull) {
@@ -30,5 +33,7 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
     }
 
     val raceResults: LiveData<StoreResponse<List<RaceResultFull>>> =
-        race.switchMap { repository.getRaceResults(it.race.season, it.race.round).asLiveData() }
+        raceFromList.switchMap { repository.getRaceResults(it.race.season, it.race.round)
+            .onEach { Log.d(javaClass.name, "RaceResultsFull: $it") }
+            .asLiveData() }
 }
