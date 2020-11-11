@@ -9,23 +9,30 @@
         android:id="@+id/fragment_race_list"
         android:name="com.jventrib.formulainfo.race.ui.list.RaceListFragment"
         android:label="fragment_race_list"
-        tools:layout="@layout/fragment_race_list" >
+        tools:layout="@layout/fragment_race_list">
         <action
             android:id="@+id/action_raceFragment_to_raceResultFragment"
-            app:destination="@id/fragment_race_detail"/>
-<!--            app:enterAnim="@anim/fragment_open_enter"-->
-<!--            app:exitAnim="@anim/fragment_open_exit"-->
-<!--            app:popEnterAnim="@anim/fragment_open_enter"-->
-<!--            app:popExitAnim="@anim/fragment_open_exit"-->
-
+            app:destination="@id/fragment_race_detail" />
     </fragment>
     <fragment
         android:id="@+id/fragment_race_detail"
         android:name="com.jventrib.formulainfo.race.ui.detail.RaceDetailFragment"
         android:label="fragment_race_result"
-        tools:layout="@layout/fragment_race_detail" >
+        tools:layout="@layout/fragment_race_detail">
         <argument
             android:name="race"
             app:argType="com.jventrib.formulainfo.race.model.db.RaceFull" />
     </fragment>
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.jventrib.formulainfo.about.AboutFragment"
+        android:label="AboutFragment" />
+    <action
+        android:id="@+id/action_global_aboutFragment"
+        app:destination="@id/aboutFragment"
+        app:enterAnim="@android:anim/slide_in_left"
+        app:exitAnim="@android:anim/slide_out_right"
+        app:popEnterAnim="@anim/slide_in_right"
+        app:popExitAnim="@anim/slide_out_left"
+         />
 </navigation>
