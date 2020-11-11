@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?attr/textAppearanceBody2"
             app:layout_constraintEnd_toEndOf="@+id/text_driver_points"
-            app:layout_constraintTop_toTopOf="@+id/text_constructor"
+            app:layout_constraintTop_toTopOf="@+id/text_time"
             tools:text="(+2)" />
 
         <TextView
@@ -81,8 +81,9 @@
             style="@style/word_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:textAppearance="?attr/textAppearanceBody2"
+            android:layout_marginTop="2dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+
             android:textColor="?android:attr/textColorSecondary"
             app:layout_constraintStart_toStartOf="@+id/text_driver_name"
             app:layout_constraintTop_toBottomOf="@+id/text_driver_name"
