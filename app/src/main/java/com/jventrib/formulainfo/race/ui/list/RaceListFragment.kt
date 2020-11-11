@@ -6,10 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +17,7 @@ import com.google.android.material.transition.platform.Hold
 import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.R
+import com.jventrib.formulainfo.common.ui.beforeTransition
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
@@ -33,7 +32,7 @@ class RaceListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val raceList: RecyclerView =
+        val view: RecyclerView =
             inflater.inflate(R.layout.fragment_race_list, container, false) as RecyclerView
 
         val context = requireContext()
@@ -50,10 +49,10 @@ class RaceListFragment : Fragment() {
                 binding.imageFlag to "race_image_flag",
                 binding.textRaceDate to "text_race_date",
             )
-            raceList.findNavController().navigate(directions, extras)
+            view.findNavController().navigate(directions, extras)
         }
-        raceList.adapter = adapter
-        raceList.layoutManager = LinearLayoutManager(context)
+        view.adapter = adapter
+        view.layoutManager = LinearLayoutManager(context)
 
         val viewModel: MainViewModel by activityViewModels {
             appContainer.getViewModelFactory(::MainViewModel)
@@ -78,13 +77,12 @@ class RaceListFragment : Fragment() {
                 is StoreResponse.Error.Message -> TODO()
             }
         }
-        return raceList
+        return view
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        postponeEnterTransition()
-        view.doOnPreDraw { startPostponedEnterTransition() }
+        beforeTransition(view) {}
     }
 }
