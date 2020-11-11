@@ -1,6 +1,5 @@
 package com.jventrib.formulainfo.race.data.remote
 
-import com.jventrib.formulainfo.race.model.db.Race
 import com.jventrib.formulainfo.race.model.remote.RaceRemote
 import com.jventrib.formulainfo.race.model.remote.RaceResultRemote
 import kotlinx.coroutines.flow.Flow
@@ -17,22 +16,9 @@ open class RaceRemoteDataSource(
 
     ) {
 
-    fun getRacesFlow(season: Int): Flow<List<RaceRemote>> = flow {
-        val races = getRaces(season)
-        //First emit with all races, no flag loaded
-        emit(races)
+    fun getRacesFlow(season: Int) = flow { emit(getRaces(season)) }
 
-        //Then load the flags
-//        races.forEach {
-//            it.circuit.location.flag =
-//                getCountryFlag(it.circuit.location.country)
-            //Each time a flag is load, emit all the races
-//            it.circuit.circuitImageUrl = getCircuitImage(it.circuit.circuitUrl, 500)
-//            emit(races)
-//        }
-    }
-
-    suspend fun getRaces(season: Int): List<RaceRemote> {
+    private suspend fun getRaces(season: Int): List<RaceRemote> {
 
         val races = mrdService.getRaces(season).mrData.table.races
         return try {
