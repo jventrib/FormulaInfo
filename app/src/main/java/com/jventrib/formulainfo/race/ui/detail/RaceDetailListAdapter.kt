@@ -61,6 +61,7 @@ class RaceResultListAdapter internal constructor(
             }
         holder.binding.textDriverGainLoss.text = "($positionGainString)"
         holder.binding.textDriverGainLoss.setTextColor(positionGainColor)
+        current.raceResult.time?.let{ holder.binding.textTime.text = it.time }
 
 //        if (current.constructor.image != null && current.constructor.image != "NONE") {
 //            holder.binding.textConstructor.loadBackground(current.constructor.image)
