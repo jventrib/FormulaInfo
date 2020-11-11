@@ -11,23 +11,34 @@ import android.widget.Spinner
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
+import com.jventrib.formulainfo.databinding.ActivityMainBinding
+import com.jventrib.formulainfo.race.ui.list.RaceListFragmentDirections
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 
 
+@ExperimentalCoroutinesApi
+@FlowPreview
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
+    private val navController by lazy { binding.navHostFragment.findNavController() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.my_toolbar))
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.myToolbar)
     }
 
     private val seasonList = (1950..2020).toList().reversed()
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu, menu)
 
-        val item: MenuItem = menu!!.findItem(R.id.spinner)
+        val item: MenuItem = menu.findItem(R.id.spinner)
         val spinner = item.actionView as Spinner
         spinner.adapter = ArrayAdapter(
             applicationContext, R.layout.spinner_season, seasonList
@@ -50,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                 id: Long
             ) {
                 viewModel.setSeason(seasonList[position])
-                val findNavController = findNavController(R.id.nav_host_fragment)
+                val findNavController = navController
                 findNavController.navigateUp()
             }
 
@@ -59,6 +70,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        //About fragment handling
+        val menuItem = menu.findItem(R.id.action_about)
+        menuItem.setOnMenuItemClickListener {
+            navController.navigate(NavGraphDirections.actionGlobalAboutFragment())
+            true
+        }
+//
+//        }
 
         return true
     }

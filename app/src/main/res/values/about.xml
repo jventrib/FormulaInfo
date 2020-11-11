@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="about_title">Formula Info</string>
+    <string name="about_version">Version 1.0.0</string>
+    <string name="about_developed">Developed by Jérôme Ventribout</string>
+    <string name="about_purpose">This app is a personal project to improve my personal skills in Android application development. By now, there is no dedicated backend, and no static content inside the app. All the content is coming from various public APIs</string>
+    <string name="about_disclaimer_title">Disclaimer</string>
+    <string name="about_disclaimer">This app is unofficial and is not associated in any way with the Formula One group or companies. F1, FORMULA ONE, FORMULA 1, FIA FORMULA ONE CHAMPIONSHIP, GRAND PRIX and related marks are trade marks of Formula One Licensing B.V.</string>
+    <string name="about_datasource_title">Datasources</string>
+
+    <string name="about_datasource_ergast_title">Ergast MRD API</string>
+    <string name="about_datasource_ergast">Most historical infos are coming from this great API</string>
+
+    <string name="about_datasource_wikipedia_title">Wikipedia</string>
+    <string name="about_datasource_wikipedia">Wikipedia is serving most images used in the app (flag, circuit, drivers)</string>
+
+    <string name="about_datasource_f1c_title">F1Calendar API</string>
+    <string name="about_datasource_f1c">F1Calendar API is serving the sessions information for the ongoing season</string>
+
+
+</resources>
