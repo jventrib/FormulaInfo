@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.findNavController
 
 
 class MainActivity : AppCompatActivity() {
@@ -49,12 +50,13 @@ class MainActivity : AppCompatActivity() {
                 id: Long
             ) {
                 viewModel.setSeason(seasonList[position])
+                val findNavController = findNavController(R.id.nav_host_fragment)
+                findNavController.navigateUp()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
-
         }
 
 
