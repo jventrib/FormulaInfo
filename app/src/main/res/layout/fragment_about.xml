@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:src="@mipmap/ic_launcher_round"
+        app:layout_constraintBottom_toTopOf="@+id/text_version"
+        app:layout_constraintEnd_toStartOf="@+id/text_title"
+        app:layout_constraintTop_toTopOf="@+id/text_title" />
 
     <TextView
         android:id="@+id/text_title"
@@ -26,6 +35,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_title" />
+
     <TextView
         android:id="@+id/text_developed"
         android:layout_width="wrap_content"
@@ -95,8 +105,8 @@
         android:id="@+id/text_credit_ergast"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="16dp"
         android:layout_marginStart="150dp"
+        android:padding="16dp"
         android:text="@string/about_datasource_ergast"
         android:textAppearance="?attr/textAppearanceBody2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -118,8 +128,8 @@
         android:id="@+id/text_credit_wikipedia"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="16dp"
         android:layout_marginStart="150dp"
+        android:padding="16dp"
         android:text="@string/about_datasource_wikipedia"
         android:textAppearance="?attr/textAppearanceBody2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -141,13 +151,14 @@
         android:id="@+id/text_credit_f1c"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="16dp"
         android:layout_marginStart="150dp"
+        android:padding="16dp"
         android:text="@string/about_datasource_f1c"
         android:textAppearance="?attr/textAppearanceBody2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/text_credit_f1c_title" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
