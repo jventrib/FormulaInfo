@@ -39,10 +39,9 @@
             style="@style/word_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
             android:textAppearance="?attr/textAppearanceBody2"
             app:layout_constraintEnd_toEndOf="@+id/text_driver_points"
-            app:layout_constraintTop_toBottomOf="@+id/text_driver_points"
+            app:layout_constraintTop_toTopOf="@+id/text_constructor"
             tools:text="(+2)" />
 
         <TextView
@@ -54,7 +53,6 @@
             android:textAppearance="?attr/textAppearanceBody2"
             app:layout_constraintEnd_toStartOf="@+id/text_driver_gain_loss"
             app:layout_constraintTop_toTopOf="@+id/text_driver_gain_loss"
-            app:layout_constraintVertical_bias="1.0"
             tools:text="Started 2" />
 
         <ImageView
@@ -83,7 +81,7 @@
             style="@style/word_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="12dp"
             android:textAppearance="?attr/textAppearanceBody2"
             android:textColor="?android:attr/textColorSecondary"
             app:layout_constraintStart_toStartOf="@+id/text_driver_name"
@@ -99,6 +97,17 @@
             app:layout_constraintStart_toEndOf="@+id/image_driver"
             app:layout_constraintTop_toTopOf="@+id/image_driver"
             tools:text="1:" />
+
+        <TextView
+            android:id="@+id/text_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="120dp"
+            android:text="TextView"
+            app:layout_constraintBottom_toBottomOf="@+id/text_constructor"
+            app:layout_constraintStart_toStartOf="@+id/text_constructor"
+            app:layout_constraintTop_toTopOf="@+id/text_constructor"
+            tools:text="+02:01.00" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
