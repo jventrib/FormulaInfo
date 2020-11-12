@@ -30,7 +30,7 @@
         android:id="@+id/text_version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/about_version"
+        android:text="@string/app_version"
         android:textAppearance="?attr/textAppearanceSubtitle2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,6 +47,16 @@
         app:layout_constraintTop_toBottomOf="@+id/text_version" />
 
     <TextView
+        android:id="@+id/text_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBody2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_developed"
+        tools:text="Icon by ..."/>
+
+    <TextView
         android:id="@+id/text_purpose"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,7 +66,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_developed" />
+        app:layout_constraintTop_toBottomOf="@+id/text_icon" />
 
     <TextView
         android:id="@+id/text_disclaimer_title"
