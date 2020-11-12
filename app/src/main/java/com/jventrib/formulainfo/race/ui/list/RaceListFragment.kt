@@ -20,6 +20,7 @@ import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.beforeTransition
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import timber.log.Timber
 
 /**
  * A fragment representing a list of Items.
@@ -61,17 +62,17 @@ class RaceListFragment : Fragment() {
         viewModel.seasonRaces.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is StoreResponse.Data -> {
-                    Log.d(javaClass.name, "Resource.Status.SUCCESS: ${response.value}")
+                    Timber.d("Resource.Status.SUCCESS: ${response.value}")
 //                    progress_bar.visibility = View.GONE
                     adapter.setRaces(response.value)
                 }
                 is StoreResponse.Error.Exception -> {
-                    Log.e(javaClass.name, "Error: ${response.errorMessageOrNull()}", response.error)
+                    Timber.e(response.error, "Error: ${response.errorMessageOrNull()}")
                     Toast.makeText(context, response.errorMessageOrNull(), Toast.LENGTH_SHORT)
                         .show()
                 }
                 is StoreResponse.Loading ->
-                    Log.d(javaClass.name, "Resource.Status.LOADING")
+                    Timber.d("Resource.Status.LOADING")
 //                    progress_bar.visibility = View.VISIBLE
                 is StoreResponse.NoNewData -> TODO()
                 is StoreResponse.Error.Message -> TODO()

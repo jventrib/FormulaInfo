@@ -10,6 +10,7 @@ import com.jventrib.formulainfo.race.model.db.RaceResultFull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -34,6 +35,5 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
 
     val raceResults: LiveData<StoreResponse<List<RaceResultFull>>> =
         raceFromList.switchMap { repository.getRaceResults(it.race.season, it.race.round)
-            .onEach { Log.d(javaClass.name, "RaceResultsFull: $it") }
             .asLiveData() }
 }

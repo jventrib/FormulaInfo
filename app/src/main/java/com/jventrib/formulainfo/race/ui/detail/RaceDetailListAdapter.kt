@@ -20,6 +20,7 @@ import com.jventrib.formulainfo.common.ui.getColorWithAlpha
 import com.jventrib.formulainfo.databinding.ItemRaceResultBinding
 import com.jventrib.formulainfo.race.model.db.Race
 import com.jventrib.formulainfo.race.model.db.RaceResultFull
+import timber.log.Timber
 
 class RaceResultListAdapter internal constructor(
     val context: Context,
@@ -61,7 +62,7 @@ class RaceResultListAdapter internal constructor(
             }
         holder.binding.textDriverGainLoss.text = "($positionGainString)"
         holder.binding.textDriverGainLoss.setTextColor(positionGainColor)
-        current.raceResult.time?.let{ holder.binding.textTime.text = it.time }
+        current.raceResult.time?.let { holder.binding.textTime.text = it.time }
 
 //        if (current.constructor.image != null && current.constructor.image != "NONE") {
 //            holder.binding.textConstructor.loadBackground(current.constructor.image)
@@ -69,7 +70,7 @@ class RaceResultListAdapter internal constructor(
 //            holder.binding.textConstructor.background = null
 
 
-        var colorId = context.resources.getIdentifier(
+        val colorId = context.resources.getIdentifier(
             current.constructor.id,
             "color",
             context.packageName
@@ -77,15 +78,11 @@ class RaceResultListAdapter internal constructor(
 
         try {
             val color = context.resources.getColor(colorId, null)
-            val colorWithAlpha = getColorWithAlpha(color, 0.9f)
             holder.binding.spaceConstructorColor.setBackgroundColor(color)
         } catch (e: Resources.NotFoundException) {
             val color = context.resources.getColor(R.color.light_grey, null)
             holder.binding.spaceConstructorColor.setBackgroundColor(color)
-            Log.i(
-                this.javaClass.name,
-                "Constructor ${current.constructor.id} color resource not found"
-            )
+            Timber.i("Constructor ${current.constructor.id} color resource not found")
 
         }
 
