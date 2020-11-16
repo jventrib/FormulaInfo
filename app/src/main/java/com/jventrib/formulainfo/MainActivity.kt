@@ -10,7 +10,10 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.jventrib.formulainfo.databinding.ActivityMainBinding
 import com.jventrib.formulainfo.race.ui.list.RaceListFragmentDirections
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,13 +26,17 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private val navController by lazy { binding.navHostFragment.findNavController() }
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.myToolbar)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+        binding.myToolbar.setupWithNavController(navController)
     }
 
     private val seasonList = (1950..2020).toList().reversed()
@@ -71,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         //About fragment handling
-        val menuItem = menu.findItem(R.id.action_about)
+        val menuItem = menu.findItem(R.id.menu_action_about)
         menuItem.setOnMenuItemClickListener {
             navController.navigate(NavGraphDirections.actionGlobalAboutFragment())
             true
