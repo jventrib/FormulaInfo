@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         setSupportActionBar(binding.myToolbar)
         navController = getNavController()
         binding.myToolbar.setupWithNavController(navController)
+        supportActionBar?.setHomeButtonEnabled(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -68,7 +69,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         viewModel.setSeason(seasonList[position])
-        navController.navigateUp()
+        @Suppress("ControlFlowWithEmptyBody")
+        while (navController.navigateUp()) {
+        }
+
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {

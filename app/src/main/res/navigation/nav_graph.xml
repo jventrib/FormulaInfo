@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/fragment_race_list"
         android:name="com.jventrib.formulainfo.race.ui.list.RaceListFragment"
-        android:label="fragment_race_list"
+        android:label="Formula Info"
         tools:layout="@layout/fragment_race_list">
         <action
             android:id="@+id/action_raceFragment_to_raceResultFragment"
@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/fragment_race_detail"
         android:name="com.jventrib.formulainfo.race.ui.detail.RaceDetailFragment"
-        android:label="fragment_race_result"
+        android:label="Race Detail"
         tools:layout="@layout/fragment_race_detail">
         <argument
             android:name="race"
@@ -26,7 +26,7 @@
     <fragment
         android:id="@+id/aboutFragment"
         android:name="com.jventrib.formulainfo.about.AboutFragment"
-        android:label="AboutFragment" />
+        android:label="About" />
     <action
         android:id="@+id/action_global_aboutFragment"
         app:destination="@id/aboutFragment"
