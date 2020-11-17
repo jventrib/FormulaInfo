@@ -26,7 +26,6 @@ class MainFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
     }
 
     override fun onCreateView(
@@ -36,13 +35,10 @@ class MainFragment : Fragment() {
         // Inflate the layout for this fragment
         val binding = FragmentMainBinding.inflate(inflater, container, false)
         val view = binding.root
-
         (activity as AppCompatActivity).setSupportActionBar(binding.myToolbar)
 
-//        val findNavController = view.findNavController()
-//        navController = findNavController
-
-        val navHostFragment = childFragmentManager.fragments[0] as NavHostFragment
+        val navHostFragment =
+            childFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
         binding.myToolbar.setupWithNavController(navController)
         return view
@@ -86,9 +82,5 @@ class MainFragment : Fragment() {
             navController.navigate(NavGraphDirections.actionGlobalAboutFragment())
             true
         }
-//
-//        }
     }
-
-
 }
