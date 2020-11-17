@@ -9,7 +9,7 @@ data class RaceResultRemote(
     val number: Int,
     val position: Int,
     val positionText: String,
-    val points: Int,
+    val points: Float,
     @SerializedName("Driver")
     val driver: Driver,
     @SerializedName("Constructor")

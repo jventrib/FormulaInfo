@@ -16,7 +16,7 @@ data class RaceResult(
     val number: Int,
     val position: Int,
     val positionText: String,
-    val points: Int,
+    val points: Float,
     val driverId: String,
     val constructorId: String,
     val grid: Int,

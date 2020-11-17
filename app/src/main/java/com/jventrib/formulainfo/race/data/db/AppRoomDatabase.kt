@@ -16,7 +16,7 @@ import com.jventrib.formulainfo.race.model.db.*
         Driver::class,
         Constructor::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -42,7 +42,9 @@ abstract class AppRoomDatabase : RoomDatabase() {
                     context,
                     AppRoomDatabase::class.java,
                     "f1_database"
-                ).build().also { instance = it }
+                )
+                    .fallbackToDestructiveMigration()
+                    .build().also { instance = it }
             }
     }
 }

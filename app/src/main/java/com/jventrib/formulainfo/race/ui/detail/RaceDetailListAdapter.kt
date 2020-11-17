@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformation
 import com.jventrib.formulainfo.R
-import com.jventrib.formulainfo.common.ui.getColorWithAlpha
 import com.jventrib.formulainfo.databinding.ItemRaceResultBinding
 import com.jventrib.formulainfo.race.model.db.Race
 import com.jventrib.formulainfo.race.model.db.RaceResultFull
@@ -46,7 +44,7 @@ class RaceResultListAdapter internal constructor(
         holder.binding.textDriverName.text =
             "${current.driver.givenName} ${current.driver.familyName}"
         holder.binding.textConstructor.text = current.constructor.name
-        holder.binding.textDriverPoints.text = "${current.raceResult.points} pts"
+        holder.binding.textDriverPoints.text = "${current.raceResult.points.fmt()} pts"
         holder.binding.textDriverGrid.text = "Started " + (current.raceResult.grid).toString()
         val positionGain = current.raceResult.grid - current.raceResult.position
         val positionGainString = (when {
@@ -114,6 +112,13 @@ class RaceResultListAdapter internal constructor(
     }
 
     override fun getItemCount() = raceResults.size
+}
+
+private fun Float.fmt(): String? {
+    if (this == toLong().toFloat())
+    return String.format("%d", toLong())
+    else
+    return String.format("%s", this)
 }
 
 private fun View.loadBackground(image: String?) {
