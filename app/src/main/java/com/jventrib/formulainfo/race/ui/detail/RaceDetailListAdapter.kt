@@ -95,12 +95,14 @@ class RaceResultListAdapter internal constructor(
 
         current.driver.image?.let {
             holder.binding.imageDriver.load(it) {
-                transformations(
-                    listOf(
-                        CenterOnFaceTransformation(zoom = 80),
-                        CircleCropTransformation()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    transformations(
+                        listOf(
+                            CenterOnFaceTransformation(zoom = 80),
+                            CircleCropTransformation()
+                        )
                     )
-                )
+                }
             }
 
         } ?: let {
