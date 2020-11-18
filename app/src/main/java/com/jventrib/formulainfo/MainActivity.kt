@@ -14,6 +14,7 @@ import androidx.navigation.*
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.jventrib.formulainfo.about.AboutFragment
 import com.jventrib.formulainfo.databinding.ActivityMainBinding
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -59,10 +60,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == R.id.menu_action_about) {
-            navController.navigate(
-                NavGraphDirections.actionGlobalAboutFragment(),
-                navOptions { launchSingleTop = true }
-            )
+            val aboutDestination = getNavDestination<AboutFragment>()
+            if (navController.currentDestination != aboutDestination) {
+                navController.navigate(
+                    NavGraphDirections.actionGlobalAboutFragment()
+                )
+            }
+
             true
         } else super.onOptionsItemSelected(item)
     }
@@ -78,6 +82,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     override fun onNothingSelected(parent: AdapterView<*>?) {
         TODO("Not yet implemented")
     }
+
+    private inline fun <reified T> getNavDestination() =
+        navController.graph.first { (it as FragmentNavigator.Destination).className == T::class.java.name }
 
     private fun getNavController() =
         (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController

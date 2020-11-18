@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,10 +76,18 @@ class RaceResultListAdapter internal constructor(
         )
 
         try {
-            val color = context.resources.getColor(colorId, null)
+            val color = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                context.resources.getColor(colorId, null)
+            } else {
+                context.resources.getColor(colorId)
+            }
             holder.binding.spaceConstructorColor.setBackgroundColor(color)
         } catch (e: Resources.NotFoundException) {
-            val color = context.resources.getColor(R.color.light_grey, null)
+            val color = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                context.resources.getColor(R.color.light_grey, null)
+            } else {
+                context.resources.getColor(R.color.light_grey)
+            }
             holder.binding.spaceConstructorColor.setBackgroundColor(color)
             Timber.i("Constructor ${current.constructor.id} color resource not found")
 
@@ -116,9 +125,9 @@ class RaceResultListAdapter internal constructor(
 
 private fun Float.fmt(): String? {
     if (this == toLong().toFloat())
-    return String.format("%d", toLong())
+        return String.format("%d", toLong())
     else
-    return String.format("%s", this)
+        return String.format("%s", this)
 }
 
 private fun View.loadBackground(image: String?) {
