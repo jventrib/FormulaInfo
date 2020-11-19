@@ -1,6 +1,5 @@
 package com.jventrib.formulainfo.race.data
 
-import android.util.Log
 import com.dropbox.android.external.store4.*
 import com.jventrib.formulainfo.common.utils.emptyListToNull
 import com.jventrib.formulainfo.race.data.db.*
@@ -11,10 +10,10 @@ import com.jventrib.formulainfo.race.model.db.RaceResultFull
 import com.jventrib.formulainfo.race.model.mapper.*
 import com.jventrib.formulainfo.race.model.remote.RaceRemote
 import com.jventrib.formulainfo.race.model.remote.RaceResultRemote
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
+@ExperimentalStoreApi
 @ExperimentalCoroutinesApi
 @FlowPreview
 class RaceRepository(
@@ -40,6 +39,12 @@ class RaceRepository(
                 writer = { _: Int, races: List<RaceRemote> ->
                     raceDao.insertAll(RaceMapper.toEntity(races))
                     circuitDao.insertAll(RaceCircuitMapper.toEntity(races))
+                },
+                deleteAll = {
+                    withContext(Dispatchers.IO) {
+                        raceDao.deleteAll()
+                        circuitDao.deleteAll()
+                    }
                 }
             )
         ).build()
@@ -58,7 +63,7 @@ class RaceRepository(
         }
     }
 
-    private val raceResultRemoteStoreAndConstructor: Store<SeasonRace, List<RaceResultFull>> =
+    private val raceResultStore: Store<SeasonRace, List<RaceResultFull>> =
         StoreBuilder.from(
             Fetcher.ofFlow { seasonRace ->
                 raceRemoteDataSource.getRaceResultsFlow(
@@ -81,6 +86,13 @@ class RaceRepository(
                     driverDao.insertAll(RaceResultDriverMapper.toEntity(raceResultRemotes))
                     constructorDao.insertAll(RaceResultConstructorMapper.toEntity(raceResultRemotes))
                     raceResultDao.insertAll(RaceResultMapper.toEntity(raceResultRemotes))
+                },
+                deleteAll = {
+                    withContext(Dispatchers.IO) {
+                        driverDao.deleteAll()
+                        constructorDao.deleteAll()
+                        raceResultDao.deleteAll()
+                    }
                 }
             )
         ).build()
@@ -121,17 +133,20 @@ class RaceRepository(
 
     fun getAllRaces(season: Int): Flow<StoreResponse<List<RaceFull>>> {
         return raceStore.stream(StoreRequest.cached(season, false))
-//        return raceStore.stream(StoreRequest.fresh(2020))
     }
 
     fun getRaceResults(
         season: Int,
         round: Int
     ): Flow<StoreResponse<List<RaceResultFull>>> =
-        raceResultRemoteStoreAndConstructor.stream(
+        raceResultStore.stream(
             StoreRequest.cached(SeasonRace(season, round), false)
         )
-//        raceResultRemoteStore.stream(StoreRequest.fresh(SeasonRace(season, round)))
+
+    suspend fun refresh() {
+        raceStore.clearAll()
+        raceResultStore.clearAll()
+    }
 
     data class SeasonRace(val season: Int, val round: Int)
 }
