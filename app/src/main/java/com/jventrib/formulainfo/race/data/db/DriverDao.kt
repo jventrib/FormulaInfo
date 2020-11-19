@@ -19,6 +19,6 @@ interface DriverDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(races: Driver)
 
-    @Query("DELETE FROM race")
+    @Query("DELETE FROM driver")
     suspend fun deleteAll()
 }
