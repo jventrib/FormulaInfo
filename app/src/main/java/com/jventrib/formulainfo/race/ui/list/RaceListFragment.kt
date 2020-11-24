@@ -86,11 +86,10 @@ class RaceListFragment : Fragment() {
         view.setOnRefreshListener {
             Timber.d("Refresh Races")
             viewModel.viewModelScope.launch {
-//                viewModel.refreshRaces()
+                viewModel.refreshRaces()
                 view.isRefreshing = false
             }
         }
-
         return view
     }
 
