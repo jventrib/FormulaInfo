@@ -14,15 +14,21 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.dropbox.android.external.store4.ExperimentalStoreApi
 import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.common.ui.beforeTransition
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
 import com.jventrib.formulainfo.databinding.FragmentRaceDetailBinding
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
+@ExperimentalCoroutinesApi
+@FlowPreview
+@ExperimentalStoreApi
 class RaceDetailFragment : Fragment() {
 
     private val args: RaceDetailFragmentArgs by navArgs()
