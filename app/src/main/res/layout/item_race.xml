@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:clickable="true"
     app:cardElevation="4dp">
 
 
@@ -35,7 +34,7 @@
                 style="@style/word_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceHeadline6"/>
+                android:textAppearance="?attr/textAppearanceHeadline6" />
 
             <TextView
                 android:id="@+id/text_race_date"

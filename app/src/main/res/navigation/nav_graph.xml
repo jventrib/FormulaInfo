@@ -17,7 +17,6 @@
     <fragment
         android:id="@+id/fragment_race_detail"
         android:name="com.jventrib.formulainfo.race.ui.detail.RaceDetailFragment"
-        android:label="Race Detail"
         tools:layout="@layout/fragment_race_detail">
         <argument
             android:name="race"
