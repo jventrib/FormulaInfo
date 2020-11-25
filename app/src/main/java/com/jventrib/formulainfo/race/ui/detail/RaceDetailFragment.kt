@@ -73,17 +73,18 @@ class RaceDetailFragment : Fragment() {
         val toolbar = requireActivity().findViewById<Toolbar>(R.id.my_toolbar)
         val toolbarTitle: TextView = toolbar.children.first { it is TextView } as TextView
 
+        val raceDetailHeader = binding.raceDetailHeader
         viewModel.race.observe(viewLifecycleOwner) { (race, circuit) ->
             toolbarTitle.text = race.raceName
 
-            binding.raceDetailHeader.textFp1Date.textAndFormat(race.sessions.fp1)
-            binding.raceDetailHeader.textFp2Date.textAndFormat(race.sessions.fp2)
-            binding.raceDetailHeader.textFp3Date.textAndFormat(race.sessions.fp3)
-            binding.raceDetailHeader.textQualDate.textAndFormat(race.sessions.qualifying)
-            binding.raceDetailHeader.textRaceDate.textAndFormat(race.sessions.race)
+            handleDateDisplay(race.sessions.fp1, raceDetailHeader.textFp1Date, raceDetailHeader.textLabelFp1Date)
+            handleDateDisplay(race.sessions.fp2, raceDetailHeader.textFp2Date, raceDetailHeader.textLabelFp2Date)
+            handleDateDisplay(race.sessions.fp3, raceDetailHeader.textFp3Date, raceDetailHeader.textLabelFp3Date)
+            handleDateDisplay(race.sessions.qualifying, raceDetailHeader.textQualDate, raceDetailHeader.textLabelQualDate)
+            raceDetailHeader.textRaceDate.textAndFormat(race.sessions.race)
 
             circuit.location.flag?.let {
-                binding.raceDetailHeader.imageFlag.load(it)
+                raceDetailHeader.imageFlag.load(it)
             }
             circuit.imageUrl?.let {
                 binding.imageCircuitImage.load(it)
@@ -115,9 +116,9 @@ class RaceDetailFragment : Fragment() {
         }
 
 
-        ViewCompat.setTransitionName(binding.raceDetailHeader.layoutDetail, "race_card_detail")
-        ViewCompat.setTransitionName(binding.raceDetailHeader.imageFlag, "race_image_flag")
-        ViewCompat.setTransitionName(binding.raceDetailHeader.textRaceDate, "text_race_date")
+        ViewCompat.setTransitionName(raceDetailHeader.layoutDetail, "race_card_detail")
+        ViewCompat.setTransitionName(raceDetailHeader.imageFlag, "race_image_flag")
+        ViewCompat.setTransitionName(raceDetailHeader.textRaceDate, "text_race_date")
 
         //Reset the adapter before transition to avoid glitch with previous race result
         beforeTransition(view) {
@@ -127,10 +128,23 @@ class RaceDetailFragment : Fragment() {
         return view
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+
+    private fun handleDateDisplay(
+        date: Instant?,
+        field: TextView,
+        fieldLabel: TextView
+    ) {
+        if (date != null) {
+            field.textAndFormat(date)
+        } else {
+            field.visibility = View.GONE
+            fieldLabel.visibility = View.GONE
+        }
     }
 
     private fun TextView.textAndFormat(datetime: Instant?) {
