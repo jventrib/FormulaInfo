@@ -7,8 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
-import androidx.core.view.doOnPreDraw
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
@@ -17,6 +18,7 @@ import coil.load
 import com.dropbox.android.external.store4.ExperimentalStoreApi
 import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
+import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.beforeTransition
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
 import com.jventrib.formulainfo.databinding.FragmentRaceDetailBinding
@@ -57,7 +59,7 @@ class RaceDetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentRaceDetailBinding.inflate(inflater, container, false)
         val view = binding.root
 
@@ -68,18 +70,20 @@ class RaceDetailFragment : Fragment() {
         }
 
         viewModel.setRace(args.race)
+        val toolbar = requireActivity().findViewById<Toolbar>(R.id.my_toolbar)
+        val toolbarTitle: TextView = toolbar.children.first { it is TextView } as TextView
+
         viewModel.race.observe(viewLifecycleOwner) { (race, circuit) ->
+            toolbarTitle.text = race.raceName
 
-            binding.textRaceName.text = race.raceName
-
-            binding.textFp1Date.textAndFormat(race.sessions.fp1)
-            binding.textFp2Date.textAndFormat(race.sessions.fp2)
-            binding.textFp3Date.textAndFormat(race.sessions.fp3)
-            binding.textQualDate.textAndFormat(race.sessions.qualifying)
-            binding.textRaceDate.textAndFormat(race.sessions.race)
+            binding.raceDetailHeader.textFp1Date.textAndFormat(race.sessions.fp1)
+            binding.raceDetailHeader.textFp2Date.textAndFormat(race.sessions.fp2)
+            binding.raceDetailHeader.textFp3Date.textAndFormat(race.sessions.fp3)
+            binding.raceDetailHeader.textQualDate.textAndFormat(race.sessions.qualifying)
+            binding.raceDetailHeader.textRaceDate.textAndFormat(race.sessions.race)
 
             circuit.location.flag?.let {
-                binding.imageFlag.load(it)
+                binding.raceDetailHeader.imageFlag.load(it)
             }
             circuit.imageUrl?.let {
                 binding.imageCircuitImage.load(it)
@@ -110,9 +114,10 @@ class RaceDetailFragment : Fragment() {
             } ?: let { adapter.setRaceResult(listOf()) }
         }
 
-        ViewCompat.setTransitionName(binding.root, "race_card_detail")
-        ViewCompat.setTransitionName(binding.imageFlag, "race_image_flag")
-        ViewCompat.setTransitionName(binding.textRaceDate, "text_race_date")
+
+        ViewCompat.setTransitionName(binding.raceDetailHeader.layoutDetail, "race_card_detail")
+        ViewCompat.setTransitionName(binding.raceDetailHeader.imageFlag, "race_image_flag")
+        ViewCompat.setTransitionName(binding.raceDetailHeader.textRaceDate, "text_race_date")
 
         //Reset the adapter before transition to avoid glitch with previous race result
         beforeTransition(view) {
