@@ -18,4 +18,12 @@
     </style>
 
 
+    <style name="AppBarCollapsed">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="AppBarExpanded" parent="@style/TextAppearance.MaterialComponents.Headline5">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>

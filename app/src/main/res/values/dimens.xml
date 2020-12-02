@@ -3,4 +3,8 @@
     <dimen name="big_padding">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="app_bar_height">200dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="image_width">110dp</dimen>
+    <dimen name="image_small_width">32dp</dimen>
+    <dimen name="header_detail_frame_height">220dp</dimen>
 </resources>

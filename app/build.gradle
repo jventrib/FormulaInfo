@@ -2,12 +2,12 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id "org.jetbrains.kotlin.kapt"
+    id "androidx.navigation.safeargs"
 }
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.1"
-    apply plugin: "androidx.navigation.safeargs.kotlin"
+    buildToolsVersion "30.0.2"
 
     buildFeatures {
         viewBinding = true
@@ -79,7 +79,7 @@ dependencies {
     implementation("com.github.Commit451.coil-transformations:transformations-face-detection:1.0.0")
 
     //Store
-    implementation 'com.dropbox.mobile.store:store4:4.0.0-beta01'
+    implementation 'com.dropbox.mobile.store:store4:4.0.0'
 
     //Room components
     implementation "androidx.room:room-runtime:$roomVersion"
@@ -127,4 +127,6 @@ dependencies {
     androidTestImplementation "com.google.truth:truth:1.1"
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
     debugImplementation "androidx.fragment:fragment-testing:$fragment_version"
+
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 }

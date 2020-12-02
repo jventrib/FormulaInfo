@@ -25,7 +25,7 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
         season.value = s
     }
 
-    val seasonRaces: LiveData<StoreResponse<List<RaceFull>>> =
+    val races: LiveData<StoreResponse<List<RaceFull>>> =
         season.switchMap { repository.getAllRaces(it).asLiveData() }
 
     suspend fun refreshRaces() {
