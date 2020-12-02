@@ -17,18 +17,21 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 class RaceListAdapter internal constructor(
-    val context: Context,
     private val listener: (RaceFull, ItemRaceBinding) -> Unit
 ) : RecyclerView.Adapter<RaceListAdapter.ViewHolder>() {
 
-    private val inflater: LayoutInflater = LayoutInflater.from(context)
-    private var races = emptyList<RaceFull>()
+    internal var races = emptyList<RaceFull>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
-    inner class ViewHolder(val binding: ItemRaceBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    override fun getItemCount() = races.size
+
+    inner class ViewHolder(val binding: ItemRaceBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemRaceBinding.inflate(inflater, parent, false)
+        val binding = ItemRaceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
@@ -51,17 +54,16 @@ class RaceListAdapter internal constructor(
             holder.binding.imageFlag.setImageDrawable(null)
         }
         ViewCompat.setTransitionName(holder.binding.root, "race_card${current.race.round}")
-        ViewCompat.setTransitionName(holder.binding.imageFlag, "race_image_flag${current.race.round}")
-        ViewCompat.setTransitionName(holder.binding.textRaceDate, "text_race_date${current.race.round}")
+        ViewCompat.setTransitionName(
+            holder.binding.imageFlag,
+            "race_image_flag${current.race.round}"
+        )
+        ViewCompat.setTransitionName(
+            holder.binding.textRaceDate,
+            "text_race_date${current.race.round}"
+        )
 
         holder.itemView.setOnClickListener { listener(current, holder.binding) }
     }
 
-
-    internal fun setRaces(races: List<RaceFull>) {
-        this.races = races
-        notifyDataSetChanged()
-    }
-
-    override fun getItemCount() = races.size
 }

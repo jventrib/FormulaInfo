@@ -22,18 +22,21 @@ import com.jventrib.formulainfo.race.model.db.RaceResultFull
 import timber.log.Timber
 
 class RaceResultListAdapter internal constructor(
-    val context: Context,
     private val listener: (Race, ItemRaceResultBinding) -> Unit
 ) : RecyclerView.Adapter<RaceResultListAdapter.ViewHolder>() {
 
-    private val inflater: LayoutInflater = LayoutInflater.from(context)
+    private lateinit var context: Context
     private var raceResults = emptyList<RaceResultFull>()
+
+    override fun getItemCount() = raceResults.size
 
     inner class ViewHolder(val binding: ItemRaceResultBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemRaceResultBinding.inflate(inflater, parent, false)
+        context = parent.context
+        val binding =
+            ItemRaceResultBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding)
     }
 
@@ -67,7 +70,6 @@ class RaceResultListAdapter internal constructor(
 //            holder.binding.textConstructor.loadBackground(current.constructor.image)
 //        } else
 //            holder.binding.textConstructor.background = null
-
 
         val colorId = context.resources.getIdentifier(
             current.constructor.id,
@@ -122,18 +124,19 @@ class RaceResultListAdapter internal constructor(
         notifyDataSetChanged()
     }
 
-    override fun getItemCount() = raceResults.size
-}
 
-private fun Float.fmt(): String? {
-    if (this == toLong().toFloat())
-        return String.format("%d", toLong())
-    else
-        return String.format("%s", this)
-}
+    private fun Float.fmt(): String? {
+        if (this == toLong().toFloat())
+            return String.format("%d", toLong())
+        else
+            return String.format("%s", this)
+    }
 
-private fun View.loadBackground(image: String?) {
-    ImageRequest.Builder(this.context).data(image).target { this.background = it }.build().also {
-        this.context.imageLoader.enqueue(it)
+    private fun View.loadBackground(image: String?) {
+        ImageRequest.Builder(this.context).data(image).target { this.background = it }.build()
+            .also {
+                this.context.imageLoader.enqueue(it)
+            }
     }
 }
+

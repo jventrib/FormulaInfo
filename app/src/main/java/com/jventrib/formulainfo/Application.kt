@@ -6,6 +6,7 @@ import coil.ImageLoaderFactory
 import coil.decode.SvgDecoder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+//import leakcanary.LeakCanary
 import timber.log.Timber
 
 @ExperimentalCoroutinesApi
@@ -15,6 +16,7 @@ class Application: Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+//        LeakCanary.config = LeakCanary.config.copy(retainedVisibleThreshold = 1)
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
