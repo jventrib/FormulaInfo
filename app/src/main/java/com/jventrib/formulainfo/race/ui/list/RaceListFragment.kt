@@ -14,10 +14,10 @@ import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.transition.Fade
-import androidx.transition.TransitionSet
 import com.dropbox.android.external.store4.ExperimentalStoreApi
 import com.dropbox.android.external.store4.StoreResponse
+import com.google.android.material.transition.Hold
+import com.google.android.material.transition.MaterialElevationScale
 import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.NavGraphDirections
@@ -56,7 +56,7 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentRaceListBinding.inflate(inflater, container, false)
-        val adapter = RaceListAdapter(onRaceClick())
+        val adapter = RaceListListAdapter(onRaceClicked())
         binding.list.adapter = adapter
         observeRaces(adapter)
 
@@ -69,6 +69,16 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbarRaceList)
         binding.toolbarRaceList.setupWithNavController(navController)
+
+
+//        reenterTransition = tr
+        exitTransition = MaterialElevationScale(false).apply {
+            duration = 3000
+        }
+        reenterTransition = Hold().apply {
+            duration = 3000
+        }
+
 
         setupSwipeRefresh()
         beforeTransition(view) {}
@@ -85,14 +95,7 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    private fun onRaceClick() = { race: RaceFull, itemRaceBinding: ItemRaceBinding ->
-        val tr = TransitionSet().apply {
-//            addTransition(Hold().apply { duration = 3000 })
-            addTransition(Fade().apply { duration = 3000 })
-        }
-        exitTransition = tr
-        reenterTransition = tr
-
+    private fun onRaceClicked() = { race: RaceFull, itemRaceBinding: ItemRaceBinding ->
         val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
         val extras = FragmentNavigatorExtras(
             itemRaceBinding.root to "race_card_detail",
@@ -102,13 +105,13 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         findNavController().navigate(directions, extras)
     }
 
-    private fun observeRaces(raceListAdapter: RaceListAdapter) {
+    private fun observeRaces(raceListListAdapter: RaceListListAdapter) {
         viewModel.races.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is StoreResponse.Data -> {
                     Timber.d("Resource.Status.SUCCESS: ${response.value}")
                     //                    progress_bar.visibility = View.GONE
-                    raceListAdapter.races = response.value
+                    raceListListAdapter.races = response.value
                 }
                 is StoreResponse.Error.Exception -> {
                     Timber.e(response.error, "Error: ${response.errorMessageOrNull()}")

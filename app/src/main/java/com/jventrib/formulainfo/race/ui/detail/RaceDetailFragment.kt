@@ -1,15 +1,14 @@
 package com.jventrib.formulainfo.race.ui.detail
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -18,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.dropbox.android.external.store4.ExperimentalStoreApi
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.transition.MaterialContainerTransform
 import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.R
@@ -46,19 +46,28 @@ class RaceDetailFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        sharedElementEnterTransition = MaterialContainerTransform().apply {
-//            drawingViewId = R.id.nav_host_fragment
-//            scrimColor = Color.TRANSPARENT
-//            duration = 500
-//        }
-
-        sharedElementEnterTransition = androidx.transition.TransitionInflater.from(context)
-            .inflateTransition(android.R.transition.move)
-            .apply {
-                duration = 3000
-                interpolator = AccelerateDecelerateInterpolator()
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = R.id.nav_host_fragment
+            scrimColor = Color.TRANSPARENT
+            duration = 3000
+            val containerColor = TypedValue().let {
+                requireContext().theme.resolveAttribute(
+                    R.attr.colorSurface,
+                    it,
+                    true
+                )
+                it.data
             }
+//            setAllContainerColors(containerColor)
 
+        }
+
+//        sharedElementEnterTransition = androidx.transition.TransitionInflater.from(context)
+//            .inflateTransition(android.R.transition.move)
+//            .apply {
+//                duration = 3000
+//                interpolator = AccelerateDecelerateInterpolator()
+//            }
 
     }
 
@@ -70,8 +79,6 @@ class RaceDetailFragment : Fragment() {
         val view = binding.root
         val raceDetailHeader = binding.raceDetailHeader
         initToolBar()
-        initTransitions(raceDetailHeader)
-
         val viewModel = getViewModel()
 
         viewModel.setRace(args.race)
@@ -91,6 +98,11 @@ class RaceDetailFragment : Fragment() {
                 adapter.setRaceResult(it)
             } ?: let { adapter.setRaceResult(listOf()) }
         }
+
+//        val tr = Fade().apply { duration = 3000 }
+//        reenterTransition = tr
+//        exitTransition = tr
+
 
         //Reset the adapter before transition to avoid glitch with previous race result
         beforeTransition(view) {
@@ -117,12 +129,6 @@ class RaceDetailFragment : Fragment() {
             appContainer.getViewModelFactory { MainViewModel(it) }
         }
         return viewModel
-    }
-
-    private fun initTransitions(raceDetailHeader: LayoutRaceDetailHeaderBinding) {
-        ViewCompat.setTransitionName(raceDetailHeader.layoutDetail, "race_card_detail")
-        ViewCompat.setTransitionName(raceDetailHeader.imageFlag, "race_image_flag")
-        ViewCompat.setTransitionName(raceDetailHeader.textRaceDate, "text_race_date")
     }
 
     private fun displayHeader(
