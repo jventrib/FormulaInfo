@@ -1,6 +1,5 @@
 package com.jventrib.formulainfo.race.ui.list
 
-import android.content.Context
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,15 +9,14 @@ import coil.clear
 import coil.load
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
 import com.jventrib.formulainfo.databinding.ItemRaceBinding
-import com.jventrib.formulainfo.race.model.db.Race
 import com.jventrib.formulainfo.race.model.db.RaceFull
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-class RaceListAdapter internal constructor(
+class RaceListListAdapter internal constructor(
     private val listener: (RaceFull, ItemRaceBinding) -> Unit
-) : RecyclerView.Adapter<RaceListAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<RaceListListAdapter.ViewHolder>() {
 
     internal var races = emptyList<RaceFull>()
         set(value) {
@@ -53,7 +51,6 @@ class RaceListAdapter internal constructor(
             holder.binding.imageFlag.clear()
             holder.binding.imageFlag.setImageDrawable(null)
         }
-        ViewCompat.setTransitionName(holder.binding.root, "race_card${current.race.round}")
         ViewCompat.setTransitionName(
             holder.binding.imageFlag,
             "race_image_flag${current.race.round}"
@@ -62,6 +59,7 @@ class RaceListAdapter internal constructor(
             holder.binding.textRaceDate,
             "text_race_date${current.race.round}"
         )
+        ViewCompat.setTransitionName(holder.binding.root, "race_card${current.race.round}")
 
         holder.itemView.setOnClickListener { listener(current, holder.binding) }
     }

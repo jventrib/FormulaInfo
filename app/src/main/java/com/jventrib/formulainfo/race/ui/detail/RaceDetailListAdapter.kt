@@ -8,6 +8,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.clear
 import coil.imageLoader
@@ -111,7 +112,7 @@ class RaceResultListAdapter internal constructor(
             holder.binding.imageDriver.clear()
             holder.binding.imageDriver.setImageDrawable(null)
         }
-//        ViewCompat.setTransitionName(holder.binding.root, "race_card${current.round}")
+//        ViewCompat.setTransitionName(holder.binding.root, "race_card${current.raceResult.round}")
 //        ViewCompat.setTransitionName(holder.binding.imageFlag, "race_image_flag${current.round}")
 //        ViewCompat.setTransitionName(holder.binding.textRaceDate, "text_race_date${current.round}")
 
