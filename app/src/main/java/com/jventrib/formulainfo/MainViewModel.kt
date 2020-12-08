@@ -10,7 +10,9 @@ import com.jventrib.formulainfo.race.model.db.RaceFull
 import com.jventrib.formulainfo.race.model.db.RaceResultFull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -26,11 +28,13 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
     }
 
     val races: LiveData<StoreResponse<List<RaceFull>>> =
-        season.switchMap { repository.getAllRaces(it).asLiveData() }
+        season.switchMap {
+            repository.getAllRaces(it).asLiveData()
+        }
 
     suspend fun refreshRaces() {
         repository.refresh()
-        season.value?.let { setSeason(it)}
+        season.value?.let { setSeason(it) }
     }
 
     private val raceFromList: MutableLiveData<RaceFull> = MutableLiveData()

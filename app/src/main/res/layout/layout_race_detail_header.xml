@@ -10,7 +10,6 @@
     android:background="@color/light_grey"
     android:elevation="4dp"
     android:padding="4dp"
-    android:transitionName="race_card_detail"
     tools:showIn="@layout/fragment_race_detail">
 
     <ImageView
@@ -19,7 +18,6 @@
         android:layout_height="64dp"
         android:layout_marginStart="16dp"
         android:contentDescription="@string/location_flag"
-        android:transitionName="race_image_flag"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -143,7 +141,6 @@
         android:layout_marginStart="64dp"
         android:textAppearance="?attr/textAppearanceBody2"
         android:textColor="?android:attr/textColorSecondary"
-        android:transitionName="text_race_date"
         app:layout_constraintStart_toEndOf="@+id/text_label_race_date"
         app:layout_constraintTop_toTopOf="@+id/text_label_race_date"
         tools:text="Fri, 7 Aug 2020 12:00:00" />

@@ -22,7 +22,7 @@ import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.autoCleared
-import com.jventrib.formulainfo.common.ui.beforeTransition
+import com.jventrib.formulainfo.common.ui.postponeTransition
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
 import com.jventrib.formulainfo.databinding.FragmentRaceDetailBinding
 import com.jventrib.formulainfo.databinding.LayoutRaceDetailHeaderBinding
@@ -58,8 +58,7 @@ class RaceDetailFragment : Fragment() {
                 )
                 it.data
             }
-//            setAllContainerColors(containerColor)
-
+            setAllContainerColors(containerColor)
         }
 
 //        sharedElementEnterTransition = androidx.transition.TransitionInflater.from(context)
@@ -77,6 +76,7 @@ class RaceDetailFragment : Fragment() {
     ): View {
         binding = FragmentRaceDetailBinding.inflate(inflater, container, false)
         val view = binding.root
+
         val raceDetailHeader = binding.raceDetailHeader
         initToolBar()
         val viewModel = getViewModel()
@@ -105,8 +105,8 @@ class RaceDetailFragment : Fragment() {
 
 
         //Reset the adapter before transition to avoid glitch with previous race result
-        beforeTransition(view) {
-            adapter.setRaceResult(listOf())
+        postponeTransition(view) {
+//            adapter.setRaceResult(listOf())
         }
 
 
