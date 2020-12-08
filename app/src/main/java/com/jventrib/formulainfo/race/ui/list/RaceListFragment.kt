@@ -7,8 +7,10 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -17,14 +19,13 @@ import androidx.navigation.ui.setupWithNavController
 import com.dropbox.android.external.store4.ExperimentalStoreApi
 import com.dropbox.android.external.store4.StoreResponse
 import com.google.android.material.transition.Hold
-import com.google.android.material.transition.MaterialElevationScale
 import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.NavGraphDirections
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.about.AboutFragment
 import com.jventrib.formulainfo.common.ui.autoCleared
-import com.jventrib.formulainfo.common.ui.beforeTransition
+import com.jventrib.formulainfo.common.ui.postponeTransition
 import com.jventrib.formulainfo.databinding.FragmentRaceListBinding
 import com.jventrib.formulainfo.databinding.ItemRaceBinding
 import com.jventrib.formulainfo.race.model.db.RaceFull
@@ -32,6 +33,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 /**
  * A fragment representing a list of Items.
@@ -56,10 +58,10 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentRaceListBinding.inflate(inflater, container, false)
+        postponeEnterTransition()
         val adapter = RaceListListAdapter(onRaceClicked())
         binding.list.adapter = adapter
         observeRaces(adapter)
-
         return binding.root
     }
 
@@ -71,8 +73,7 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.toolbarRaceList.setupWithNavController(navController)
 
 
-//        reenterTransition = tr
-        exitTransition = MaterialElevationScale(false).apply {
+        exitTransition = Hold().apply {
             duration = 3000
         }
         reenterTransition = Hold().apply {
@@ -81,7 +82,8 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
         setupSwipeRefresh()
-        beforeTransition(view) {}
+//        postponeEnterTransition(2L, TimeUnit.SECONDS)
+//        postponeTransition(view) {}
     }
 
     private fun setupSwipeRefresh() {
@@ -99,8 +101,8 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
         val extras = FragmentNavigatorExtras(
             itemRaceBinding.root to "race_card_detail",
-            itemRaceBinding.imageFlag to "race_image_flag",
-            itemRaceBinding.textRaceDate to "text_race_date",
+//            itemRaceBinding.imageFlag to "race_image_flag",
+//            itemRaceBinding.textRaceDate to "text_race_date",
         )
         findNavController().navigate(directions, extras)
     }
@@ -112,6 +114,11 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     Timber.d("Resource.Status.SUCCESS: ${response.value}")
                     //                    progress_bar.visibility = View.GONE
                     raceListListAdapter.races = response.value
+
+                    //FIXME postponed transition
+                    (view?.parent as ViewGroup).doOnPreDraw {
+                        startPostponedEnterTransition()
+                    }
                 }
                 is StoreResponse.Error.Exception -> {
                     Timber.e(response.error, "Error: ${response.errorMessageOrNull()}")

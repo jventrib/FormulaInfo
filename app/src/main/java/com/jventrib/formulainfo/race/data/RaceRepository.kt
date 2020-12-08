@@ -133,6 +133,7 @@ class RaceRepository(
 
     fun getAllRaces(season: Int): Flow<StoreResponse<List<RaceFull>>> {
         return raceStore.stream(StoreRequest.cached(season, false))
+            .distinctUntilChangedBy { sr -> sr.dataOrNull() }
     }
 
     fun getRaceResults(

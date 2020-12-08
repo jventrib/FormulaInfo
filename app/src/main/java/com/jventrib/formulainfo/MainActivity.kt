@@ -48,12 +48,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.setSeason(2020)
-
-    }
-
 //    override fun onCreateOptionsMenu(menu: Menu): Boolean {
 //        val inflater: MenuInflater = menuInflater
 //        inflater.inflate(R.menu.menu, menu)
