@@ -24,6 +24,7 @@ import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.autoCleared
 import com.jventrib.formulainfo.common.ui.postponeTransition
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
+import com.jventrib.formulainfo.common.utils.getLong
 import com.jventrib.formulainfo.databinding.FragmentRaceDetailBinding
 import com.jventrib.formulainfo.databinding.LayoutRaceDetailHeaderBinding
 import com.jventrib.formulainfo.race.model.db.Circuit
@@ -49,7 +50,7 @@ class RaceDetailFragment : Fragment() {
         sharedElementEnterTransition = MaterialContainerTransform().apply {
             drawingViewId = R.id.nav_host_fragment
             scrimColor = Color.TRANSPARENT
-            duration = 3000
+            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
             val containerColor = TypedValue().let {
                 requireContext().theme.resolveAttribute(
                     R.attr.colorSurface,
