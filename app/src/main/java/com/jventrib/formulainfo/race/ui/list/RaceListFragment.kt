@@ -26,6 +26,7 @@ import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.about.AboutFragment
 import com.jventrib.formulainfo.common.ui.autoCleared
 import com.jventrib.formulainfo.common.ui.postponeTransition
+import com.jventrib.formulainfo.common.utils.getLong
 import com.jventrib.formulainfo.databinding.FragmentRaceListBinding
 import com.jventrib.formulainfo.databinding.ItemRaceBinding
 import com.jventrib.formulainfo.race.model.db.RaceFull
@@ -74,10 +75,10 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
         exitTransition = Hold().apply {
-            duration = 3000
+            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
         }
         reenterTransition = Hold().apply {
-            duration = 3000
+            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
         }
 
 
