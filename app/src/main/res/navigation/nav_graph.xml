@@ -12,7 +12,11 @@
         tools:layout="@layout/fragment_race_list">
         <action
             android:id="@+id/action_raceFragment_to_raceResultFragment"
-            app:destination="@id/fragment_race_detail" />
+            app:destination="@id/fragment_race_detail"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"/>
     </fragment>
     <fragment
         android:id="@+id/fragment_race_detail"

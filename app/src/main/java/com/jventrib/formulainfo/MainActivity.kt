@@ -29,20 +29,19 @@ import kotlinx.coroutines.FlowPreview
 class MainActivity : AppCompatActivity() {
 
 //    private lateinit var spinner: Spinner
-    private lateinit var binding: ActivityMainBinding
 
-    private lateinit var navController: NavController
+//    private lateinit var navController: NavController
 
 
-    private val viewModel: MainViewModel by viewModels {
-        (application as Application).appContainer.getViewModelFactory(::MainViewModel)
-    }
+//    private val viewModel: MainViewModel by viewModels {
+//        (application as Application).appContainer.getViewModelFactory(::MainViewModel)
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        navController = getNavController()
+//        navController = getNavController()
 //        supportActionBar?.setHomeButtonEnabled(true)
 
     }
@@ -64,6 +63,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    private fun getNavController() =
-        (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
+//    private fun getNavController() =
+//        (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
 }
