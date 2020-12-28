@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -25,7 +24,6 @@ import com.jventrib.formulainfo.NavGraphDirections
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.about.AboutFragment
 import com.jventrib.formulainfo.common.ui.autoCleared
-import com.jventrib.formulainfo.common.ui.postponeTransition
 import com.jventrib.formulainfo.common.utils.getLong
 import com.jventrib.formulainfo.databinding.FragmentRaceListBinding
 import com.jventrib.formulainfo.databinding.ItemRaceBinding
@@ -34,7 +32,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 /**
  * A fragment representing a list of Items.
@@ -74,12 +71,12 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.toolbarRaceList.setupWithNavController(navController)
 
 
-        exitTransition = Hold().apply {
-            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
-        }
-        reenterTransition = Hold().apply {
-            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
-        }
+//        exitTransition = Hold().apply {
+//            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
+//        }
+//        reenterTransition = Hold().apply {
+//            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
+//        }
 
 
         setupSwipeRefresh()
@@ -87,6 +84,11 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 //        postponeTransition(view) {}
     }
 
+
+    override fun onResume() {
+        super.onResume()
+        Timber.d("RESUMED !!!")
+    }
     private fun setupSwipeRefresh() {
         binding.swipeRaceList.setDistanceToTriggerSync(800)
         binding.swipeRaceList.setOnRefreshListener {
@@ -112,7 +114,7 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         viewModel.races.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is StoreResponse.Data -> {
-                    Timber.d("Resource.Status.SUCCESS: ${response.value}")
+//                    Timber.d("Resource.Status.SUCCESS: ${response.value}")
                     //                    progress_bar.visibility = View.GONE
                     raceListListAdapter.races = response.value
 
@@ -166,9 +168,9 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         viewModel.setSeason(seasonList[position])
-        @Suppress("ControlFlowWithEmptyBody")
-        while (navController.navigateUp()) {
-        }
+//        @Suppress("ControlFlowWithEmptyBody")
+//        while (navController.navigateUp()) {
+//        }
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {

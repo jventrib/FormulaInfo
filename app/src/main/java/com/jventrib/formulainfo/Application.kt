@@ -1,6 +1,7 @@
 package com.jventrib.formulainfo
 
 import android.app.Application
+import androidx.fragment.app.FragmentManager
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.SvgDecoder

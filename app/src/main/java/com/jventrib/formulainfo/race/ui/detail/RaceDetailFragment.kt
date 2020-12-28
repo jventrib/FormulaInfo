@@ -31,6 +31,7 @@ import com.jventrib.formulainfo.race.model.db.Circuit
 import com.jventrib.formulainfo.race.model.db.Race
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import timber.log.Timber
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -47,20 +48,20 @@ class RaceDetailFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedElementEnterTransition = MaterialContainerTransform().apply {
-            drawingViewId = R.id.nav_host_fragment
-            scrimColor = Color.TRANSPARENT
-            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
-            val containerColor = TypedValue().let {
-                requireContext().theme.resolveAttribute(
-                    R.attr.colorSurface,
-                    it,
-                    true
-                )
-                it.data
-            }
-            setAllContainerColors(containerColor)
-        }
+//        sharedElementEnterTransition = MaterialContainerTransform().apply {
+//            drawingViewId = R.id.nav_host_fragment
+//            scrimColor = Color.TRANSPARENT
+//            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
+//            val containerColor = TypedValue().let {
+//                requireContext().theme.resolveAttribute(
+//                    R.attr.colorSurface,
+//                    it,
+//                    true
+//                )
+//                it.data
+//            }
+//            setAllContainerColors(containerColor)
+//        }
 
 //        sharedElementEnterTransition = androidx.transition.TransitionInflater.from(context)
 //            .inflateTransition(android.R.transition.move)
