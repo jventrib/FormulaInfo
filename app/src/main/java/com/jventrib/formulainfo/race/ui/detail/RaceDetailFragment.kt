@@ -22,7 +22,6 @@ import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.autoCleared
-import com.jventrib.formulainfo.common.ui.postponeTransition
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
 import com.jventrib.formulainfo.common.utils.getLong
 import com.jventrib.formulainfo.databinding.FragmentRaceDetailBinding
@@ -31,7 +30,6 @@ import com.jventrib.formulainfo.race.model.db.Circuit
 import com.jventrib.formulainfo.race.model.db.Race
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import timber.log.Timber
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -82,8 +80,7 @@ class RaceDetailFragment : Fragment() {
         }
 
         val raceResultList: RecyclerView = binding.listResult
-        val adapter = RaceResultListAdapter { driver, binding ->
-        }
+        val adapter = RaceResultListAdapter()
         raceResultList.adapter = adapter
 
         viewModel.raceResults.observe(viewLifecycleOwner) { storeResponse ->
@@ -91,16 +88,6 @@ class RaceDetailFragment : Fragment() {
             storeResponse.dataOrNull()?.let {
                 adapter.setRaceResult(it)
             } ?: let { adapter.setRaceResult(listOf()) }
-        }
-
-//        val tr = Fade().apply { duration = 3000 }
-//        reenterTransition = tr
-//        exitTransition = tr
-
-
-        //Reset the adapter before transition to avoid glitch with previous race result
-        postponeTransition(view) {
-//            adapter.setRaceResult(listOf())
         }
 
 
@@ -158,16 +145,16 @@ class RaceDetailFragment : Fragment() {
         circuit.imageUrl?.let {
             binding.imageCircuitImage.load(it)
         }
-        //Ajust FrameLayout height
 
+        //Adjust FrameLayout height
         val framePixels: Int = resources.getDimensionPixelSize(R.dimen.header_detail_frame_height)
         val sessionHeight = if (hasSessionsInfo(race)) 100f else 60f
         val sessionPixels: Int =
             TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 sessionHeight,
-                resources.getDisplayMetrics()
-            ).toInt();
+                resources.displayMetrics
+            ).toInt()
         binding.framelayoutHeader.layoutParams = CollapsingToolbarLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             framePixels + sessionPixels
@@ -184,7 +171,7 @@ class RaceDetailFragment : Fragment() {
     private fun initToolBar() {
         (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbarRaceDetail)
         val supportActionBar = (requireActivity() as AppCompatActivity).supportActionBar
-        supportActionBar?.setDisplayHomeAsUpEnabled(true);
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbarRaceDetail.setNavigationOnClickListener {
             findNavController().navigateUp()
         }

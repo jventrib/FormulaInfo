@@ -6,25 +6,18 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.clear
-import coil.imageLoader
 import coil.load
-import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformation
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.databinding.ItemRaceResultBinding
-import com.jventrib.formulainfo.race.model.db.Race
 import com.jventrib.formulainfo.race.model.db.RaceResultFull
 import timber.log.Timber
 
-class RaceResultListAdapter internal constructor(
-    private val listener: (Race, ItemRaceResultBinding) -> Unit
-) : RecyclerView.Adapter<RaceResultListAdapter.ViewHolder>() {
+class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHolder>() {
 
     private lateinit var context: Context
     private var raceResults = emptyList<RaceResultFull>()
@@ -82,6 +75,7 @@ class RaceResultListAdapter internal constructor(
             val color = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 context.resources.getColor(colorId, null)
             } else {
+                @Suppress("DEPRECATION")
                 context.resources.getColor(colorId)
             }
             holder.binding.spaceConstructorColor.setBackgroundColor(color)
@@ -89,6 +83,7 @@ class RaceResultListAdapter internal constructor(
             val color = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 context.resources.getColor(R.color.light_grey, null)
             } else {
+                @Suppress("DEPRECATION")
                 context.resources.getColor(R.color.light_grey)
             }
             holder.binding.spaceConstructorColor.setBackgroundColor(color)
@@ -126,18 +121,12 @@ class RaceResultListAdapter internal constructor(
     }
 
 
-    private fun Float.fmt(): String? {
+    private fun Float.fmt(): String {
         if (this == toLong().toFloat())
             return String.format("%d", toLong())
         else
             return String.format("%s", this)
     }
 
-    private fun View.loadBackground(image: String?) {
-        ImageRequest.Builder(this.context).data(image).target { this.background = it }.build()
-            .also {
-                this.context.imageLoader.enqueue(it)
-            }
-    }
 }
 
