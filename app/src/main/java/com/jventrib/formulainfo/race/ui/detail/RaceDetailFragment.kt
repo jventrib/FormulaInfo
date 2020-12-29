@@ -51,11 +51,7 @@ class RaceDetailFragment : Fragment() {
             scrimColor = Color.TRANSPARENT
             duration = requireContext().getLong(R.integer.shared_element_transition_duration)
             val containerColor = TypedValue().let {
-                requireContext().theme.resolveAttribute(
-                    R.attr.colorSurface,
-                    it,
-                    true
-                )
+                requireContext().theme.resolveAttribute(R.attr.colorSurface, it, true)
                 it.data
             }
             setAllContainerColors(containerColor)
