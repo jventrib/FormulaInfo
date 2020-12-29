@@ -20,7 +20,6 @@ import com.dropbox.android.external.store4.StoreResponse
 import com.google.android.material.transition.Hold
 import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
-import com.jventrib.formulainfo.NavGraphDirections
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.about.AboutFragment
 import com.jventrib.formulainfo.common.ui.autoCleared
@@ -51,6 +50,11 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         (requireActivity().application as Application).appContainer.getViewModelFactory(::MainViewModel)
     }
 
+    private fun getHold() = Hold().apply {
+        duration = requireContext().getLong(R.integer.shared_element_transition_duration)
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -70,25 +74,10 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbarRaceList)
         binding.toolbarRaceList.setupWithNavController(navController)
 
-
-//        exitTransition = Hold().apply {
-//            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
-//        }
-//        reenterTransition = Hold().apply {
-//            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
-//        }
-
-
         setupSwipeRefresh()
-//        postponeEnterTransition(2L, TimeUnit.SECONDS)
-//        postponeTransition(view) {}
     }
 
 
-    override fun onResume() {
-        super.onResume()
-        Timber.d("RESUMED !!!")
-    }
     private fun setupSwipeRefresh() {
         binding.swipeRaceList.setDistanceToTriggerSync(800)
         binding.swipeRaceList.setOnRefreshListener {
@@ -101,11 +90,11 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun onRaceClicked() = { race: RaceFull, itemRaceBinding: ItemRaceBinding ->
+        exitTransition = getHold()
+        reenterTransition = getHold()
         val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
         val extras = FragmentNavigatorExtras(
             itemRaceBinding.root to "race_card_detail",
-//            itemRaceBinding.imageFlag to "race_image_flag",
-//            itemRaceBinding.textRaceDate to "text_race_date",
         )
         findNavController().navigate(directions, extras)
     }
@@ -157,8 +146,10 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         return if (item.itemId == R.id.menu_action_about) {
             val aboutDestination = getNavDestination<AboutFragment>()
             if (navController.currentDestination != aboutDestination) {
+                exitTransition = null
+                reenterTransition = null
                 navController.navigate(
-                    NavGraphDirections.actionGlobalAboutFragment()
+                    RaceListFragmentDirections.actionFragmentRaceListToAboutFragment()
                 )
             }
 

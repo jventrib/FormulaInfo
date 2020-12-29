@@ -12,11 +12,14 @@
         tools:layout="@layout/fragment_race_list">
         <action
             android:id="@+id/action_raceFragment_to_raceResultFragment"
-            app:destination="@id/fragment_race_detail"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"/>
+            app:destination="@id/fragment_race_detail" />
+        <action
+            android:id="@+id/action_fragment_race_list_to_aboutFragment"
+            app:destination="@id/aboutFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left"/>
     </fragment>
     <fragment
         android:id="@+id/fragment_race_detail"
@@ -30,11 +33,4 @@
         android:id="@+id/aboutFragment"
         android:name="com.jventrib.formulainfo.about.AboutFragment"
         android:label="About" />
-    <action
-        android:id="@+id/action_global_aboutFragment"
-        app:destination="@id/aboutFragment"
-        app:enterAnim="@android:anim/slide_in_left"
-        app:exitAnim="@android:anim/slide_out_right"
-        app:popEnterAnim="@anim/slide_in_right"
-        app:popExitAnim="@anim/slide_out_left" />
 </navigation>
