@@ -13,6 +13,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
+        app:navigationIcon="?attr/homeAsUpIndicator"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
