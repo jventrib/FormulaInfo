@@ -167,11 +167,17 @@ class RaceDetailFragment : Fragment() {
     private fun initToolBar() {
         (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbarRaceDetail)
         val supportActionBar = (requireActivity() as AppCompatActivity).supportActionBar
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar?.setDisplayShowHomeEnabled(true)
+//        supportActionBar?.setHomeButtonEnabled(true)
+
         binding.toolbarRaceDetail.setNavigationOnClickListener {
-            findNavController().navigateUp()
+            requireActivity().onBackPressed()
+//            findNavController().navigateUp()
         }
     }
+
+
 
     private fun handleDateDisplay(
         date: Instant?,
