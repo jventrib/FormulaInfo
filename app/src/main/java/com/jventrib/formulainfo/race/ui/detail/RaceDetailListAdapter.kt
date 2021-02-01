@@ -9,12 +9,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.clear
-import coil.load
-import coil.transform.CircleCropTransformation
-import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformation
+import com.bumptech.glide.Glide
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.databinding.ItemRaceResultBinding
 import com.jventrib.formulainfo.race.model.db.RaceResultFull
+import com.rohitarya.glide.facedetection.transformation.FaceCenterCrop
+import com.rohitarya.glide.facedetection.transformation.MyFaceCenterCrop
+import com.rohitarya.glide.facedetection.transformation.core.GlideFaceDetector
 import timber.log.Timber
 
 class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHolder>() {
@@ -92,16 +93,21 @@ class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHol
         }
 
         current.driver.image?.let {
-            holder.binding.imageDriver.load(it) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    transformations(
-                        listOf(
-                            CenterOnFaceTransformation(zoom = 80),
-                            CircleCropTransformation()
-                        )
-                    )
-                }
-            }
+            Glide.with(holder.binding.imageDriver.context)
+                .load(it)
+                .transform(MyFaceCenterCrop())
+                .circleCrop()
+                .into(holder.binding.imageDriver)
+//            holder.binding.imageDriver.load(it) {
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    transformations(
+//                        listOf(
+//                            CenterOnFaceTransformation(zoom = 80),
+//                            CircleCropTransformation()
+//                        )
+//                    )
+//                }
+//            }
 
         } ?: let {
             holder.binding.imageDriver.clear()

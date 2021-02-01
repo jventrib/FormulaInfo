@@ -7,22 +7,28 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionInflater
 import coil.load
+import com.bumptech.glide.Glide
 import com.dropbox.android.external.store4.ExperimentalStoreApi
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialElevationScale
 import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.autoCleared
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
+import com.jventrib.formulainfo.common.ui.loadImage
 import com.jventrib.formulainfo.common.utils.getLong
 import com.jventrib.formulainfo.databinding.FragmentRaceDetailBinding
 import com.jventrib.formulainfo.databinding.LayoutRaceDetailHeaderBinding
@@ -56,6 +62,14 @@ class RaceDetailFragment : Fragment() {
             }
             setAllContainerColors(containerColor)
         }
+
+//        sharedElementEnterTransition = TransitionInflater
+//            .from(context).inflateTransition(
+//                android.R.transition.move // you can change this
+//            ).apply {
+//                duration = requireContext().getLong(R.integer.shared_element_transition_duration)
+//            }
+
     }
 
     override fun onCreateView(
@@ -136,10 +150,10 @@ class RaceDetailFragment : Fragment() {
         raceDetailHeader.textRaceDate.textAndFormat(race.sessions.race)
 
         circuit.location.flag?.let {
-            raceDetailHeader.imageFlag.load(it)
+            raceDetailHeader.imageFlag.loadImage(it)
         }
         circuit.imageUrl?.let {
-            binding.imageCircuitImage.load(it)
+            binding.imageCircuitImage.loadImage(it)
         }
 
         //Adjust FrameLayout height
@@ -178,7 +192,6 @@ class RaceDetailFragment : Fragment() {
     }
 
 
-
     private fun handleDateDisplay(
         date: Instant?,
         field: TextView,
@@ -202,3 +215,4 @@ class RaceDetailFragment : Fragment() {
         }
     }
 }
+

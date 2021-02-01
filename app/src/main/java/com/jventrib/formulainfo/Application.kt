@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentManager
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.SvgDecoder
+import com.rohitarya.glide.facedetection.transformation.core.GlideFaceDetector
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 //import leakcanary.LeakCanary
@@ -22,6 +23,7 @@ class Application: Application(), ImageLoaderFactory {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+        GlideFaceDetector.initialize(this)
         appContainer = AppContainer(this)
     }
 
