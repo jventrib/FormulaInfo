@@ -18,11 +18,13 @@ import androidx.navigation.ui.setupWithNavController
 import com.dropbox.android.external.store4.ExperimentalStoreApi
 import com.dropbox.android.external.store4.StoreResponse
 import com.google.android.material.transition.Hold
+import com.google.android.material.transition.MaterialElevationScale
 import com.jventrib.formulainfo.Application
 import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.about.AboutFragment
 import com.jventrib.formulainfo.common.ui.autoCleared
+import com.jventrib.formulainfo.common.ui.postponeTransition
 import com.jventrib.formulainfo.common.utils.getLong
 import com.jventrib.formulainfo.databinding.FragmentRaceListBinding
 import com.jventrib.formulainfo.databinding.ItemRaceBinding
@@ -90,8 +92,15 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun onRaceClicked() = { race: RaceFull, itemRaceBinding: ItemRaceBinding ->
-        exitTransition = getHold()
-        reenterTransition = getHold()
+//        exitTransition = getHold()
+//        reenterTransition = getHold()
+
+        exitTransition = MaterialElevationScale(false).apply {
+            duration = 3000L
+        }
+        reenterTransition = MaterialElevationScale(true).apply {
+            duration = 3000L
+        }
         val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
         val extras = FragmentNavigatorExtras(
             itemRaceBinding.root to "race_card_detail",

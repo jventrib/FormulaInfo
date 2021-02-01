@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.clear
 import coil.load
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
+import com.jventrib.formulainfo.common.ui.loadImage
 import com.jventrib.formulainfo.databinding.ItemRaceBinding
 import com.jventrib.formulainfo.race.model.db.RaceFull
 import java.time.Instant
@@ -46,7 +47,7 @@ class RaceListListAdapter internal constructor(
             if (raceDT.isAfter(Instant.now())) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
 
         current.circuit.location.flag?.let {
-            holder.binding.imageFlag.load(it)
+            holder.binding.imageFlag.loadImage(it)
         } ?: let {
             holder.binding.imageFlag.clear()
             holder.binding.imageFlag.setImageDrawable(null)
