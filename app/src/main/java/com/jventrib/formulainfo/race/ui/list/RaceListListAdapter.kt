@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.clear
-import coil.load
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
 import com.jventrib.formulainfo.common.ui.loadImage
 import com.jventrib.formulainfo.databinding.ItemRaceBinding

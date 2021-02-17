@@ -1,8 +1,14 @@
 package com.jventrib.formulainfo.common.ui
 
 import android.widget.ImageView
-import com.bumptech.glide.Glide
+import coil.imageLoader
+import coil.request.ImageRequest
 
-fun ImageView.loadImage(it: String) {
-    Glide.with(this.context).load(it).into(this)
+fun ImageView.loadImage(it: String, builder: ImageRequest.Builder.() -> Unit = {}) {
+    val request = ImageRequest.Builder(this.context)
+        .data(it)
+        .target { setImageDrawable(it) }
+        .apply(builder)
+        .build()
+    context.imageLoader.enqueue(request)
 }

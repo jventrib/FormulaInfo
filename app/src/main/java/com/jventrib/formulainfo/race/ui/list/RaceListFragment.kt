@@ -44,7 +44,7 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private var binding by autoCleared<FragmentRaceListBinding>()
 
-    private val seasonList = (1950..2020).toList().reversed()
+    private val seasonList = (1950..2021).toList().reversed()
 
     private val navController by lazy { findNavController() }
 
