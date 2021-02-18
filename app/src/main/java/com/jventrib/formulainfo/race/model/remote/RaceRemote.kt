@@ -48,7 +48,7 @@ class RaceRemote(
         val fp2: Instant? = null,
         val fp3: Instant? = null,
         val qualifying: Instant? = null,
-        val race: Instant
+        val gp: Instant
     ): Serializable
 
     override fun equals(other: Any?): Boolean {
