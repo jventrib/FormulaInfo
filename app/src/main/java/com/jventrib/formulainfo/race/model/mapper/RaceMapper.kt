@@ -20,7 +20,7 @@ object RaceMapper : Mapper<RaceRemote, Race> {
             remote.sessions.fp2,
             remote.sessions.fp3,
             remote.sessions.qualifying,
-            remote.sessions.race
+            remote.sessions.gp
         )
     )
 }

@@ -33,7 +33,7 @@ open class RaceRemoteDataSource(
                 } else {
                     ZonedDateTime.parse("${it.date}T15:00:00Z").toInstant()
                 }
-                it.sessions = RaceRemote.Sessions(race = raceDateTime)
+                it.sessions = RaceRemote.Sessions(gp = raceDateTime)
             }
         }
     }

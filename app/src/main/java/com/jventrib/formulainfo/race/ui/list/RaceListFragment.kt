@@ -44,7 +44,6 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private var binding by autoCleared<FragmentRaceListBinding>()
 
-    private val seasonList = (1950..2021).toList().reversed()
 
     private val navController by lazy { findNavController() }
 
@@ -96,10 +95,10 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 //        reenterTransition = getHold()
 
         exitTransition = MaterialElevationScale(false).apply {
-            duration = 3000L
+            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
         }
         reenterTransition = MaterialElevationScale(true).apply {
-            duration = 3000L
+            duration = requireContext().getLong(R.integer.shared_element_transition_duration)
         }
         val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
         val extras = FragmentNavigatorExtras(
@@ -112,8 +111,6 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         viewModel.races.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is StoreResponse.Data -> {
-//                    Timber.d("Resource.Status.SUCCESS: ${response.value}")
-                    //                    progress_bar.visibility = View.GONE
                     raceListListAdapter.races = response.value
 
                     //FIXME postponed transition
@@ -132,7 +129,6 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 }
                 is StoreResponse.Loading ->
                     Timber.d("Resource.Status.LOADING")
-                //                    progress_bar.visibility = View.VISIBLE
                 is StoreResponse.NoNewData -> TODO()
                 is StoreResponse.Error.Message -> TODO()
             }
@@ -146,9 +142,10 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val item: MenuItem = menu.findItem(R.id.spinner)
         val spinner = item.actionView as Spinner
         spinner.adapter = ArrayAdapter(
-            requireContext(), R.layout.spinner_season, seasonList
+            requireContext(), R.layout.spinner_season, viewModel.seasonList
         ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
         spinner.onItemSelectedListener = this
+        viewModel.seasonPosition.value?.let { spinner.setSelection(it) }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -167,7 +164,8 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        viewModel.setSeason(seasonList[position])
+        viewModel.setSeasonPosition(position)
+//        viewModel.setSeason(seasonList[position])
 //        @Suppress("ControlFlowWithEmptyBody")
 //        while (navController.navigateUp()) {
 //        }

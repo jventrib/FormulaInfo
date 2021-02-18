@@ -21,10 +21,12 @@ import timber.log.Timber
 @ExperimentalCoroutinesApi
 class MainViewModel(private val repository: RaceRepository) : ViewModel() {
 
-    val season: MutableLiveData<Int> = MutableLiveData()
+    val seasonList = (1950..2021).toList().reversed()
 
-    fun setSeason(s: Int) {
-        season.value = s
+    val seasonPosition: MutableLiveData<Int> = MutableLiveData()
+
+    val season: LiveData<Int> = seasonPosition.map {
+        seasonList[it]
     }
 
     val races: LiveData<StoreResponse<List<RaceFull>>> =
@@ -34,7 +36,7 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
 
     suspend fun refreshRaces() {
         repository.refresh()
-        season.value?.let { setSeason(it) }
+        seasonPosition.value?.let { setSeasonPosition(it) }
     }
 
     private val raceFromList: MutableLiveData<RaceFull> = MutableLiveData()
@@ -43,6 +45,10 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
 
     fun setRace(r: RaceFull) {
         raceFromList.value = r
+    }
+
+    fun setSeasonPosition(position: Int) {
+        seasonPosition.value = position
     }
 
     val raceResults: LiveData<StoreResponse<List<RaceResultFull>>> =
