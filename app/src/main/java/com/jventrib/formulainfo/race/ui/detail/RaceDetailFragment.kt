@@ -6,12 +6,14 @@ import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import coil.transform.CircleCropTransformation
@@ -58,14 +60,6 @@ class RaceDetailFragment : Fragment() {
             }
             setAllContainerColors(containerColor)
         }
-
-//        sharedElementEnterTransition = TransitionInflater
-//            .from(context).inflateTransition(
-//                android.R.transition.move // you can change this
-//            ).apply {
-//                duration = requireContext().getLong(R.integer.shared_element_transition_duration)
-//            }
-
     }
 
     override fun onCreateView(
@@ -175,16 +169,16 @@ class RaceDetailFragment : Fragment() {
                 && race.sessions.fp3 != null
 
     private fun initToolBar() {
-        (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbarRaceDetail)
-        val supportActionBar = (requireActivity() as AppCompatActivity).supportActionBar
-//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//        supportActionBar?.setDisplayShowHomeEnabled(true)
-//        supportActionBar?.setHomeButtonEnabled(true)
+        setHasOptionsMenu(true)
+        (activity as AppCompatActivity).setSupportActionBar(binding.toolbarRaceDetail)
+        val supportActionBar = (activity as AppCompatActivity).supportActionBar
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
 
-        binding.toolbarRaceDetail.setNavigationOnClickListener {
-            requireActivity().onBackPressed()
-//            findNavController().navigateUp()
-        }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        requireActivity().onBackPressed()
+        return true
     }
 
 
