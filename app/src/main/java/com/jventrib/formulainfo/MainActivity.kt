@@ -27,42 +27,9 @@ import kotlinx.coroutines.FlowPreview
 @ExperimentalCoroutinesApi
 @FlowPreview
 class MainActivity : AppCompatActivity() {
-
-//    private lateinit var spinner: Spinner
-
-//    private lateinit var navController: NavController
-
-
-//    private val viewModel: MainViewModel by viewModels {
-//        (application as Application).appContainer.getViewModelFactory(::MainViewModel)
-//    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//        navController = getNavController()
-//        supportActionBar?.setHomeButtonEnabled(true)
-
     }
-
-
-//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        val inflater: MenuInflater = menuInflater
-//        inflater.inflate(R.menu.menu, menu)
-//
-//        val item: MenuItem = menu.findItem(R.id.spinner)
-//        spinner = item.actionView as Spinner
-//        spinner.adapter = ArrayAdapter(
-//            applicationContext, R.layout.spinner_season, seasonList
-//        ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
-//        spinner.onItemSelectedListener = this
-//        return true
-//    }
-
-
-
-
-//    private fun getNavController() =
-//        (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
 }
