@@ -177,7 +177,7 @@ class RaceDetailFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        requireActivity().onBackPressed()
+        findNavController().navigateUp()
         return true
     }
 
