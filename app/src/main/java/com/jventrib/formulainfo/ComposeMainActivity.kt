@@ -3,22 +3,7 @@ package com.jventrib.formulainfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.dropbox.android.external.store4.ResponseOrigin
-import com.dropbox.android.external.store4.StoreResponse
-import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.ui.list.RaceScreen
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 
 class ComposeMainActivity : ComponentActivity() {
@@ -37,97 +22,6 @@ class ComposeMainActivity : ComponentActivity() {
 
 }
 
-@Composable
-private fun RaceScreen(viewModel: IMainViewModel) {
-    val raceList by viewModel.races.observeAsState(
-        StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
-    )
-    val seasonList = viewModel.seasonList
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Formula Info") },
-                actions = {
-                    SeasonMenu(
-                        seasonList,
-                        viewModel.season.observeAsState().value
-                    ) { viewModel.setSeasonPosition(it) }
-                }
-            )
-        }) {
-        RaceList(raceList)
-    }
-}
-
-@Composable
-fun RaceList(raceList: StoreResponse<List<RaceFull>>) {
-    Column {
-        raceList.dataOrNull()?.forEach {
-            Text(text = it.race.raceName)
-        }
-    }
-}
-
-
-@Composable
-fun SeasonMenu(
-    seasonList: List<Int>,
-    selectedSeason: Int?,
-    initiallyExpanded: Boolean = false,
-    onSeasonSelect: (Int) -> Unit
-) {
-    var expanded by remember { mutableStateOf(initiallyExpanded) }
-    Box(
-        Modifier
-            .clickable { expanded = !expanded }
-            .padding(8.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-
-        ) {
-            Text(selectedSeason.toString())
-            Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null)
-        }
-    }
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false }
-    ) {
-        seasonList.forEachIndexed { index, season ->
-            DropdownMenuItem(onClick = {
-                expanded = false
-                onSeasonSelect(index)
-            }, modifier = Modifier.sizeIn(maxWidth = 70.dp)) {
-                Text(season.toString())
-            }
-        }
-    }
-}
-
-
-//TODO look for a better way to provide a "mock" MainViewModel
-@Preview
-@Composable
-fun RaceScreenPreview() {
-    FormulaInfoTheme {
-        RaceScreen(viewModel = MockMainViewModel())
-    }
-}
-
-@Preview
-@Composable
-fun SeasonMenuPreview() {
-    SeasonMenu(listOf(2021, 2020, 2019), 2021, true) {}
-//    DropdownMenuItem(
-//        onClick = { /*TODO*/ }, modifier = Modifier.sizeIn(
-//            maxWidth = 80.dp
-//        )
-//    ) {
-//        Text(text = "Test")
-//    }
-}
 
 //@Preview
 //@Composable
