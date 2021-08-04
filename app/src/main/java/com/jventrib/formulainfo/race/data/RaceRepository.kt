@@ -13,9 +13,6 @@ import com.jventrib.formulainfo.race.model.remote.RaceResultRemote
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
-@ExperimentalStoreApi
-@ExperimentalCoroutinesApi
-@FlowPreview
 class RaceRepository(
     private val raceDao: RaceDao,
     private val circuitDao: CircuitDao,

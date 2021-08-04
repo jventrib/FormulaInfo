@@ -2,7 +2,6 @@ package com.jventrib.formulainfo.race.ui.detail
 
 import android.graphics.Color
 import android.graphics.Typeface
-import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -16,9 +15,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
-import coil.transform.CircleCropTransformation
-import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformation
-import com.dropbox.android.external.store4.ExperimentalStoreApi
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.transition.MaterialContainerTransform
 import com.jventrib.formulainfo.Application
@@ -32,16 +28,10 @@ import com.jventrib.formulainfo.databinding.FragmentRaceDetailBinding
 import com.jventrib.formulainfo.databinding.LayoutRaceDetailHeaderBinding
 import com.jventrib.formulainfo.race.model.db.Circuit
 import com.jventrib.formulainfo.race.model.db.Race
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-
-@ExperimentalCoroutinesApi
-@FlowPreview
-@ExperimentalStoreApi
 class RaceDetailFragment : Fragment() {
 
     private val args: RaceDetailFragmentArgs by navArgs()
