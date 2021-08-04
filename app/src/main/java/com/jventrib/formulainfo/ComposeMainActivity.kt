@@ -3,6 +3,7 @@ package com.jventrib.formulainfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dropbox.android.external.store4.ResponseOrigin
@@ -75,11 +77,19 @@ fun SeasonMenu(
     onSeasonSelect: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(initiallyExpanded) }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable { expanded = !expanded }) {
-        Text(selectedSeason.toString())
-        Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null)
+    Box(
+        Modifier
+            .clickable { expanded = !expanded }
+            .padding(8.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+
+        ) {
+            Text(selectedSeason.toString())
+            Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null)
+        }
     }
     DropdownMenu(
         expanded = expanded,
