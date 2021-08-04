@@ -34,6 +34,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
         useIR = true
+        // Disabling coroutine's ExperimentalCoroutinesApi warning
+        freeCompilerArgs += [
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=com.dropbox.android.external.store4.ExperimentalStoreApi",
+                "-Xuse-experimental=kotlinx.coroutines.FlowPreview"
+        ]
     }
     buildFeatures {
         viewBinding = true
