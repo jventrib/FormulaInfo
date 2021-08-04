@@ -14,6 +14,7 @@ import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.IMainViewModel
 import com.jventrib.formulainfo.MockMainViewModel
 import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.ui.list.item.RaceItem
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 
 @Composable
@@ -43,7 +44,7 @@ fun RaceList(raceList: StoreResponse<List<RaceFull>>) {
     LazyColumn {
         raceList.dataOrNull()?.let { raceList ->
             items(raceList) {
-                Text(text = it.race.raceName)
+                RaceItem(it)
             }
         }
     }
@@ -57,3 +58,4 @@ fun RaceScreenPreview() {
         RaceScreen(viewModel = MockMainViewModel())
     }
 }
+
