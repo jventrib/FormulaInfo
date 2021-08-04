@@ -101,8 +101,9 @@ fun SeasonMenu(
 @Preview
 @Composable
 fun RaceScreenPreview() {
-    val vm = MockMainViewModel()
-    RaceScreen(viewModel = vm)
+    FormulaInfoTheme {
+        RaceScreen(viewModel = MockMainViewModel())
+    }
 }
 
 @Preview
