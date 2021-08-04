@@ -15,7 +15,6 @@ import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
-import com.dropbox.android.external.store4.ExperimentalStoreApi
 import com.dropbox.android.external.store4.StoreResponse
 import com.google.android.material.transition.Hold
 import com.google.android.material.transition.MaterialElevationScale
@@ -24,22 +23,16 @@ import com.jventrib.formulainfo.MainViewModel
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.about.AboutFragment
 import com.jventrib.formulainfo.common.ui.autoCleared
-import com.jventrib.formulainfo.common.ui.postponeTransition
 import com.jventrib.formulainfo.common.utils.getLong
 import com.jventrib.formulainfo.databinding.FragmentRaceListBinding
 import com.jventrib.formulainfo.databinding.ItemRaceBinding
 import com.jventrib.formulainfo.race.model.db.RaceFull
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
  * A fragment representing a list of Items.
  */
-@ExperimentalStoreApi
-@ExperimentalCoroutinesApi
-@FlowPreview
 class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private var binding by autoCleared<FragmentRaceListBinding>()
