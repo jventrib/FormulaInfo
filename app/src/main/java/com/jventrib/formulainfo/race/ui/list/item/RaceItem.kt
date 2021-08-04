@@ -22,9 +22,9 @@ import java.time.ZonedDateTime
 fun RaceItem(raceFull: RaceFull) {
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(6.dp)
             .fillMaxWidth(),
-        elevation = 10.dp,
+        elevation = 4.dp,
         backgroundColor = LightLightGrey
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
