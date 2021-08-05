@@ -10,7 +10,7 @@ fun Image(url: String?, modifier: Modifier = Modifier, placeholder: Int = R.draw
     androidx.compose.foundation.Image(
         painter = rememberImagePainter(
             url,
-            builder = { this.placeholder(placeholder) }),
+            builder = { placeholder(placeholder) }),
         null,
         modifier
     )

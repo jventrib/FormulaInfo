@@ -3,10 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="../../../../layout/compose-model-1628189168199.xml" value="0.1537037037037037" />
-        <entry key="../../../../layout/compose-model-1628189208123.xml" value="0.335" />
         <entry key="..\:/dev/projects/FormulaInfo/app/src/main/res/layout/activity_main.xml" value="0.12960526315789472" />
-        <entry key="..\:/dev/projects/FormulaInfo/app/src/main/res/layout/fragment_about.xml" value="0.12960526315789472" />
+        <entry key="..\:/dev/projects/FormulaInfo/app/src/main/res/layout/fragment_about.xml" value="0.16" />
         <entry key="..\:/dev/projects/FormulaInfo/app/src/main/res/layout/fragment_race_list.xml" value="0.1" />
         <entry key="..\:/dev/projects/FormulaInfo/app/src/main/res/layout/item_race.xml" value="0.13651315789473684" />
         <entry key="..\:/dev/projects/FormulaInfo/app/src/main/res/layout/layout_race_detail_header.xml" value="0.12960526315789472" />
@@ -14,7 +12,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
