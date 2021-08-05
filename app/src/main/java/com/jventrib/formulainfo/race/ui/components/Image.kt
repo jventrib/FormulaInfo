@@ -6,7 +6,7 @@ import coil.compose.rememberImagePainter
 import com.jventrib.formulainfo.R
 
 @Composable
-fun Image(url: String, modifier: Modifier = Modifier, placeholder: Int = R.drawable.loading) {
+fun Image(url: String?, modifier: Modifier = Modifier, placeholder: Int = R.drawable.loading) {
     androidx.compose.foundation.Image(
         painter = rememberImagePainter(
             url,
