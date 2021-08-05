@@ -7,7 +7,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.ui.theme.LightLightGrey
 
 @Composable
@@ -18,7 +20,7 @@ fun ItemCard(
 ) {
     Card(
         modifier = Modifier
-            .padding(6.dp)
+            .padding(8.dp)
             .fillMaxWidth(),
         elevation = 4.dp,
         backgroundColor = LightLightGrey
@@ -26,10 +28,10 @@ fun ItemCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 imageUrl, Modifier
-                    .padding(start = 8.dp)
+                    .padding(horizontal = 8.dp)
                     .size(64.dp), placeholder
             )
-            Column(Modifier.padding(8.dp), content = content)
+            Column(content = content)
         }
     }
 }
@@ -47,4 +49,16 @@ fun ItemCard(
             text = bottomText, style = MaterialTheme.typography.body2
         )
     }
+}
+
+@Preview
+@Composable
+fun ItemCardPreview() {
+    ItemCard(
+        imageUrl = "",
+        placeholder = R.drawable.japan,
+        topText = "Top text Top text Top text",
+        bottomText = "Bottom text"
+    )
+
 }
