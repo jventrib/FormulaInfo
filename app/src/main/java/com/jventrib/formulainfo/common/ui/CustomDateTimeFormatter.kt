@@ -1,5 +1,8 @@
 package com.jventrib.formulainfo.common.ui
 
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.SignStyle
@@ -9,8 +12,6 @@ import java.util.*
 
 val customDateTimeFormatter: DateTimeFormatter?
     get() {
-
-
         // manually code maps to ensure correct data always used
         // (locale data can be changed by application code)
         val dow: MutableMap<Long, String> = HashMap()
@@ -60,3 +61,5 @@ val customDateTimeFormatter: DateTimeFormatter?
     }
 
 
+fun Instant.format(): String =
+    ZonedDateTime.ofInstant(this, ZoneId.systemDefault()).format(customDateTimeFormatter)
