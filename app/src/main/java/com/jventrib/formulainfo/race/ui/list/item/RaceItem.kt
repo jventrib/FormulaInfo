@@ -1,6 +1,5 @@
 package com.jventrib.formulainfo.race.ui.list.item
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -10,16 +9,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
+import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
 import com.jventrib.formulainfo.getRaceFullSample
 import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.ui.components.Image
 import com.jventrib.formulainfo.ui.theme.LightLightGrey
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
 @Composable
-fun RaceItem(raceFull: RaceFull) {
+fun RaceItem(raceFull: RaceFull, placeholder: Int = R.drawable.loading) {
     Card(
         modifier = Modifier
             .padding(6.dp)
@@ -29,11 +29,9 @@ fun RaceItem(raceFull: RaceFull) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
-                painter = rememberImagePainter(raceFull.circuit.location.flag),
-                null,
-                Modifier
+                raceFull.circuit.location.flag!!, Modifier
                     .padding(start = 8.dp)
-                    .size(64.dp)
+                    .size(64.dp), placeholder
             )
             Column(Modifier.padding(8.dp)) {
                 Text(text = raceFull.race.raceName, style = MaterialTheme.typography.h6)
@@ -52,5 +50,8 @@ fun RaceItem(raceFull: RaceFull) {
 @Preview(showBackground = true)
 @Composable
 fun RaceItemPreview() {
-    RaceItem(raceFull = getRaceFullSample(1, "Emilia Romagna Grand Prix"))
+    RaceItem(
+        raceFull = getRaceFullSample(1, "Emilia Romagna Grand Prix"),
+        placeholder = R.drawable.japan
+    )
 }
