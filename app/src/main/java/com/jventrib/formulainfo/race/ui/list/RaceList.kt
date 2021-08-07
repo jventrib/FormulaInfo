@@ -1,14 +1,19 @@
 package com.jventrib.formulainfo.race.ui.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.IMainViewModel
@@ -18,7 +23,7 @@ import com.jventrib.formulainfo.race.ui.list.item.RaceItem
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 
 @Composable
-fun RaceScreen(viewModel: IMainViewModel) {
+fun RaceScreen(viewModel: IMainViewModel, navController: NavHostController) {
     val raceList by viewModel.races.observeAsState(
         StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
     )
@@ -26,7 +31,11 @@ fun RaceScreen(viewModel: IMainViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Formula Info") },
+                title = {
+                    Text(
+                        "Formula Info",
+                        modifier = Modifier.clickable { navController.navigate("about") })
+                },
                 actions = {
                     SeasonMenu(
                         seasonList,
@@ -51,11 +60,11 @@ fun RaceList(raceList: StoreResponse<List<RaceFull>>) {
 }
 
 //TODO look for a better way to provide a "mock" MainViewModel
-@Preview
-@Composable
-fun RaceScreenPreview() {
-    FormulaInfoTheme {
-        RaceScreen(viewModel = MockMainViewModel())
-    }
-}
+//@Preview
+//@Composable
+//fun RaceScreenPreview() {
+//    FormulaInfoTheme {
+//        RaceScreen(viewModel = MockMainViewModel(), navController = NavController())
+//    }
+//}
 
