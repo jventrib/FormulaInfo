@@ -3,8 +3,6 @@ package com.jventrib.formulainfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.jventrib.formulainfo.race.ui.list.RaceScreen
-import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 
 class ComposeMainActivity : ComponentActivity() {
 
@@ -14,9 +12,7 @@ class ComposeMainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         viewModel.setSeasonPosition(0)
         setContent {
-            FormulaInfoTheme {
-                RaceScreen(viewModel)
-            }
+            FormulaInfoApp(viewModel)
         }
     }
 
