@@ -7,17 +7,15 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.jventrib.formulainfo.R
-import com.jventrib.formulainfo.race.ui.list.SeasonMenu
+import com.jventrib.formulainfo.common.ui.components.LinkText
 
 @Composable
 fun About() {
@@ -54,20 +52,11 @@ fun About() {
                 }
             }
             B2(R.string.about_developed)
-            Text(
-                text = with(AnnotatedString.Builder()) {
-                    append("link: Jetpack Compose")
-                    // attach a string annotation that stores a URL to the text "Jetpack Compose".
-                    addStringAnnotation(
-                        tag = "URL",
-                        annotation = "https://developer.android.com/jetpack/compose",
-                        start = 6,
-                        end = 21
-                    )
-                    toAnnotatedString()
-                },
-                style = MaterialTheme.typography.body2
-            )
+            // UriHandler parse and opens URI inside AnnotatedString Item in Browse
+            LinkText("Icon made by Freepik from www.flaticon.com",) {
+                Link("Freepik", "https://www.flaticon.com/authors/freepik")
+                Link("www.flaticon.com", "https://www.flaticon.com")
+            }
             B2(R.string.about_purpose)
             H6(R.string.about_disclaimer_title)
             B2(R.string.about_disclaimer)
@@ -88,6 +77,7 @@ fun About() {
         }
     }
 }
+
 
 @Composable
 private fun H6(resId: Int, modifier: Modifier = Modifier) {
@@ -134,3 +124,7 @@ private fun RowScope.B2(resId: Int, modifier: Modifier = Modifier) {
             .weight(.7f)
     )
 }
+
+
+
+
