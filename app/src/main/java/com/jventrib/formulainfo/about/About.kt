@@ -38,7 +38,7 @@ fun About() {
                         builder = { this.placeholder(R.mipmap.ic_launcher_round) }),
                     null
                 )
-                Column() {
+                Column {
                     Text(
                         text = stringResource(R.string.about_title),
                         style = MaterialTheme.typography.h4
@@ -53,7 +53,7 @@ fun About() {
             }
             B2(R.string.about_developed)
             // UriHandler parse and opens URI inside AnnotatedString Item in Browse
-            LinkText("Icon made by Freepik from www.flaticon.com",) {
+            LinkText("Icon made by Freepik from www.flaticon.com") {
                 Link("Freepik", "https://www.flaticon.com/authors/freepik")
                 Link("www.flaticon.com", "https://www.flaticon.com")
             }
