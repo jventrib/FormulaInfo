@@ -14,12 +14,12 @@ import androidx.compose.ui.text.style.TextDecoration
 fun LinkText(
     text: String,
     modifier: Modifier = Modifier,
-    links: @Composable LinksScope.() -> Unit
+    content: @Composable LinksScope.() -> Unit
 ) {
     val uriHandler = LocalUriHandler.current
     val annotatedLinkString: AnnotatedString = buildAnnotatedString {
         append(text)
-        LinksScope(this, text).links()
+        LinksScope(this, text).content()
     }
 
     ClickableText(
@@ -35,23 +35,23 @@ fun LinkText(
     )
 }
 
-class LinksScope(private val builder: AnnotatedString.Builder, val text: String) {
-    @Composable
-    fun Link(linkText: String, linkUrl: String) {
-        val startIndex = text.indexOf(string = linkText)
-        val endIndex = startIndex + linkText.length
-        builder.addStyle(
-            style = SpanStyle(
-                color = Color(0xff64B5F6),
+class LinksScope(internal val builder: AnnotatedString.Builder, val text: String)
+
+@Composable
+fun LinksScope.Link(linkText: String, linkUrl: String) {
+    val startIndex = text.indexOf(string = linkText)
+    val endIndex = startIndex + linkText.length
+    builder.addStyle(
+        style = SpanStyle(
+            color = Color(0xff64B5F6),
 //                fontSize = 18.sp,
-                textDecoration = TextDecoration.Underline
-            ), start = startIndex, end = endIndex
-        )
-        builder.addStringAnnotation(
-            tag = "URL",
-            annotation = linkUrl,
-            start = startIndex,
-            end = endIndex
-        )
-    }
+            textDecoration = TextDecoration.Underline
+        ), start = startIndex, end = endIndex
+    )
+    builder.addStringAnnotation(
+        tag = "URL",
+        annotation = linkUrl,
+        start = startIndex,
+        end = endIndex
+    )
 }
