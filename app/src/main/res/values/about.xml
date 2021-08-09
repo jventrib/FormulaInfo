@@ -3,7 +3,7 @@
 
     <string name="about_title">Formula Info</string>
     <string name="about_version">Version 1.0.0</string>
-    <string name="about_developed">Developed by Jérôme Ventribout</string>
+    <string name="about_developed">Created by Jérôme Ventribout</string>
     <string name="about_purpose">This app is a personal project to improve my personal skills in Android application development. By now, there is no dedicated backend, and no static content inside the app. All the content is coming from various public APIs</string>
     <string name="about_disclaimer_title">Disclaimer</string>
     <string name="about_disclaimer">This app is unofficial and is not associated in any way with the Formula One group or companies. F1, FORMULA ONE, FORMULA 1, FIA FORMULA ONE CHAMPIONSHIP, GRAND PRIX and related marks are trade marks of Formula One Licensing B.V.</string>
