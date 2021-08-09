@@ -23,7 +23,7 @@ fun About() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Formula Info") },
+                title = { Text(stringResource(R.string.about_title)) },
             )
         }) {
         Column(
@@ -89,12 +89,6 @@ private fun H6(resId: Int, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview
-@Composable
-fun AboutPreview() {
-    About()
-}
-
 @Composable
 private fun B2(resId: Int, modifier: Modifier = Modifier) {
     Text(
@@ -124,6 +118,12 @@ private fun RowScope.B2(resId: Int, modifier: Modifier = Modifier) {
             .padding(top = 16.dp)
             .weight(.7f)
     )
+}
+
+@Preview
+@Composable
+fun AboutPreview() {
+    About()
 }
 
 
