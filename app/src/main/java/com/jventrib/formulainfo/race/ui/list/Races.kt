@@ -4,26 +4,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.IMainViewModel
-import com.jventrib.formulainfo.MockMainViewModel
 import com.jventrib.formulainfo.race.model.db.RaceFull
 import com.jventrib.formulainfo.race.ui.list.item.RaceItem
-import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 
 @Composable
-fun RaceScreen(viewModel: IMainViewModel, navController: NavHostController) {
+fun Races(viewModel: IMainViewModel, navController: NavHostController) {
     val raceList by viewModel.races.observeAsState(
         StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
     )
@@ -44,16 +37,16 @@ fun RaceScreen(viewModel: IMainViewModel, navController: NavHostController) {
                 }
             )
         }) {
-        RaceList(raceList)
+        RaceList(raceList) { race -> navController.navigate("race/${race.race.season}/${race.race.round}") }
     }
 }
 
 @Composable
-fun RaceList(raceList: StoreResponse<List<RaceFull>>) {
+fun RaceList(raceList: StoreResponse<List<RaceFull>>, onRaceSelected: (RaceFull) -> Unit) {
     LazyColumn {
         raceList.dataOrNull()?.let { raceList ->
             items(raceList) {
-                RaceItem(it)
+                RaceItem(it, onRaceSelected = onRaceSelected)
             }
         }
     }

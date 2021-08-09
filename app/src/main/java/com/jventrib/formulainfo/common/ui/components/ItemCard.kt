@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.race.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -16,12 +17,31 @@ import com.jventrib.formulainfo.ui.theme.LightLightGrey
 fun ItemCard(
     imageUrl: String?,
     placeholder: Int,
-    content: @Composable ColumnScope.() -> Unit
+    topText: String,
+    bottomText: String,
+    onItemSelected: () -> Unit
+) {
+    ItemCard(imageUrl, placeholder, onItemSelected)
+    {
+        Text(text = topText, style = MaterialTheme.typography.h6)
+        Text(
+            text = bottomText, style = MaterialTheme.typography.body2
+        )
+    }
+}
+
+@Composable
+fun ItemCard(
+    imageUrl: String?,
+    placeholder: Int,
+    onItemSelected: () -> Unit,
+    content: @Composable() (ColumnScope.() -> Unit)
 ) {
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onItemSelected },
         elevation = 4.dp,
         backgroundColor = LightLightGrey
     ) {
@@ -36,21 +56,6 @@ fun ItemCard(
     }
 }
 
-@Composable
-fun ItemCard(
-    imageUrl: String?,
-    placeholder: Int,
-    topText: String,
-    bottomText: String
-) {
-    ItemCard(imageUrl, placeholder) {
-        Text(text = topText, style = MaterialTheme.typography.h6)
-        Text(
-            text = bottomText, style = MaterialTheme.typography.body2
-        )
-    }
-}
-
 @Preview
 @Composable
 fun ItemCardPreview() {
@@ -58,7 +63,8 @@ fun ItemCardPreview() {
         imageUrl = "",
         placeholder = R.drawable.japan,
         topText = "Top text Top text Top text",
-        bottomText = "Bottom text"
+        bottomText = "Bottom text",
+        onItemSelected = {}
     )
 
 }
