@@ -9,12 +9,17 @@ import com.jventrib.formulainfo.race.model.db.RaceFull
 import com.jventrib.formulainfo.race.ui.components.ItemCard
 
 @Composable
-fun RaceItem(raceFull: RaceFull, placeholder: Int = R.drawable.loading) {
+fun RaceItem(
+    raceFull: RaceFull,
+    placeholder: Int = R.drawable.loading,
+    onRaceSelected: (RaceFull) -> Unit = {}
+) {
     ItemCard(
         raceFull.circuit.location.flag,
         placeholder,
         raceFull.race.raceName,
-        raceFull.race.sessions.race.format()
+        raceFull.race.sessions.race.format(),
+        onItemSelected = { onRaceSelected(raceFull) }
     )
 }
 
@@ -23,6 +28,7 @@ fun RaceItem(raceFull: RaceFull, placeholder: Int = R.drawable.loading) {
 fun RaceItemPreview() {
     RaceItem(
         raceFull = getRaceFullSample(1, "Emilia Romagna Grand Prix"),
-        placeholder = R.drawable.japan
+        placeholder = R.drawable.japan,
+        {}
     )
 }
