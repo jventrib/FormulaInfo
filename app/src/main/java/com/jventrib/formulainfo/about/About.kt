@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.jventrib.formulainfo.BuildConfig
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.components.LinkText
 
@@ -44,7 +45,7 @@ fun About() {
                         style = MaterialTheme.typography.h4
                     )
                     Text(
-                        text = "0.0.1",
+                        text = BuildConfig.VERSION_NAME,
                         style = MaterialTheme.typography.subtitle2,
                         modifier = Modifier.align(End)
                     )
