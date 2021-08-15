@@ -42,10 +42,10 @@ fun SeasonMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false }
     ) {
-        seasonList.forEachIndexed { index, season ->
+        seasonList.forEach { season ->
             DropdownMenuItem(onClick = {
                 expanded = false
-                onSeasonSelect(index)
+                onSeasonSelect(season)
             }, modifier = Modifier.sizeIn(maxWidth = 70.dp)) {
                 Text(season.toString())
             }

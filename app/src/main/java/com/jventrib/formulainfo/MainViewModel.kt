@@ -6,17 +6,15 @@ import com.jventrib.formulainfo.race.data.RaceRepository
 import com.jventrib.formulainfo.race.model.db.RaceFull
 import com.jventrib.formulainfo.race.model.db.RaceResultFull
 
-class MainViewModel(private val repository: RaceRepository) : ViewModel(), IMainViewModel {
+class MainViewModel(private val repository: RaceRepository) : ViewModel() {
 
-    override val seasonList = (1950..2021).toList().reversed()
+    val seasonList = (1950..2021).toList().reversed()
 
     val seasonPosition: MutableLiveData<Int> = MutableLiveData()
 
-    override val season: LiveData<Int> = seasonPosition.map {
-        seasonList[it]
-    }
+    val season = MutableLiveData(2021)
 
-    override val races: LiveData<StoreResponse<List<RaceFull>>> =
+    val races: LiveData<StoreResponse<List<RaceFull>>> =
         season.switchMap {
             repository.getAllRaces(it).asLiveData()
         }
@@ -34,7 +32,7 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel(), IMain
         raceFromList.value = r
     }
 
-    override fun setSeasonPosition(position: Int) {
+    fun setSeasonPosition(position: Int) {
         seasonPosition.value = position
     }
 
