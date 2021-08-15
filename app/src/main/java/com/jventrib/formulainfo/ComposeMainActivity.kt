@@ -3,12 +3,19 @@ package com.jventrib.formulainfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class ComposeMainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val raceRepository = (application as Application).appContainer.raceRepository
-        val viewModel = MainViewModel(raceRepository)
+        val appContainer = (application as Application).appContainer
+        val viewModel: MainViewModel by viewModels {
+            appContainer.getViewModelFactory(::MainViewModel)
+        }
+
         super.onCreate(savedInstanceState)
         viewModel.setSeasonPosition(0)
         setContent {

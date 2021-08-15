@@ -5,39 +5,39 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
-import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
-import com.jventrib.formulainfo.IMainViewModel
 import com.jventrib.formulainfo.race.model.db.RaceFull
 import com.jventrib.formulainfo.race.ui.list.item.RaceItem
 
 @Composable
-fun Races(viewModel: IMainViewModel, navController: NavHostController) {
-    val raceList by viewModel.races.observeAsState(
-        StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
-    )
-    val seasonList = viewModel.seasonList
+fun Races(
+    raceList: StoreResponse<List<RaceFull>>,
+    onRaceClicked: (RaceFull) -> Unit,
+    seasonList: List<Int>,
+    selectedSeason: Int?,
+    onSeasonSelected: (Int) -> Unit,
+    onAboutClicked: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         "Formula Info",
-                        modifier = Modifier.clickable { navController.navigate("about") })
+                        modifier = Modifier.clickable(onClick = onAboutClicked)
+                    )
                 },
                 actions = {
                     SeasonMenu(
-                        seasonList,
-                        viewModel.season.observeAsState().value
-                    ) { viewModel.setSeasonPosition(it) }
+                        seasonList = seasonList,
+                        selectedSeason = selectedSeason,
+                        onSeasonSelect = onSeasonSelected
+                    )
                 }
             )
         }) {
-        RaceList(raceList) { race -> navController.navigate("race/${race.race.season}/${race.race.round}") }
+        RaceList(raceList, onRaceClicked)
     }
 }
 
