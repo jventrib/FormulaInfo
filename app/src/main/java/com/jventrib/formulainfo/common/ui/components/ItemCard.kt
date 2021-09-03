@@ -8,24 +8,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.ui.theme.LightLightGrey
-import com.skydoves.landscapist.ShimmerParams
-import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
 fun ItemCard(
     imageUrl: String,
-    placeholder: Int,
     topText: String,
     bottomText: String,
     onItemSelected: () -> Unit
 ) {
-    ItemCard(imageUrl, placeholder, onItemSelected)
+    ItemCard(imageUrl, onItemSelected)
     {
         Text(text = topText, style = MaterialTheme.typography.h6)
         Text(
@@ -36,8 +30,7 @@ fun ItemCard(
 
 @Composable
 fun ItemCard(
-    imageUrl: String,
-    placeholder: Int,
+    image: Any,
     onItemSelected: () -> Unit,
     content: @Composable() (ColumnScope.() -> Unit)
 ) {
@@ -53,9 +46,9 @@ fun ItemCard(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
-                imageUrl, Modifier
+                image, Modifier
                     .padding(horizontal = 8.dp)
-                    .size(64.dp), placeholder
+                    .size(64.dp)
             )
             Column(content = content)
         }
@@ -67,10 +60,8 @@ fun ItemCard(
 fun ItemCardPreview() {
     ItemCard(
         imageUrl = "",
-        placeholder = R.drawable.japan,
         topText = "Top text Top text Top text",
-        bottomText = "Bottom text",
-        onItemSelected = {}
-    )
+        bottomText = "Bottom text"
+    ) {}
 
 }
