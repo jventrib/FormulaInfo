@@ -29,7 +29,7 @@ fun RaceDetail(raceFull: RaceFull) {
         }) {
         Column {
             RaceItem(raceFull = raceFull)
-            raceFull.circuit.imageUrl?.let { it1 -> Image(imageModel = it1) }
+            raceFull.circuit.imageUrl?.let { Image(imageModel = it) }
         }
     }
 }
