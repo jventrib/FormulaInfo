@@ -10,13 +10,9 @@ import androidx.navigation.compose.rememberNavController
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.about.About
-import com.jventrib.formulainfo.race.model.db.Circuit
-import com.jventrib.formulainfo.race.model.db.Race
-import com.jventrib.formulainfo.race.model.db.RaceFull
 import com.jventrib.formulainfo.race.ui.detail.RaceDetail
 import com.jventrib.formulainfo.race.ui.list.Races
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
-import java.time.Instant
 
 @Composable
 fun FormulaInfoApp(viewModel: MainViewModel) {
@@ -27,6 +23,7 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
         )
         val seasonList = viewModel.seasonList
         val raceFull by viewModel.raceFull.observeAsState()
+        val raceResults by viewModel.raceResults.observeAsState()
 
         NavHost(navController = navController, startDestination = "races") {
             composable("races") {
@@ -47,7 +44,7 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
             ) { navBackStackEntry ->
                 viewModel.season.value = navBackStackEntry.arguments?.get("season") as Int
                 viewModel.round.value = navBackStackEntry.arguments?.get("round") as Int
-                RaceDetail(raceFull!!)
+                RaceDetail(raceFull!!, raceResults?.dataOrNull() ?: listOf())
             }
             composable("about") { About() }
         }

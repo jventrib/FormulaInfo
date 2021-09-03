@@ -1,5 +1,7 @@
 package com.jventrib.formulainfo.race.ui.list.item
 
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.common.ui.format
@@ -12,12 +14,17 @@ fun RaceItem(
     raceFull: RaceFull,
     onRaceSelected: (RaceFull) -> Unit = {}
 ) {
-    ItemCard(
-        raceFull.circuit.location.flag!!,
-        raceFull.race.raceName,
-        raceFull.race.sessions.race.format()
-    ) {
+    ItemCard(raceFull.circuit.location.flag!!,
+        {
         onRaceSelected(raceFull)
+    })
+    {
+        Text(text = raceFull.race.raceName,
+            style = MaterialTheme.typography.h6)
+        Text(
+            text = raceFull.race.sessions.race.format(),
+            style = MaterialTheme.typography.body2
+        )
     }
 }
 
