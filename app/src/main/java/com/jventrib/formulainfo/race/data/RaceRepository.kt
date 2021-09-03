@@ -134,10 +134,12 @@ class RaceRepository(
     }
 
     fun getRace(season: Int, round: Int): Flow<RaceFull> {
-        return getAllRaces(season).transform {
-            val first = it.requireData().first { it.race.round == round }
-            emit(first)
-        }
+        return getAllRaces(season)
+            .transform { storeResponse ->
+                val first = storeResponse.requireData().first { it.race.round == round }
+                emit(first)
+            }
+            .flatMapLatest { getRace(it) }
     }
 
     fun getRaceResults(
