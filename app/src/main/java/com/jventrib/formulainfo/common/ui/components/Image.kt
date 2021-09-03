@@ -9,17 +9,19 @@ import com.skydoves.landscapist.ShimmerParams
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
-fun Image(imageModel: Any, modifier: Modifier = Modifier) {
-    CoilImage(
-        imageModel = imageModel,
-        contentScale = ContentScale.FillWidth,
-        modifier = modifier,
-        shimmerParams = ShimmerParams(
-            baseColor = MaterialTheme.colors.background,
-            highlightColor = Color.White,
-            durationMillis = 350,
-            dropOff = 0.65f,
-            tilt = 20f
+fun Image(imageModel: Any?, modifier: Modifier = Modifier) {
+    if (imageModel != null) {
+        CoilImage(
+            imageModel = imageModel,
+            contentScale = ContentScale.FillWidth,
+            modifier = modifier,
+            shimmerParams = ShimmerParams(
+                baseColor = MaterialTheme.colors.background,
+                highlightColor = Color.White,
+                durationMillis = 350,
+                dropOff = 0.65f,
+                tilt = 20f
+            )
         )
-    )
+    }
 }

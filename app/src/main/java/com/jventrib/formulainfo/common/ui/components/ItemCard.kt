@@ -14,12 +14,12 @@ import com.jventrib.formulainfo.ui.theme.LightLightGrey
 
 @Composable
 fun ItemCard(
-    imageUrl: String,
+    image: Any?,
     topText: String,
     bottomText: String,
     onItemSelected: () -> Unit
 ) {
-    ItemCard(imageUrl, onItemSelected)
+    ItemCard(image, onItemSelected)
     {
         Text(text = topText, style = MaterialTheme.typography.h6)
         Text(
@@ -30,7 +30,7 @@ fun ItemCard(
 
 @Composable
 fun ItemCard(
-    image: Any,
+    image: Any?,
     onItemSelected: () -> Unit,
     content: @Composable() (ColumnScope.() -> Unit)
 ) {
@@ -59,7 +59,7 @@ fun ItemCard(
 @Composable
 fun ItemCardPreview() {
     ItemCard(
-        imageUrl = "",
+        image = "",
         topText = "Top text Top text Top text",
         bottomText = "Bottom text"
     ) {}

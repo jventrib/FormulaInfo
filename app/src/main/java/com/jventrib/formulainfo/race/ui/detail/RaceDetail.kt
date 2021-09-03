@@ -10,11 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.getRaceFullSample
 import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.model.db.RaceResultFull
 import com.jventrib.formulainfo.race.ui.components.Image
 import com.jventrib.formulainfo.race.ui.list.item.RaceItem
+import com.jventrib.formulainfo.result.Results
 
 @Composable
-fun RaceDetail(raceFull: RaceFull) {
+fun RaceDetail(raceFull: RaceFull, raceResults: List<RaceResultFull>) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -29,7 +31,8 @@ fun RaceDetail(raceFull: RaceFull) {
         }) {
         Column {
             RaceItem(raceFull = raceFull)
-            raceFull.circuit.imageUrl?.let { Image(imageModel = it) }
+            Image(imageModel = raceFull.circuit.imageUrl)
+            Results(results = raceResults)
         }
     }
 }
@@ -37,5 +40,5 @@ fun RaceDetail(raceFull: RaceFull) {
 @Preview
 @Composable
 fun RaceDetailPreview() {
-    RaceDetail(raceFull = getRaceFullSample(3))
+    RaceDetail(raceFull = getRaceFullSample(3), listOf())
 }
