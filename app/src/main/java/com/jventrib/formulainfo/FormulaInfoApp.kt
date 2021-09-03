@@ -10,10 +10,13 @@ import androidx.navigation.compose.rememberNavController
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.about.About
+import com.jventrib.formulainfo.race.model.db.Circuit
+import com.jventrib.formulainfo.race.model.db.Race
 import com.jventrib.formulainfo.race.model.db.RaceFull
 import com.jventrib.formulainfo.race.ui.detail.RaceDetail
 import com.jventrib.formulainfo.race.ui.list.Races
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
+import java.time.Instant
 
 @Composable
 fun FormulaInfoApp(viewModel: MainViewModel) {
@@ -23,6 +26,7 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
             StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
         )
         val seasonList = viewModel.seasonList
+        val raceFull by viewModel.raceFull.observeAsState()
 
         NavHost(navController = navController, startDestination = "races") {
             composable("races") {
@@ -36,16 +40,14 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
                 )
             }
             composable(
-                "raceDetail/{raceId}",
-                listOf(navArgument("raceId") {
-                    type = NavType.ParcelableType(RaceFull::class.java)
-                })
+                "race/{season}/{round}",
+                listOf(
+                    navArgument("season") { type = NavType.IntType },
+                    navArgument("round") { type = NavType.IntType })
             ) { navBackStackEntry ->
-                RaceDetail(
-                    viewModel,
-                    navController,
-                    navBackStackEntry.arguments?.get("race") as RaceFull
-                )
+                viewModel.season.value = navBackStackEntry.arguments?.get("season") as Int
+                viewModel.round.value = navBackStackEntry.arguments?.get("round") as Int
+                RaceDetail(raceFull!!)
             }
             composable("about") { About() }
         }

@@ -133,6 +133,13 @@ class RaceRepository(
             .distinctUntilChangedBy { sr -> sr.dataOrNull() }
     }
 
+    fun getRace(season: Int, round: Int): Flow<RaceFull> {
+        return getAllRaces(season).transform {
+            val first = it.requireData().first { it.race.round == round }
+            emit(first)
+        }
+    }
+
     fun getRaceResults(
         season: Int,
         round: Int

@@ -19,7 +19,8 @@ fun RaceItem(
         placeholder,
         raceFull.race.raceName,
         raceFull.race.sessions.race.format(),
-        onItemSelected = { onRaceSelected(raceFull) }
+        onItemSelected = {
+            onRaceSelected(raceFull) }
     )
 }
 

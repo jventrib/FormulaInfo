@@ -41,7 +41,9 @@ fun ItemCard(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .clickable { onItemSelected },
+            .clickable {
+                onItemSelected()
+            },
         elevation = 4.dp,
         backgroundColor = LightLightGrey
     ) {
