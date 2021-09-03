@@ -14,6 +14,8 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
 
     val season = MutableLiveData(2021)
 
+    val round = MutableLiveData(1)
+
     val races: LiveData<StoreResponse<List<RaceFull>>> =
         season.switchMap {
             repository.getAllRaces(it).asLiveData()
@@ -36,8 +38,14 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
         seasonPosition.value = position
     }
 
+    val raceFull: LiveData<RaceFull> =
+        round.switchMap {
+            repository.getRace(season.value!!, it)
+                .asLiveData()
+        }
+
     val raceResults: LiveData<StoreResponse<List<RaceResultFull>>> =
-        raceFromList.switchMap {
+        raceFull.switchMap {
             repository.getRaceResults(it.race.season, it.race.round)
                 .asLiveData()
         }
