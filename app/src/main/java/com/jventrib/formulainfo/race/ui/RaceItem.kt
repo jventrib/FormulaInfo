@@ -15,7 +15,7 @@ fun RaceItem(
     onRaceSelected: (RaceFull) -> Unit = {}
 ) {
     ItemCard(
-        raceFull.circuit.location.flag,
+        raceFull.circuit.location.flag!!,
         placeholder,
         raceFull.race.raceName,
         raceFull.race.sessions.race.format(),
