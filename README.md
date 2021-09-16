@@ -1,5 +1,11 @@
 # Formula Info
+![Formula Info](https://play-lh.googleusercontent.com/_uCswjBOWgxz8h_VExW2biO0IHNrQZrIf4dftGtEPYpFy49sxWYU-gMjRp5hftEPMp0=w720-h310-rw)
+![Formula Info](https://play-lh.googleusercontent.com/wzCfTrWAJNzuTHj32F712KNHwknyFkOiMN5NReeJwG4ga5fok8fYbO8AEWwgHzGM9pau=w720-h310-rw)
+
 This app is a personal project to improve my personal skills in Android application development. By now, there is no dedicated backend, and no static content inside the app. All the content is coming from various public APIs
+
+### Play Store
+https://play.google.com/store/apps/details?id=com.jventrib.formulainfo
 
 ### Disclaimer
 This app is unofficial and is not associated in any way with the Formula One group or companies. F1, FORMULA ONE, FORMULA 1, FIA FORMULA ONE CHAMPIONSHIP, GRAND PRIX and related marks are trade marks of Formula One Licensing B.V.
