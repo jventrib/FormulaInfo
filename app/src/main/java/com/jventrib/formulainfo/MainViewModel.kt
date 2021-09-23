@@ -18,7 +18,7 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
     val round: MutableLiveData<Int?> = MutableLiveData(null)
 
     val races: LiveData<StoreResponse<List<RaceFull>>> =
-        season.switchMap {
+        season.distinctUntilChanged().switchMap {
             repository.getAllRaces(it).asLiveData()
         }
 
