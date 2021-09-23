@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.race.data
 
+import android.util.Log
 import com.dropbox.android.external.store4.*
 import com.jventrib.formulainfo.common.utils.emptyListToNull
 import com.jventrib.formulainfo.race.data.db.*
@@ -60,39 +61,36 @@ class RaceRepository(
         }
     }
 
-    private val raceResultStore: Store<SeasonRace, List<RaceResultFull>> =
-        StoreBuilder.from(
-            Fetcher.ofFlow { seasonRace ->
-                raceRemoteDataSource.getRaceResultsFlow(
-                    seasonRace.season,
-                    seasonRace.round
-                )
-            },
-            SourceOfTruth.of(
-                reader = { seasonRace ->
-                    raceResultDao.getRaceResultsFull(seasonRace.season, seasonRace.round)
-                        .complete({ it.driver.image }) {
-                            driverDao.insert(getDriverWithImage(it))
-                        }
-                        .complete({ it.constructor.image }) {
-                            constructorDao.insert(getConstructorWithImage(it))
-                        }
-                        .emptyListToNull()
-                },
-                writer = { _: SeasonRace, raceResultRemotes: List<RaceResultRemote> ->
-                    driverDao.insertAll(RaceResultDriverMapper.toEntity(raceResultRemotes))
-                    constructorDao.insertAll(RaceResultConstructorMapper.toEntity(raceResultRemotes))
-                    raceResultDao.insertAll(RaceResultMapper.toEntity(raceResultRemotes))
-                },
-                deleteAll = {
-                    withContext(Dispatchers.IO) {
-                        driverDao.deleteAll()
-                        constructorDao.deleteAll()
-                        raceResultDao.deleteAll()
-                    }
-                }
-            )
-        ).build()
+//    private val raceResultStore: Store<SeasonRace, List<RaceResultFull>> =
+//        StoreBuilder.from(
+//            Fetcher.ofFlow { seasonRace ->
+//                raceRemoteDataSource.getRaceResultsFlow(seasonRace.season, seasonRace.round)
+//            },
+//            SourceOfTruth.of(
+//                reader = { seasonRace ->
+//                    raceResultDao.getRaceResultsFull(seasonRace.season, seasonRace.round)
+//                        .complete({ it.driver.image }) {
+//                            driverDao.insert(getDriverWithImage(it))
+//                        }
+//                        .complete({ it.constructor.image }) {
+//                            constructorDao.insert(getConstructorWithImage(it))
+//                        }
+//                        .emptyListToNull()
+//                },
+//                writer = { _: SeasonRace, raceResultRemotes: List<RaceResultRemote> ->
+//                    driverDao.insertAll(RaceResultDriverMapper.toEntity(raceResultRemotes))
+//                    constructorDao.insertAll(RaceResultConstructorMapper.toEntity(raceResultRemotes))
+//                    raceResultDao.insertAll(RaceResultMapper.toEntity(raceResultRemotes))
+//                },
+//                deleteAll = {
+//                    withContext(Dispatchers.IO) {
+//                        driverDao.deleteAll()
+//                        constructorDao.deleteAll()
+//                        raceResultDao.deleteAll()
+//                    }
+//                }
+//            )
+//        ).build()
 
 
     private fun <T : List<U>, U> Flow<T>.complete(
@@ -114,19 +112,19 @@ class RaceRepository(
         )
     )
 
-    private suspend fun getDriverWithImage(raceResultFull: RaceResultFull) =
-        raceResultFull.driver.copy(
-            image = raceRemoteDataSource.getWikipediaImageFromUrl(
-                raceResultFull.driver.url, 200, WikipediaService.Licence.FREE
-            ) ?: "NONE"
-        )
-
-    private suspend fun getConstructorWithImage(result: RaceResultFull) =
-        result.constructor.copy(
-            image = raceRemoteDataSource.getWikipediaImageFromUrl(
-                result.constructor.url, 200,
-            ) ?: "NONE"
-        )
+//    private suspend fun getDriverWithImage(raceResultFull: RaceResultFull) =
+//        raceResultFull.driver.copy(
+//            image = raceRemoteDataSource.getWikipediaImageFromUrl(
+//                raceResultFull.driver.url, 200, WikipediaService.Licence.FREE
+//            ) ?: "NONE"
+//        )
+//
+//    private suspend fun getConstructorWithImage(result: RaceResultFull) =
+//        result.constructor.copy(
+//            image = raceRemoteDataSource.getWikipediaImageFromUrl(
+//                result.constructor.url, 200,
+//            ) ?: "NONE"
+//        )
 
     fun getAllRaces(season: Int): Flow<StoreResponse<List<RaceFull>>> {
         return raceStore.stream(StoreRequest.cached(season, false))
@@ -147,14 +145,26 @@ class RaceRepository(
     fun getRaceResults(
         season: Int,
         round: Int
-    ): Flow<StoreResponse<List<RaceResultFull>>> =
-        raceResultStore.stream(
-            StoreRequest.cached(SeasonRace(season, round), false)
-        )
+    ): Flow<StoreResponse<List<RaceResultFull>>> {
+        return (raceResultDao.getRaceResultsFull(season, round)
+            .transform { data ->
+                Log.d("RaceRepository", "raceResultDao.getRaceResultsFull CALLED ${data.size}")
+                if (data.isEmpty()) {
+                    raceRemoteDataSource.getRaceResultsFlow(season, round).collect {
+                        driverDao.insertAll(RaceResultDriverMapper.toEntity(it))
+                        constructorDao.insertAll(RaceResultConstructorMapper.toEntity(it))
+                        raceResultDao.insertAll(RaceResultMapper.toEntity(it))
+                    }
+                } else {
+                    emit(data)
+                }
+            }).map { StoreResponse.Data(it, ResponseOrigin.SourceOfTruth) }
+    }
+
 
     suspend fun refresh() {
         raceStore.clearAll()
-        raceResultStore.clearAll()
+//        raceResultStore.clearAll()
     }
 
     data class SeasonRace(val season: Int, val round: Int)

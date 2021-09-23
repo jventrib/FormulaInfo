@@ -7,8 +7,8 @@ data class RaceResultFull(
     @Embedded
     val raceResult: RaceResult,
     @Relation(entityColumn = "driverId", parentColumn = "driverId")
-    val driver: Driver,
+    val driver: Driver?,
     @Relation(entityColumn = "id", parentColumn = "constructorId")
-    val constructor: Constructor
+    val constructor: Constructor?
 
 )
