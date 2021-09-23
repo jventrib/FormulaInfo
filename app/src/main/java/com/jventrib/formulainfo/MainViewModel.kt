@@ -1,6 +1,7 @@
 package com.jventrib.formulainfo
 
 import androidx.lifecycle.*
+import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.race.data.RaceRepository
 import com.jventrib.formulainfo.race.model.db.RaceFull
@@ -14,7 +15,7 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
 
     val season = MutableLiveData(2021)
 
-    val round = MutableLiveData(1)
+    val round: MutableLiveData<Int?> = MutableLiveData(null)
 
     val races: LiveData<StoreResponse<List<RaceFull>>> =
         season.switchMap {
@@ -38,15 +39,19 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
         seasonPosition.value = position
     }
 
-    val raceFull: LiveData<RaceFull> =
+    val raceFull: LiveData<RaceFull?> =
         round.switchMap {
-            repository.getRace(season.value!!, it)
-                .asLiveData()
+            it?.let { it1 ->
+                repository.getRace(season.value!!, it1)
+                    .asLiveData()
+            } ?: MutableLiveData(null)
         }
 
     val raceResults: LiveData<StoreResponse<List<RaceResultFull>>> =
         raceFull.switchMap {
-            repository.getRaceResults(it.race.season, it.race.round)
-                .asLiveData()
+            it?.let {
+                repository.getRaceResults(it.race.season, it.race.round)
+                    .asLiveData()
+            } ?: MutableLiveData(StoreResponse.Loading(ResponseOrigin.Fetcher))
         }
 }
