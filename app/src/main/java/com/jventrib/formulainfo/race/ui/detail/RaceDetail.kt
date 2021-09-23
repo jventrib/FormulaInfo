@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.getRaceFullSample
 import com.jventrib.formulainfo.race.model.db.RaceFull
 import com.jventrib.formulainfo.race.model.db.RaceResultFull
-import com.jventrib.formulainfo.race.ui.components.Image
+import com.jventrib.formulainfo.common.ui.components.Image
 import com.jventrib.formulainfo.race.ui.list.item.RaceItem
 import com.jventrib.formulainfo.result.Results
 
