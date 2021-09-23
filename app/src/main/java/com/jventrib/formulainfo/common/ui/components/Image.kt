@@ -17,30 +17,29 @@ import com.skydoves.landscapist.ShimmerParams
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
-fun Image(imageModel: Any?, modifier: Modifier = Modifier, placeholder: Any? = null) {
-    if (imageModel != null) {
-        if (placeholder != null) {
-            CoilImage(
-                imageModel = imageModel,
-                contentScale = ContentScale.FillWidth,
-                modifier = modifier,
-                placeHolder = placeholder
+fun Image(imageModel: Any?, modifier: Modifier = Modifier, placeholder: Any? = R.drawable.loading) {
+    if (imageModel == null) {
+        CoilImage(
+            imageModel =  ImageBitmap.imageResource(R.drawable.loading),
+            contentScale = ContentScale.FillWidth,
+            modifier = modifier,
+            placeHolder = placeholder
 
+        )
+    } else {
+        CoilImage(
+            imageModel = imageModel,
+            contentScale = ContentScale.FillWidth,
+            modifier = modifier,
+            shimmerParams = ShimmerParams(
+                baseColor = MaterialTheme.colors.background,
+                highlightColor = Color.White,
+                durationMillis = 350,
+                dropOff = 0.65f,
+                tilt = 20f
             )
-        } else {
-            CoilImage(
-                imageModel = imageModel,
-                contentScale = ContentScale.FillWidth,
-                modifier = modifier,
-                shimmerParams = ShimmerParams(
-                    baseColor = MaterialTheme.colors.background,
-                    highlightColor = Color.White,
-                    durationMillis = 350,
-                    dropOff = 0.65f,
-                    tilt = 20f
-                )
-            )
-        }
+        )
+
     }
 }
 
