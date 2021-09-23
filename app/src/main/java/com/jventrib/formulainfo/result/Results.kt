@@ -32,7 +32,7 @@ fun Results(results: List<RaceResultFull>) {
 
 @Composable
 fun ResultItem(raceResult: RaceResultFull, onResultSelected: () -> Any) {
-    ItemCard(image = raceResult.driver.image,
+    ItemCard(image = raceResult.driver?.image,
         onItemSelected = {
 
         })
@@ -40,11 +40,11 @@ fun ResultItem(raceResult: RaceResultFull, onResultSelected: () -> Any) {
         Row(Modifier.fillMaxWidth()) {
             Column {
                 Text(
-                    text = "${raceResult.raceResult.position}:${raceResult.driver.givenName} ${raceResult.driver.familyName}",
+                    text = "${raceResult.raceResult.position}:${raceResult.driver?.givenName} ${raceResult.driver?.familyName}",
                     style = MaterialTheme.typography.h6
                 )
                 Text(
-                    text = raceResult.constructor.name,
+                    text = raceResult.constructor?.name ?: "",
                     style = MaterialTheme.typography.body1
                 )
                 Text(
