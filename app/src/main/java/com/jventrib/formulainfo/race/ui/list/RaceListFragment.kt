@@ -138,7 +138,7 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
             requireContext(), R.layout.spinner_season, viewModel.seasonList
         ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
         spinner.onItemSelectedListener = this
-        viewModel.seasonPosition.value?.let { spinner.setSelection(it) }
+//        viewModel.seasonPosition.value?.let { spinner.setSelection(it) }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -157,8 +157,8 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        viewModel.setSeasonPosition(position)
-//        viewModel.setSeason(seasonList[position])
+//        viewModel.seasonPosition.value = position
+        //        viewModel.setSeason(seasonList[position])
 //        @Suppress("ControlFlowWithEmptyBody")
 //        while (navController.navigateUp()) {
 //        }
