@@ -20,10 +20,6 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
             repository.getAllRaces(it).asLiveData()
         }
 
-    suspend fun refreshRaces() {
-        repository.refresh()
-    }
-
     val raceFull: LiveData<RaceFull?> =
         round.distinctUntilChanged().switchMap {
             it?.let {
@@ -39,4 +35,8 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
                     .asLiveData()
             } ?: MutableLiveData(StoreResponse.Loading(ResponseOrigin.Fetcher))
         }
+
+    suspend fun refreshRaces() {
+        repository.refresh()
+    }
 }
