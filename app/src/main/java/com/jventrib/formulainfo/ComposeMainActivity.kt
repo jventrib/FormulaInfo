@@ -4,9 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 class ComposeMainActivity : ComponentActivity() {
 
@@ -17,7 +14,6 @@ class ComposeMainActivity : ComponentActivity() {
         }
 
         super.onCreate(savedInstanceState)
-        viewModel.setSeasonPosition(0)
         setContent {
             FormulaInfoApp(viewModel)
         }

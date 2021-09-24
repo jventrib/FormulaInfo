@@ -63,11 +63,11 @@ class RaceDetailFragment : Fragment() {
         initToolBar()
         val viewModel = getViewModel()
 
-        viewModel.setRace(args.race)
-        viewModel.race.observe(viewLifecycleOwner) { (race, circuit) ->
-            (requireActivity() as AppCompatActivity).supportActionBar?.title = race.raceName
-            displayHeader(race, raceDetailHeader, circuit)
-        }
+//        viewModel.setRace(args.race)
+//        viewModel.race.observe(viewLifecycleOwner) { (race, circuit) ->
+//            (requireActivity() as AppCompatActivity).supportActionBar?.title = race.raceName
+//            displayHeader(race, raceDetailHeader, circuit)
+//        }
 
         val raceResultList: RecyclerView = binding.listResult
         val adapter = RaceResultListAdapter()
