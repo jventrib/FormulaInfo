@@ -32,7 +32,10 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
                     onRaceClicked = { race -> navController.navigate("race/${race.race.season}/${race.race.round}") },
                     seasonList = seasonList,
                     selectedSeason = viewModel.season.observeAsState().value,
-                    onSeasonSelected = { viewModel.season.value = it },
+                    onSeasonSelected = {
+                        viewModel.season.value = it
+                        viewModel.round.value = null
+                    },
                     onAboutClicked = { navController.navigate("about") },
                 )
             }
