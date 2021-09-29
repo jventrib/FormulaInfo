@@ -136,12 +136,7 @@ class RaceRepository(
             .completeMissing({ it.driver.image }) {
                 logcat { "Completing driver ${it.driver.code} with image" }
                 driverDao.insert(getDriverWithImage(it))
-                delay(1000)
             }
-//            .completeMissing({ it.constructor.image }) {
-//                logcat { "Completing constructor ${it.constructor.id} with image" }
-//                constructorDao.insert(getConstructorWithImage(it))
-//            }
             .map { StoreResponse.Data(it, ResponseOrigin.SourceOfTruth) }
 
 
