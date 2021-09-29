@@ -1,14 +1,15 @@
 package com.jventrib.formulainfo
 
 import android.app.Application
-import androidx.fragment.app.FragmentManager
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.SvgDecoder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import logcat.AndroidLogcatLogger
+import logcat.LogPriority
+
 //import leakcanary.LeakCanary
-import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @FlowPreview
@@ -19,9 +20,7 @@ class Application: Application(), ImageLoaderFactory {
         super.onCreate()
 //        LeakCanary.config = LeakCanary.config.copy(retainedVisibleThreshold = 1)
 
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
+        AndroidLogcatLogger.installOnDebuggableApp(this, minPriority = LogPriority.VERBOSE)
         appContainer = AppContainer(this)
     }
 

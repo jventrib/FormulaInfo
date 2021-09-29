@@ -15,7 +15,7 @@ import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.loadImage
 import com.jventrib.formulainfo.databinding.ItemRaceResultBinding
 import com.jventrib.formulainfo.race.model.db.RaceResultFull
-import timber.log.Timber
+import logcat.logcat
 
 class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHolder>() {
 
@@ -87,7 +87,7 @@ class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHol
                 context.resources.getColor(R.color.light_grey)
             }
             holder.binding.spaceConstructorColor.setBackgroundColor(color)
-            Timber.i("Constructor ${current.constructor?.id} color resource not found")
+            logcat {"Constructor ${current.constructor?.id} color resource not found"}
 
         }
 
