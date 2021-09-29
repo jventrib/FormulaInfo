@@ -4,8 +4,6 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class RaceResultRemote(
-    val season: Int,
-    val round: Int,
     val number: Int,
     val position: Int,
     val positionText: String,

@@ -14,13 +14,13 @@ import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformatio
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.loadImage
 import com.jventrib.formulainfo.databinding.ItemRaceResultBinding
-import com.jventrib.formulainfo.race.model.db.RaceResultFull
+import com.jventrib.formulainfo.race.model.db.FullRaceResult
 import logcat.logcat
 
 class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHolder>() {
 
     private lateinit var context: Context
-    private var raceResults = emptyList<RaceResultFull>()
+    private var raceResults = emptyList<FullRaceResult>()
 
     override fun getItemCount() = raceResults.size
 
@@ -114,7 +114,7 @@ class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHol
     }
 
 
-    internal fun setRaceResult(list: List<RaceResultFull>) {
+    internal fun setRaceResult(list: List<FullRaceResult>) {
         this.raceResults = list
         notifyDataSetChanged()
     }

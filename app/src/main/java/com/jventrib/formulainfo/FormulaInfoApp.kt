@@ -23,7 +23,7 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
         )
         val seasonList = viewModel.seasonList
         val raceFull by viewModel.raceFull.observeAsState()
-        val raceResults by viewModel.raceResults.observeAsState()
+        val raceResults by viewModel.raceResultsRaceResult.observeAsState()
 
         NavHost(navController = navController, startDestination = "races") {
             composable("races") {

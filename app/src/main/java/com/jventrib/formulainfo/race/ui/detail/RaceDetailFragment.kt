@@ -73,7 +73,7 @@ class RaceDetailFragment : Fragment() {
         val adapter = RaceResultListAdapter()
         raceResultList.adapter = adapter
 
-        viewModel.raceResults.observe(viewLifecycleOwner) { storeResponse ->
+        viewModel.raceResultsRaceResult.observe(viewLifecycleOwner) { storeResponse ->
             storeResponse.throwIfError()
             storeResponse.dataOrNull()?.let {
                 adapter.setRaceResult(it)

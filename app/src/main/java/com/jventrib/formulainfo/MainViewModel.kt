@@ -5,7 +5,7 @@ import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.race.data.RaceRepository
 import com.jventrib.formulainfo.race.model.db.RaceFull
-import com.jventrib.formulainfo.race.model.db.RaceResultFull
+import com.jventrib.formulainfo.race.model.db.FullRaceResult
 
 class MainViewModel(private val repository: RaceRepository) : ViewModel() {
 
@@ -28,7 +28,7 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
             } ?: MutableLiveData(null)
         }
 
-    val raceResults: LiveData<StoreResponse<List<RaceResultFull>>> =
+    val raceResultsRaceResult: LiveData<StoreResponse<List<FullRaceResult>>> =
         round.distinctUntilChanged().switchMap {
             it?.let {
                 repository.getRaceResults(season.value!!, it)

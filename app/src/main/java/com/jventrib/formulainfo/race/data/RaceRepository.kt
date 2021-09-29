@@ -1,16 +1,14 @@
 package com.jventrib.formulainfo.race.data
 
-import android.util.Log
 import com.dropbox.android.external.store4.*
 import com.jventrib.formulainfo.common.utils.emptyListToNull
 import com.jventrib.formulainfo.race.data.db.*
 import com.jventrib.formulainfo.race.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.race.data.remote.WikipediaService
 import com.jventrib.formulainfo.race.model.db.RaceFull
-import com.jventrib.formulainfo.race.model.db.RaceResultFull
+import com.jventrib.formulainfo.race.model.db.FullRaceResult
 import com.jventrib.formulainfo.race.model.mapper.*
 import com.jventrib.formulainfo.race.model.remote.RaceRemote
-import com.jventrib.formulainfo.race.model.remote.RaceResultRemote
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import logcat.logcat
@@ -29,7 +27,7 @@ class RaceRepository(
             SourceOfTruth.of(
                 reader = { season ->
                     raceDao.getSeasonRaces(season)
-                        .complete({ it.circuit.location.flag }) {
+                        .completeMissing({ it.circuit.location.flag }) {
                             circuitDao.insert(getCircuitWithFlag(it))
                         }
                         .emptyListToNull()
@@ -94,38 +92,6 @@ class RaceRepository(
 //        ).build()
 
 
-    private fun <T : List<U>, U> Flow<T>.complete(
-        attr: (U) -> Any?,
-        action: suspend (U) -> Unit
-    ): Flow<T> =
-        this.transform {
-            emit(it)
-            it.firstOrNull { attr.invoke(it) == null }
-                ?.let { action.invoke(it) }
-        }.distinctUntilChanged()
-
-
-    private suspend fun getCircuitWithFlag(raceFull: RaceFull) = raceFull.circuit.copy(
-        location = raceFull.circuit.location.copy(
-            flag = raceRemoteDataSource.getCountryFlag(
-                raceFull.circuit.location.country
-            )
-        )
-    )
-
-//    private suspend fun getDriverWithImage(raceResultFull: RaceResultFull) =
-//        raceResultFull.driver.copy(
-//            image = raceRemoteDataSource.getWikipediaImageFromUrl(
-//                raceResultFull.driver.url, 200, WikipediaService.Licence.FREE
-//            ) ?: "NONE"
-//        )
-//
-//    private suspend fun getConstructorWithImage(result: RaceResultFull) =
-//        result.constructor.copy(
-//            image = raceRemoteDataSource.getWikipediaImageFromUrl(
-//                result.constructor.url, 200,
-//            ) ?: "NONE"
-//        )
 
     fun getAllRaces(season: Int): Flow<StoreResponse<List<RaceFull>>> {
         return raceStore.stream(StoreRequest.cached(season, false))
@@ -146,21 +112,37 @@ class RaceRepository(
     fun getRaceResults(
         season: Int,
         round: Int
-    ): Flow<StoreResponse<List<RaceResultFull>>> {
-        return (raceResultDao.getRaceResultsFull(season, round)
+    ): Flow<StoreResponse<List<FullRaceResult>>> =
+        raceResultDao.getFullRaceResults(season, round)
+            .distinctUntilChanged()
             .transform { data ->
-                logcat { "raceResultDao.getRaceResultsFull CALLED ${data.size}" }
+                logcat { "Looking for FullRaceResults in DB" }
                 if (data.isEmpty()) {
-                    raceRemoteDataSource.getRaceResultsFlow(season, round).collect {
-                        driverDao.insertAll(RaceResultDriverMapper.toEntity(it))
-                        constructorDao.insertAll(RaceResultConstructorMapper.toEntity(it))
-                        raceResultDao.insertAll(RaceResultMapper.toEntity(it))
+                    logcat { "No FullRaceResults in DB, fetching from API" }
+                    raceRemoteDataSource.getRaceResults(season, round).also {
+                        logcat { "Fetched RaceResults from API: $it" }
+                        driverDao.insertAll(RaceResultDriverMapper.toEntity(it)
+                            .also { logcat { "Inserting Drivers $it" } })
+                        constructorDao.insertAll(RaceResultConstructorMapper.toEntity(it)
+                            .also { logcat { "Inserting Constructors $it" } })
+                        raceResultDao.insertAll(RaceResultMapper.toEntity(season, round, it)
+                            .also { logcat { "Inserting Results $it" } })
                     }
                 } else {
+                    logcat { "Got ${data.size} FullRaceResults from DB" }
                     emit(data)
                 }
-            }).map { StoreResponse.Data(it, ResponseOrigin.SourceOfTruth) }
-    }
+            }
+            .completeMissing({ it.driver.image }) {
+                logcat { "Completing driver ${it.driver.code} with image" }
+                driverDao.insert(getDriverWithImage(it))
+                delay(1000)
+            }
+//            .completeMissing({ it.constructor.image }) {
+//                logcat { "Completing constructor ${it.constructor.id} with image" }
+//                constructorDao.insert(getConstructorWithImage(it))
+//            }
+            .map { StoreResponse.Data(it, ResponseOrigin.SourceOfTruth) }
 
 
     suspend fun refresh() {
@@ -168,6 +150,37 @@ class RaceRepository(
 //        raceResultStore.clearAll()
     }
 
-    data class SeasonRace(val season: Int, val round: Int)
+    private fun <T : List<U>, U> Flow<T>.completeMissing(
+        attr: (U) -> Any?,
+        action: suspend (U) -> Unit
+    ): Flow<T> =
+        this.transform { list ->
+            emit(list)
+            list.firstOrNull { attr(it) == null }?.let { action(it) }
+        }.distinctUntilChanged()
+
+
+    private suspend fun getCircuitWithFlag(raceFull: RaceFull) = raceFull.circuit.copy(
+        location = raceFull.circuit.location.copy(
+            flag = raceRemoteDataSource.getCountryFlag(
+                raceFull.circuit.location.country
+            )
+        )
+    )
+
+    private suspend fun getDriverWithImage(fullRaceResult: FullRaceResult) =
+        fullRaceResult.driver.copy(
+            image = raceRemoteDataSource.getWikipediaImageFromUrl(
+                fullRaceResult.driver.url, 200, WikipediaService.Licence.FREE
+            ) ?: "NONE"
+        )
+
+    private suspend fun getConstructorWithImage(result: FullRaceResult) =
+        result.constructor.copy(
+            image = raceRemoteDataSource.getWikipediaImageFromUrl(
+                result.constructor.url, 200,
+            ) ?: "NONE"
+        )
+
 }
 
