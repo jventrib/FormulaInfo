@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dropbox.android.external.store4.StoreResponse
@@ -17,7 +19,8 @@ fun Races(
     seasonList: List<Int>,
     selectedSeason: Int?,
     onSeasonSelected: (Int) -> Unit,
-    onAboutClicked: () -> Unit
+    onAboutClicked: () -> Unit,
+    onRefreshClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -29,6 +32,9 @@ fun Races(
                     )
                 },
                 actions = {
+                    IconButton(onClick = onRefreshClicked) {
+                        Icon(imageVector = Icons.Filled.Refresh, contentDescription = null)
+                    }
                     SeasonMenu(
                         seasonList = seasonList,
                         selectedSeason = selectedSeason,

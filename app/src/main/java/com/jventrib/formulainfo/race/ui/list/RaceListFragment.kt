@@ -78,7 +78,7 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.swipeRaceList.setOnRefreshListener {
             logcat { "Refresh Races" }
             viewModel.viewModelScope.launch {
-                viewModel.refreshRaces()
+                viewModel.refresh()
                 binding.swipeRaceList.isRefreshing = false
             }
         }

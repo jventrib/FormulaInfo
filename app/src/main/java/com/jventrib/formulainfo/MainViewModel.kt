@@ -36,7 +36,7 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
             } ?: MutableLiveData(StoreResponse.Loading(ResponseOrigin.Fetcher))
         }
 
-    suspend fun refreshRaces() {
+    suspend fun refresh() {
         repository.refresh()
     }
 }
