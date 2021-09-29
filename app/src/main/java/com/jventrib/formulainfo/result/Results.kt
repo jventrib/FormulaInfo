@@ -17,11 +17,11 @@ import com.jventrib.formulainfo.common.ui.components.DeltaTextP
 import com.jventrib.formulainfo.race.model.db.Constructor
 import com.jventrib.formulainfo.race.model.db.Driver
 import com.jventrib.formulainfo.race.model.db.RaceResult
-import com.jventrib.formulainfo.race.model.db.RaceResultFull
+import com.jventrib.formulainfo.race.model.db.FullRaceResult
 import com.jventrib.formulainfo.race.ui.components.ItemCard
 
 @Composable
-fun Results(results: List<RaceResultFull>) {
+fun Results(results: List<FullRaceResult>) {
     LazyColumn {
         items(results) {
             ResultItem(it, onResultSelected = { })
@@ -31,7 +31,7 @@ fun Results(results: List<RaceResultFull>) {
 }
 
 @Composable
-fun ResultItem(raceResult: RaceResultFull, onResultSelected: () -> Any) {
+fun ResultItem(raceResult: FullRaceResult, onResultSelected: () -> Any) {
     ItemCard(image = raceResult.driver?.image,
         onItemSelected = {
 
@@ -78,7 +78,7 @@ fun ResultItem(raceResult: RaceResultFull, onResultSelected: () -> Any) {
 @Preview
 @Composable
 fun ResultItemPreview() {
-    val rr = RaceResultFull(
+    val rr = FullRaceResult(
         RaceResult(
             "11",
             2021,

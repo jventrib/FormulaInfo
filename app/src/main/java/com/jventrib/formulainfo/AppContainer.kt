@@ -16,6 +16,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
 import java.time.ZonedDateTime
+import java.util.concurrent.TimeUnit
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -45,11 +46,19 @@ class AppContainer(context: Context) {
         RaceRemoteDataSource(mrdService, wikipediaService, f1CalendarService)
 
     val raceRepository =
-        RaceRepository(raceDao, circuitDao, raceResultDao, driverDao, constructorDao, raceRemoteDataSource)
+        RaceRepository(
+            raceDao,
+            circuitDao,
+            raceResultDao,
+            driverDao,
+            constructorDao,
+            raceRemoteDataSource
+        )
 
     private inline fun <reified T> buildRetrofit(url: String): T {
         val httpClient = OkHttpClient.Builder()
-            .apply { addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)) }
+            .readTimeout(20, TimeUnit.SECONDS)
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
 
         return Retrofit.Builder()
             .baseUrl(url)
