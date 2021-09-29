@@ -62,9 +62,9 @@ open class RaceRemoteDataSource(
         wikipediaService.getPageImage(name, size, license.param).query?.pages?.values?.first()
             ?.let { it.original?.source ?: it.thumbnail?.source }
 
-    private fun getWikipediaTitle(circuitUrl: String): String {
+    private fun getWikipediaTitle(url: String): String {
         return URLDecoder.decode(
-            circuitUrl.splitToSequence("/").last(),
+            url.splitToSequence("/").last(),
             Charsets.UTF_8.name()
         )
     }
