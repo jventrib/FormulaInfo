@@ -95,7 +95,7 @@ dependencies {
     implementation "com.google.android.material:material:$materialVersion"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.squareup.logcat:logcat:0.1'
 
     //Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"

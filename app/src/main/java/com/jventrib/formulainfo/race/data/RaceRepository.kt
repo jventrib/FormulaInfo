@@ -13,6 +13,7 @@ import com.jventrib.formulainfo.race.model.remote.RaceRemote
 import com.jventrib.formulainfo.race.model.remote.RaceResultRemote
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import logcat.logcat
 
 class RaceRepository(
     private val raceDao: RaceDao,
@@ -148,7 +149,7 @@ class RaceRepository(
     ): Flow<StoreResponse<List<RaceResultFull>>> {
         return (raceResultDao.getRaceResultsFull(season, round)
             .transform { data ->
-                Log.d("RaceRepository", "raceResultDao.getRaceResultsFull CALLED ${data.size}")
+                logcat { "raceResultDao.getRaceResultsFull CALLED ${data.size}" }
                 if (data.isEmpty()) {
                     raceRemoteDataSource.getRaceResultsFlow(season, round).collect {
                         driverDao.insertAll(RaceResultDriverMapper.toEntity(it))
