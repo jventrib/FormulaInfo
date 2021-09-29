@@ -95,6 +95,7 @@ class RaceRepositoryTest : TestCase() {
         coEvery { raceRemoteDataSource.getCountryFlag(any()) } returns "flag1"
 
         val allRaces = RaceRepository(
+            AppRoomDatabase.getDatabase(context),
             raceDao,
             circuitDao,
             raceResultDao,

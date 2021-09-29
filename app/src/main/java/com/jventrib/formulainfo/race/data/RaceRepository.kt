@@ -1,12 +1,13 @@
 package com.jventrib.formulainfo.race.data
 
+import androidx.room.withTransaction
 import com.dropbox.android.external.store4.*
 import com.jventrib.formulainfo.common.utils.emptyListToNull
 import com.jventrib.formulainfo.race.data.db.*
 import com.jventrib.formulainfo.race.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.race.data.remote.WikipediaService
-import com.jventrib.formulainfo.race.model.db.RaceFull
 import com.jventrib.formulainfo.race.model.db.FullRaceResult
+import com.jventrib.formulainfo.race.model.db.RaceFull
 import com.jventrib.formulainfo.race.model.mapper.*
 import com.jventrib.formulainfo.race.model.remote.RaceRemote
 import kotlinx.coroutines.*
@@ -14,13 +15,15 @@ import kotlinx.coroutines.flow.*
 import logcat.logcat
 
 class RaceRepository(
-    private val raceDao: RaceDao,
-    private val circuitDao: CircuitDao,
-    private val raceResultDao: RaceResultDao,
-    private val driverDao: DriverDao,
-    private val constructorDao: ConstructorDao,
+    private val roomDb: AppRoomDatabase,
     private val raceRemoteDataSource: RaceRemoteDataSource
 ) {
+    private val raceDao: RaceDao = roomDb.raceDao()
+    private val circuitDao: CircuitDao = roomDb.circuitDao()
+    private val raceResultDao: RaceResultDao = roomDb.raceResultDao()
+    private val driverDao: DriverDao = roomDb.driverDao()
+    private val constructorDao: ConstructorDao = roomDb.constructorDao()
+
     private val raceStore: Store<Int, List<RaceFull>> =
         StoreBuilder.from(
             Fetcher.ofFlow { season -> raceRemoteDataSource.getRacesFlow(season) },
@@ -92,7 +95,6 @@ class RaceRepository(
 //        ).build()
 
 
-
     fun getAllRaces(season: Int): Flow<StoreResponse<List<RaceFull>>> {
         return raceStore.stream(StoreRequest.cached(season, false))
             .distinctUntilChangedBy { sr -> sr.dataOrNull() }
@@ -142,6 +144,12 @@ class RaceRepository(
 
     suspend fun refresh() {
         raceStore.clearAll()
+        roomDb.withTransaction {
+            driverDao.deleteAll()
+            constructorDao.deleteAll()
+            raceResultDao.deleteAll()
+        }
+
 //        raceResultStore.clearAll()
     }
 
