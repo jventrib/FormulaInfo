@@ -9,16 +9,16 @@ import coil.clear
 import com.jventrib.formulainfo.common.ui.customDateTimeFormatter
 import com.jventrib.formulainfo.common.ui.loadImage
 import com.jventrib.formulainfo.databinding.ItemRaceBinding
-import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.model.db.FullRace
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
 class RaceListListAdapter internal constructor(
-    private val listener: (RaceFull, ItemRaceBinding) -> Unit
+    private val listener: (FullRace, ItemRaceBinding) -> Unit
 ) : RecyclerView.Adapter<RaceListListAdapter.ViewHolder>() {
 
-    internal var races = emptyList<RaceFull>()
+    internal var races = emptyList<FullRace>()
         set(value) {
             field = value
             notifyDataSetChanged()

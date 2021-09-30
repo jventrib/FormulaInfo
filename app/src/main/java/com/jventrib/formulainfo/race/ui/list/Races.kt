@@ -9,13 +9,13 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dropbox.android.external.store4.StoreResponse
-import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.model.db.FullRace
 import com.jventrib.formulainfo.race.ui.list.item.RaceItem
 
 @Composable
 fun Races(
-    raceList: StoreResponse<List<RaceFull>>,
-    onRaceClicked: (RaceFull) -> Unit,
+    raceList: StoreResponse<List<FullRace>>,
+    onRaceClicked: (FullRace) -> Unit,
     seasonList: List<Int>,
     selectedSeason: Int?,
     onSeasonSelected: (Int) -> Unit,
@@ -48,7 +48,7 @@ fun Races(
 }
 
 @Composable
-fun RaceList(raceList: StoreResponse<List<RaceFull>>, onRaceSelected: (RaceFull) -> Unit) {
+fun RaceList(raceList: StoreResponse<List<FullRace>>, onRaceSelected: (FullRace) -> Unit) {
     LazyColumn {
         raceList.dataOrNull()?.let { raceList ->
             items(raceList) {

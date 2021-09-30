@@ -6,23 +6,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.common.ui.format
 import com.jventrib.formulainfo.getRaceFullSample
-import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.model.db.FullRace
 import com.jventrib.formulainfo.race.ui.components.ItemCard
 
 @Composable
 fun RaceItem(
-    raceFull: RaceFull,
-    onRaceSelected: (RaceFull) -> Unit = {}
+    fullRace: FullRace,
+    onRaceSelected: (FullRace) -> Unit = {}
 ) {
-    ItemCard(raceFull.circuit.location.flag,
+    ItemCard(fullRace.circuit.location.flag,
         {
-        onRaceSelected(raceFull)
+        onRaceSelected(fullRace)
     })
     {
-        Text(text = raceFull.race.raceName,
+        Text(text = fullRace.race.raceName,
             style = MaterialTheme.typography.h6)
         Text(
-            text = raceFull.race.sessions.race.format(),
+            text = fullRace.race.sessions.race.format(),
             style = MaterialTheme.typography.body2
         )
     }
@@ -32,6 +32,6 @@ fun RaceItem(
 @Composable
 fun RaceItemPreview() {
     RaceItem(
-        raceFull = getRaceFullSample(1, "Emilia Romagna Grand Prix")
+        fullRace = getRaceFullSample(1, "Emilia Romagna Grand Prix")
     ) {}
 }
