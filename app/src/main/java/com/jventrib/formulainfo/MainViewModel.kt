@@ -31,7 +31,7 @@ class MainViewModel(private val repository: RaceRepository) : ViewModel() {
     val raceResultsRaceResult: LiveData<StoreResponse<List<FullRaceResult>>> =
         round.distinctUntilChanged().switchMap {
             it?.let {
-                repository.getRaceResults(season.value!!, it)
+                repository.getRaceResults2(season.value!!, it)
                     .asLiveData()
             } ?: MutableLiveData(StoreResponse.Loading(ResponseOrigin.Fetcher))
         }
