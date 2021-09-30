@@ -2,10 +2,10 @@ package com.jventrib.formulainfo
 
 import com.jventrib.formulainfo.race.model.db.Circuit
 import com.jventrib.formulainfo.race.model.db.Race
-import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.model.db.FullRace
 import java.time.Instant
 
-fun getRaceFullSample(round: Int, name: String? = null): RaceFull {
+fun getRaceFullSample(round: Int, name: String? = null): FullRace {
     val sessions = Race.Sessions(race = Instant.now())
     val race = Race(2021, round, "", name ?: "Race$round", "Circuit$round", sessions)
     val circuit = Circuit(
@@ -22,5 +22,5 @@ fun getRaceFullSample(round: Int, name: String? = null): RaceFull {
         "url"
     )
 
-    return RaceFull(race, circuit)
+    return FullRace(race, circuit)
 }

@@ -15,9 +15,7 @@ open class RaceRemoteDataSource(
 
     ) {
 
-    fun getRacesFlow(season: Int) = flow { emit(getRaces(season)) }
-
-    private suspend fun getRaces(season: Int): List<RaceRemote> {
+    suspend fun getRaces(season: Int): List<RaceRemote> {
 
         val races = mrdService.getRaces(season).mrData.table.races
         return try {

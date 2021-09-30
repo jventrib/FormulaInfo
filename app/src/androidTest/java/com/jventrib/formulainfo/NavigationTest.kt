@@ -1,6 +1,5 @@
 package com.jventrib.formulainfo
 
-import android.content.Intent
 import android.view.View
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.ViewModelStore
@@ -18,7 +17,7 @@ import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiT
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.google.common.truth.Truth.assertThat
 import com.jventrib.formulainfo.race.model.db.Race
-import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.model.db.FullRace
 import com.jventrib.formulainfo.race.ui.list.RaceListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -72,7 +71,7 @@ class NavigationTest {
 
         onData(
             AllOf.allOf(
-                `is`(instanceOf(RaceFull::class.java)),
+                `is`(instanceOf(FullRace::class.java)),
                 hasProperty("race", hasProperty<Race>("round", equalTo(2)))
             )
         ).perform(click())

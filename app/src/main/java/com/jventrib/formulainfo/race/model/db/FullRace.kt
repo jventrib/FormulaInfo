@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import java.io.Serializable
 
-data class RaceFull(
+data class FullRace(
     @Embedded
     val race: Race,
     @Relation(entityColumn = "id", parentColumn = "circuitId")

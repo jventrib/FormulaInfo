@@ -26,7 +26,7 @@ import com.jventrib.formulainfo.common.ui.autoCleared
 import com.jventrib.formulainfo.common.utils.getLong
 import com.jventrib.formulainfo.databinding.FragmentRaceListBinding
 import com.jventrib.formulainfo.databinding.ItemRaceBinding
-import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.model.db.FullRace
 import kotlinx.coroutines.launch
 import logcat.LogPriority
 import logcat.logcat
@@ -84,7 +84,7 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    private fun onRaceClicked() = { race: RaceFull, itemRaceBinding: ItemRaceBinding ->
+    private fun onRaceClicked() = { race: FullRace, itemRaceBinding: ItemRaceBinding ->
 //        exitTransition = getHold()
 //        reenterTransition = getHold()
 
@@ -94,11 +94,11 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         reenterTransition = MaterialElevationScale(true).apply {
             duration = requireContext().getLong(R.integer.shared_element_transition_duration)
         }
-        val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
+//        val directions = RaceListFragmentDirections.actionRaceFragmentToRaceResultFragment(race)
         val extras = FragmentNavigatorExtras(
             itemRaceBinding.root to "race_card_detail",
         )
-        findNavController().navigate(directions, extras)
+//        findNavController().navigate(directions, extras)
     }
 
     private fun observeRaces(raceListListAdapter: RaceListListAdapter) {

@@ -1,22 +1,22 @@
 package com.jventrib.formulainfo.race.data
 
-import androidx.room.withTransaction
 import com.dropbox.android.external.store4.*
 import com.jventrib.formulainfo.common.utils.emptyListToNull
 import com.jventrib.formulainfo.race.data.db.*
 import com.jventrib.formulainfo.race.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.race.data.remote.WikipediaService
 import com.jventrib.formulainfo.race.model.db.FullRaceResult
-import com.jventrib.formulainfo.race.model.db.RaceFull
+import com.jventrib.formulainfo.race.model.db.FullRace
 import com.jventrib.formulainfo.race.model.mapper.*
 import com.jventrib.formulainfo.race.model.remote.RaceRemote
 import com.jventrib.formulainfo.race.model.remote.RaceResultRemote
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import logcat.LogPriority
 import logcat.logcat
 
 class RaceRepository(
-    private val roomDb: AppRoomDatabase,
+    roomDb: AppRoomDatabase,
     private val raceRemoteDataSource: RaceRemoteDataSource
 ) {
     private val raceDao: RaceDao = roomDb.raceDao()
@@ -25,14 +25,54 @@ class RaceRepository(
     private val driverDao: DriverDao = roomDb.driverDao()
     private val constructorDao: ConstructorDao = roomDb.constructorDao()
 
-    private val raceStore: Store<Int, List<RaceFull>> =
+    data class SeasonRace(val season: Int, val round: Int)
+
+    fun getRaces(season: Int): Flow<StoreResponse<List<FullRace>>> {
+        return raceStore.stream(StoreRequest.cached(season, false)).onEach {
+            logcat(LogPriority.VERBOSE) { "Races Response: $it" }
+        }
+    }
+
+    fun getRaceResults(season: Int, round: Int): Flow<StoreResponse<List<FullRaceResult>>> =
+        raceResultStore.stream(StoreRequest.cached(SeasonRace(season, round), false)).onEach {
+            logcat(LogPriority.VERBOSE) { "RaceResults Response: $it" }
+        }
+
+    fun getRace(season: Int, round: Int): Flow<FullRace> {
+        return getRaces(season)
+            .transform { storeResponse ->
+                if (storeResponse is StoreResponse.Data) {
+                    val first = storeResponse.requireData().first { it.race.round == round }
+                    emit(first)
+                }
+            }
+            .flatMapLatest { getRace(it) }
+    }
+
+    suspend fun refresh() {
+        raceStore.clearAll()
+        raceResultStore.clearAll()
+    }
+
+    private val raceStore: Store<Int, List<FullRace>> =
         StoreBuilder.from(
-            Fetcher.ofFlow { season -> raceRemoteDataSource.getRacesFlow(season) },
+            Fetcher.of { season ->
+                logcat { "No FullRace in DB, fetching from API" }
+                raceRemoteDataSource.getRaces(season).also {
+                    logcat { "Fetched Races from API: $it" }
+                }
+            },
             SourceOfTruth.of(
                 reader = { season ->
+                    logcat { "Getting FullRaces from DB" }
                     raceDao.getSeasonRaces(season)
+                        .onEach {
+                            logcat { "Got ${it.size} FullRaces from DB" }
+                        }
                         .completeMissing({ it.circuit.location.flag }) {
-                            circuitDao.insert(getCircuitWithFlag(it))
+                            val flag = getCircuitWithFlag(it)
+                            logcat { "Completing circuit ${it.circuit.id} with image ${flag.location.flag}" }
+                            circuitDao.insert(flag)
                         }
                         .emptyListToNull()
 
@@ -42,6 +82,7 @@ class RaceRepository(
                     circuitDao.insertAll(RaceCircuitMapper.toEntity(races))
                 },
                 deleteAll = {
+                    logcat { "Deleting Races and Circuits" }
                     withContext(Dispatchers.IO) {
                         raceDao.deleteAll()
                         circuitDao.deleteAll()
@@ -50,14 +91,11 @@ class RaceRepository(
             )
         ).build()
 
-    fun getRace(r: RaceFull) = flow {
+    private fun getRace(r: FullRace) = flow {
         emit(r)
         if (r.circuit.imageUrl == null) {
             val circuitWithImage = r.circuit.copy(
-                imageUrl = raceRemoteDataSource.getCircuitImage(
-                    r.circuit.url,
-                    500
-                )
+                imageUrl = raceRemoteDataSource.getCircuitImage(r.circuit.url, 500)
             )
             circuitDao.insert(circuitWithImage)
             emit(r.copy(circuit = circuitWithImage))
@@ -103,6 +141,7 @@ class RaceRepository(
                         .also { logcat { "Inserting Results $it" } })
                 },
                 deleteAll = {
+                    logcat { "Deleting Drivers, Constructors and RaceResults" }
                     withContext(Dispatchers.IO) {
                         driverDao.deleteAll()
                         constructorDao.deleteAll()
@@ -111,86 +150,6 @@ class RaceRepository(
                 }
             )
         ).build()
-
-
-    fun getAllRaces(season: Int): Flow<StoreResponse<List<RaceFull>>> {
-        return raceStore.stream(StoreRequest.cached(season, false))
-            .distinctUntilChangedBy { sr -> sr.dataOrNull() }
-    }
-
-    fun getRace(season: Int, round: Int): Flow<RaceFull> {
-        return getAllRaces(season)
-            .transform { storeResponse ->
-                if (storeResponse is StoreResponse.Data) {
-                    val first = storeResponse.requireData().first { it.race.round == round }
-                    emit(first)
-                }
-            }
-            .flatMapLatest { getRace(it) }
-    }
-
-
-
-    fun getRaceResults2(
-        season: Int,
-        round: Int
-    ): Flow<StoreResponse<List<FullRaceResult>>> =
-        raceResultStore.stream(StoreRequest.cached(SeasonRace(season, round), false))
-
-
-    fun getRaceResults(
-        season: Int,
-        round: Int
-    ): Flow<StoreResponse<List<FullRaceResult>>> =
-        raceResultDao.getFullRaceResults(season, round)
-            .distinctUntilChanged()
-            .transformLatest { data ->
-                emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
-                logcat { "Getting FullRaceResults from DB" }
-                if (data.isEmpty()) {
-                    logcat { "No FullRaceResults in DB, fetching from API" }
-                    emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
-                    raceRemoteDataSource.getRaceResults(season, round).also {
-                        logcat { "Fetched RaceResults from API: $it" }
-                        driverDao.insertAll(RaceResultDriverMapper.toEntity(it)
-                            .also { logcat { "Inserting Drivers $it" } })
-                        constructorDao.insertAll(RaceResultConstructorMapper.toEntity(it)
-                            .also { logcat { "Inserting Constructors $it" } })
-                        raceResultDao.insertAll(RaceResultMapper.toEntity(season, round, it)
-                            .also { logcat { "Inserting Results $it" } })
-                    }
-                } else {
-                    logcat { "Got ${data.size} FullRaceResults from DB" }
-                    emit(StoreResponse.Data(data, ResponseOrigin.SourceOfTruth))
-                }
-            }
-            .completeFlowMissing({ it.driver.image }) {
-                logcat { "Completing driver ${it.driver.code} with image" }
-                driverDao.insert(getDriverWithImage(it))
-            }.onEach { logcat { "Response: $it" } }
-
-
-    suspend fun refresh() {
-        raceStore.clearAll()
-        roomDb.withTransaction {
-            driverDao.deleteAll()
-            constructorDao.deleteAll()
-            raceResultDao.deleteAll()
-        }
-
-//        raceResultStore.clearAll()
-    }
-
-    private fun <T : StoreResponse<List<U>>, U> Flow<T>.completeFlowMissing(
-        attr: (U) -> Any?,
-        action: suspend (U) -> Unit
-    ): Flow<T> =
-        this.transform { response ->
-            emit(response)
-            if (response is StoreResponse.Data<*>) {
-                response.dataOrNull()?.firstOrNull { attr(it) == null }?.let { action(it) }
-            }
-        }.distinctUntilChanged()
 
 
     private fun <T : List<U>, U> Flow<T>.completeMissing(
@@ -203,10 +162,10 @@ class RaceRepository(
         }.distinctUntilChanged()
 
 
-    private suspend fun getCircuitWithFlag(raceFull: RaceFull) = raceFull.circuit.copy(
-        location = raceFull.circuit.location.copy(
+    private suspend fun getCircuitWithFlag(fullRace: FullRace) = fullRace.circuit.copy(
+        location = fullRace.circuit.location.copy(
             flag = raceRemoteDataSource.getCountryFlag(
-                raceFull.circuit.location.country
+                fullRace.circuit.location.country
             )
         )
     )
@@ -225,6 +184,5 @@ class RaceRepository(
             ) ?: "NONE"
         )
 
-    data class SeasonRace(val season: Int, val round: Int)
 }
 

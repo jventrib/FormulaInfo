@@ -23,7 +23,7 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
             StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
         )
         val seasonList = viewModel.seasonList
-        val raceFull by viewModel.raceFull.observeAsState()
+        val raceFull by viewModel.fullRace.observeAsState()
         val raceResults by viewModel.raceResultsRaceResult.observeAsState()
         val scope = rememberCoroutineScope()
 
