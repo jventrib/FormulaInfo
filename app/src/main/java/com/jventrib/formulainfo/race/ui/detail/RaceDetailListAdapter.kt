@@ -14,13 +14,13 @@ import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformatio
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.loadImage
 import com.jventrib.formulainfo.databinding.ItemRaceResultBinding
-import com.jventrib.formulainfo.race.model.db.RaceResultFull
-import timber.log.Timber
+import com.jventrib.formulainfo.race.model.db.FullRaceResult
+import logcat.logcat
 
 class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHolder>() {
 
     private lateinit var context: Context
-    private var raceResults = emptyList<RaceResultFull>()
+    private var raceResults = emptyList<FullRaceResult>()
 
     override fun getItemCount() = raceResults.size
 
@@ -40,8 +40,8 @@ class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHol
         val current = raceResults.toList()[position]
         holder.binding.textPosition.text = "${current.raceResult.position}:"
         holder.binding.textDriverName.text =
-            "${current.driver.givenName} ${current.driver.familyName}"
-        holder.binding.textConstructor.text = current.constructor.name
+            "${current.driver?.givenName} ${current.driver?.familyName}"
+        holder.binding.textConstructor.text = current.constructor?.name
         holder.binding.textDriverPoints.text = "${current.raceResult.points.fmt()} pts"
         holder.binding.textDriverGrid.text = "Started " + (current.raceResult.grid).toString()
         val positionGain = current.raceResult.grid - current.raceResult.position
@@ -66,7 +66,7 @@ class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHol
 //            holder.binding.textConstructor.background = null
 
         val colorId = context.resources.getIdentifier(
-            current.constructor.id,
+            current.constructor?.id,
             "color",
             context.packageName
         )
@@ -87,11 +87,11 @@ class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHol
                 context.resources.getColor(R.color.light_grey)
             }
             holder.binding.spaceConstructorColor.setBackgroundColor(color)
-            Timber.i("Constructor ${current.constructor.id} color resource not found")
+            logcat {"Constructor ${current.constructor?.id} color resource not found"}
 
         }
 
-        current.driver.image?.let {
+        current.driver?.image?.let {
             holder.binding.imageDriver.loadImage(it) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     transformations(
@@ -114,7 +114,7 @@ class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHol
     }
 
 
-    internal fun setRaceResult(list: List<RaceResultFull>) {
+    internal fun setRaceResult(list: List<FullRaceResult>) {
         this.raceResults = list
         notifyDataSetChanged()
     }

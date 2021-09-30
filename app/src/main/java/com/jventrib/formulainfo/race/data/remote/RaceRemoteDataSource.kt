@@ -2,7 +2,6 @@ package com.jventrib.formulainfo.race.data.remote
 
 import com.jventrib.formulainfo.race.model.remote.RaceRemote
 import com.jventrib.formulainfo.race.model.remote.RaceResultRemote
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.URLDecoder
 import java.time.ZonedDateTime
@@ -38,14 +37,8 @@ open class RaceRemoteDataSource(
         }
     }
 
-    fun getRaceResultsFlow(season: Int, round: Int): Flow<List<RaceResultRemote>> {
-        return flow {
-            val raceResults =
-                mrdService.getRaceResults(season, round)
-                    .mrData.table.races.firstOrNull()?.resultRemotes
-                    ?.map { it.copy(season = season, round = round) }
-            raceResults?.let { emit(it) } ?: emit(listOf<RaceResultRemote>())
-        }
+    suspend fun getRaceResults(season: Int, round: Int): List<RaceResultRemote> {
+        return mrdService.getRaceResults(season, round).mrData.table.races.first().resultRemotes!!
     }
 
     suspend fun getCountryFlag(country: String) =
@@ -69,9 +62,9 @@ open class RaceRemoteDataSource(
         wikipediaService.getPageImage(name, size, license.param).query?.pages?.values?.first()
             ?.let { it.original?.source ?: it.thumbnail?.source }
 
-    private fun getWikipediaTitle(circuitUrl: String): String {
+    private fun getWikipediaTitle(url: String): String {
         return URLDecoder.decode(
-            circuitUrl.splitToSequence("/").last(),
+            url.splitToSequence("/").last(),
             Charsets.UTF_8.name()
         )
     }

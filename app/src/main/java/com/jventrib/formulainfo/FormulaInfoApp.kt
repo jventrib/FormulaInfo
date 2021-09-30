@@ -13,6 +13,7 @@ import com.jventrib.formulainfo.about.About
 import com.jventrib.formulainfo.race.ui.detail.RaceDetail
 import com.jventrib.formulainfo.race.ui.list.Races
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun FormulaInfoApp(viewModel: MainViewModel) {
@@ -23,7 +24,8 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
         )
         val seasonList = viewModel.seasonList
         val raceFull by viewModel.raceFull.observeAsState()
-        val raceResults by viewModel.raceResults.observeAsState()
+        val raceResults by viewModel.raceResultsRaceResult.observeAsState()
+        val scope = rememberCoroutineScope()
 
         NavHost(navController = navController, startDestination = "races") {
             composable("races") {
@@ -32,8 +34,12 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
                     onRaceClicked = { race -> navController.navigate("race/${race.race.season}/${race.race.round}") },
                     seasonList = seasonList,
                     selectedSeason = viewModel.season.observeAsState().value,
-                    onSeasonSelected = { viewModel.season.value = it },
+                    onSeasonSelected = {
+                        viewModel.season.value = it
+                        viewModel.round.value = null
+                    },
                     onAboutClicked = { navController.navigate("about") },
+                    onRefreshClicked = { scope.launch { viewModel.refresh() } }
                 )
             }
             composable(
