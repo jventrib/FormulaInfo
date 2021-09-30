@@ -30,7 +30,7 @@ class RaceRepository(
             SourceOfTruth.of(
                 reader = { season ->
                     raceDao.getSeasonRaces(season)
-                        .completeMissing({ it.circuit.location.flag }) {
+                        .completeMissingInList({ it.circuit.location.flag }) {
                             circuitDao.insert(getCircuitWithFlag(it))
                         }
                         .emptyListToNull()
@@ -117,10 +117,12 @@ class RaceRepository(
     ): Flow<StoreResponse<List<FullRaceResult>>> =
         raceResultDao.getFullRaceResults(season, round)
             .distinctUntilChanged()
-            .transform { data ->
-                logcat { "Looking for FullRaceResults in DB" }
+            .transformLatest { data ->
+                emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
+                logcat { "Getting FullRaceResults from DB" }
                 if (data.isEmpty()) {
                     logcat { "No FullRaceResults in DB, fetching from API" }
+                    emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
                     raceRemoteDataSource.getRaceResults(season, round).also {
                         logcat { "Fetched RaceResults from API: $it" }
                         driverDao.insertAll(RaceResultDriverMapper.toEntity(it)
@@ -132,14 +134,13 @@ class RaceRepository(
                     }
                 } else {
                     logcat { "Got ${data.size} FullRaceResults from DB" }
-                    emit(data)
+                    emit(StoreResponse.Data(data, ResponseOrigin.SourceOfTruth))
                 }
             }
             .completeMissing({ it.driver.image }) {
                 logcat { "Completing driver ${it.driver.code} with image" }
                 driverDao.insert(getDriverWithImage(it))
-            }
-            .map { StoreResponse.Data(it, ResponseOrigin.SourceOfTruth) }
+            }.onEach { logcat { "Response: $it" } }
 
 
     suspend fun refresh() {
@@ -153,13 +154,25 @@ class RaceRepository(
 //        raceResultStore.clearAll()
     }
 
-    private fun <T : List<U>, U> Flow<T>.completeMissing(
+    private fun <T : StoreResponse<List<U>>, U> Flow<T>.completeMissing(
         attr: (U) -> Any?,
         action: suspend (U) -> Unit
     ): Flow<T> =
-        this.transform { list ->
-            emit(list)
-            list.firstOrNull { attr(it) == null }?.let { action(it) }
+        this.transform { response ->
+            emit(response)
+            if (response is StoreResponse.Data<*>) {
+                response.dataOrNull()?.firstOrNull { attr(it) == null }?.let { action(it) }
+            }
+        }.distinctUntilChanged()
+
+
+    private fun <T : List<U>, U> Flow<T>.completeMissingInList(
+        attr: (U) -> Any?,
+        action: suspend (U) -> Unit
+    ): Flow<T> =
+        this.transform { response ->
+            emit(response)
+                response.firstOrNull { attr(it) == null }?.let { action(it) }
         }.distinctUntilChanged()
 
 
