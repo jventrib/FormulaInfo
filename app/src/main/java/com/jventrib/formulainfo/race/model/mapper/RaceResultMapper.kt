@@ -1,16 +1,14 @@
 package com.jventrib.formulainfo.race.model.mapper
 
-import com.jventrib.formulainfo.race.model.db.Constructor
-import com.jventrib.formulainfo.race.model.db.Driver
 import com.jventrib.formulainfo.race.model.db.RaceResult
 import com.jventrib.formulainfo.race.model.remote.RaceResultRemote
 
-object RaceResultMapper: Mapper<RaceResultRemote, RaceResult> {
+object RaceResultMapper {
 
-    override fun toEntity(remote: RaceResultRemote) = RaceResult(
-        "${remote.season}-${remote.round}-${remote.position}",
-        remote.season,
-        remote.round,
+    fun toEntity(season: Int, round: Int, remote: RaceResultRemote) = RaceResult(
+        "${season}-${round}-${remote.position}",
+        season,
+        round,
         remote.number,
         remote.position,
         remote.positionText,
@@ -30,4 +28,7 @@ object RaceResultMapper: Mapper<RaceResultRemote, RaceResult> {
             )
         },
     )
+
+    fun toEntity(season: Int, round: Int, remotes: List<RaceResultRemote>) =
+        remotes.map { toEntity(season, round, it) }
 }

@@ -1,6 +1,5 @@
 package com.jventrib.formulainfo.race.model.remote
 
-import androidx.room.Embedded
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 import java.time.Instant

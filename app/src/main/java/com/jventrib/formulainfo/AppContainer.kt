@@ -16,6 +16,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
 import java.time.ZonedDateTime
+import java.util.concurrent.TimeUnit
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -29,12 +30,6 @@ class AppContainer(context: Context) {
             }).create()
     )
 
-    private val raceDao = AppRoomDatabase.getDatabase(context).raceDao()
-    private val circuitDao = AppRoomDatabase.getDatabase(context).circuitDao()
-    private val raceResultDao = AppRoomDatabase.getDatabase(context).raceResultDao()
-    private val driverDao = AppRoomDatabase.getDatabase(context).driverDao()
-    private val constructorDao = AppRoomDatabase.getDatabase(context).constructorDao()
-
     private val mrdService: MrdService =
         buildRetrofit(context.getString(R.string.api_ergast))
     private val wikipediaService: WikipediaService =
@@ -44,12 +39,12 @@ class AppContainer(context: Context) {
     private val raceRemoteDataSource =
         RaceRemoteDataSource(mrdService, wikipediaService, f1CalendarService)
 
-    val raceRepository =
-        RaceRepository(raceDao, circuitDao, raceResultDao, driverDao, constructorDao, raceRemoteDataSource)
+    val raceRepository = RaceRepository(AppRoomDatabase.getDatabase(context), raceRemoteDataSource)
 
     private inline fun <reified T> buildRetrofit(url: String): T {
         val httpClient = OkHttpClient.Builder()
-            .apply { addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)) }
+            .readTimeout(20, TimeUnit.SECONDS)
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
 
         return Retrofit.Builder()
             .baseUrl(url)

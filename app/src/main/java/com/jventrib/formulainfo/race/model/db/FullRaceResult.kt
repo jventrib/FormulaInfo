@@ -3,7 +3,7 @@ package com.jventrib.formulainfo.race.model.db
 import androidx.room.Embedded
 import androidx.room.Relation
 
-data class RaceResultFull(
+data class FullRaceResult(
     @Embedded
     val raceResult: RaceResult,
     @Relation(entityColumn = "driverId", parentColumn = "driverId")

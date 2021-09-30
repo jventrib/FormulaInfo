@@ -28,7 +28,8 @@ import com.jventrib.formulainfo.databinding.FragmentRaceListBinding
 import com.jventrib.formulainfo.databinding.ItemRaceBinding
 import com.jventrib.formulainfo.race.model.db.RaceFull
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import logcat.LogPriority
+import logcat.logcat
 
 /**
  * A fragment representing a list of Items.
@@ -75,9 +76,9 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private fun setupSwipeRefresh() {
         binding.swipeRaceList.setDistanceToTriggerSync(800)
         binding.swipeRaceList.setOnRefreshListener {
-            Timber.d("Refresh Races")
+            logcat { "Refresh Races" }
             viewModel.viewModelScope.launch {
-                viewModel.refreshRaces()
+                viewModel.refresh()
                 binding.swipeRaceList.isRefreshing = false
             }
         }
@@ -112,7 +113,7 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     }
                 }
                 is StoreResponse.Error.Exception -> {
-                    Timber.e(response.error, "Error: ${response.errorMessageOrNull()}")
+                    logcat(LogPriority.ERROR) { "Error: ${response.errorMessageOrNull()}" }
                     Toast.makeText(
                         this.context,
                         response.errorMessageOrNull(),
@@ -121,7 +122,7 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         .show()
                 }
                 is StoreResponse.Loading ->
-                    Timber.d("Resource.Status.LOADING")
+                    logcat { "Resource.Status.LOADING" }
                 is StoreResponse.NoNewData -> TODO()
                 is StoreResponse.Error.Message -> TODO()
             }
@@ -138,7 +139,7 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
             requireContext(), R.layout.spinner_season, viewModel.seasonList
         ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
         spinner.onItemSelectedListener = this
-        viewModel.seasonPosition.value?.let { spinner.setSelection(it) }
+//        viewModel.seasonPosition.value?.let { spinner.setSelection(it) }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -157,8 +158,8 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        viewModel.setSeasonPosition(position)
-//        viewModel.setSeason(seasonList[position])
+//        viewModel.seasonPosition.value = position
+        //        viewModel.setSeason(seasonList[position])
 //        @Suppress("ControlFlowWithEmptyBody")
 //        while (navController.navigateUp()) {
 //        }
