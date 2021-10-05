@@ -10,6 +10,6 @@ import com.jventrib.formulainfo.race.model.db.Circuit
 interface CircuitDao : IDao<Circuit> {
 
     @Query("DELETE FROM circuit")
-    fun deleteAll()
+    suspend fun deleteAll()
 
 }

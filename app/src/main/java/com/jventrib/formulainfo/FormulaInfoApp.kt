@@ -23,7 +23,7 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
             StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
         )
         val seasonList = viewModel.seasonList
-        val raceFull by viewModel.fullRace.observeAsState()
+        val fullRace by viewModel.fullRace.observeAsState()
         val raceResults by viewModel.raceResultsRaceResult.observeAsState()
         val scope = rememberCoroutineScope()
 
@@ -48,9 +48,13 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
                     navArgument("season") { type = NavType.IntType },
                     navArgument("round") { type = NavType.IntType })
             ) { navBackStackEntry ->
-                viewModel.season.value = navBackStackEntry.arguments?.get("season") as Int
-                viewModel.round.value = navBackStackEntry.arguments?.get("round") as Int
-                RaceDetail(raceFull!!, raceResults?.dataOrNull() ?: listOf())
+                val season = navBackStackEntry.arguments?.get("season") as Int
+                val round = navBackStackEntry.arguments?.get("round") as Int
+                viewModel.season.value = season
+                viewModel.round.value = round
+                fullRace?.let {
+                    RaceDetail(it, raceResults?.dataOrNull() ?: listOf())
+                }
             }
             composable("about") { About() }
         }
