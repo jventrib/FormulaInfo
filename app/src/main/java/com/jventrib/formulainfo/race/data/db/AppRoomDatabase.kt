@@ -27,24 +27,4 @@ abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun raceResultDao(): RaceResultDao
     abstract fun driverDao(): DriverDao
     abstract fun constructorDao(): ConstructorDao
-
-    companion object {
-        // Singleton prevents multiple instances of database opening at the
-        // same time.
-        @Volatile
-        private var instance: AppRoomDatabase? = null
-
-        fun getDatabase(
-            context: Context
-        ): AppRoomDatabase =
-            instance ?: synchronized(this) {
-                instance ?: Room.databaseBuilder(
-                    context,
-                    AppRoomDatabase::class.java,
-                    "f1_database"
-                )
-                    .fallbackToDestructiveMigration()
-                    .build().also { instance = it }
-            }
-    }
 }
