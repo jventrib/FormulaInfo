@@ -41,10 +41,10 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private val navController by lazy { findNavController() }
 
-    private val viewModel: MainViewModel by activityViewModels {
-        (requireActivity().application as Application).appContainer.getViewModelFactory(::MainViewModel)
-    }
-
+//    private val viewModel: MainViewModel by activityViewModels {
+//        (requireActivity().application as Application).appContainer.getViewModelFactory(::MainViewModel)
+//    }
+//
     private fun getHold() = Hold().apply {
         duration = requireContext().getLong(R.integer.shared_element_transition_duration)
     }
@@ -77,10 +77,10 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.swipeRaceList.setDistanceToTriggerSync(800)
         binding.swipeRaceList.setOnRefreshListener {
             logcat { "Refresh Races" }
-            viewModel.viewModelScope.launch {
-                viewModel.refresh()
-                binding.swipeRaceList.isRefreshing = false
-            }
+//            viewModel.viewModelScope.launch {
+//                viewModel.refresh()
+//                binding.swipeRaceList.isRefreshing = false
+//            }
         }
     }
 
@@ -102,31 +102,31 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun observeRaces(raceListListAdapter: RaceListListAdapter) {
-        viewModel.races.observe(viewLifecycleOwner) { response ->
-            when (response) {
-                is StoreResponse.Data -> {
-                    raceListListAdapter.races = response.value
-
-                    //FIXME postponed transition
-                    (view?.parent as ViewGroup).doOnPreDraw {
-                        startPostponedEnterTransition()
-                    }
-                }
-                is StoreResponse.Error.Exception -> {
-                    logcat(LogPriority.ERROR) { "Error: ${response.errorMessageOrNull()}" }
-                    Toast.makeText(
-                        this.context,
-                        response.errorMessageOrNull(),
-                        Toast.LENGTH_SHORT
-                    )
-                        .show()
-                }
-                is StoreResponse.Loading ->
-                    logcat { "Resource.Status.LOADING" }
-                is StoreResponse.NoNewData -> TODO()
-                is StoreResponse.Error.Message -> TODO()
-            }
-        }
+//        viewModel.races.observe(viewLifecycleOwner) { response ->
+//            when (response) {
+//                is StoreResponse.Data -> {
+//                    raceListListAdapter.races = response.value
+//
+//                    //FIXME postponed transition
+//                    (view?.parent as ViewGroup).doOnPreDraw {
+//                        startPostponedEnterTransition()
+//                    }
+//                }
+//                is StoreResponse.Error.Exception -> {
+//                    logcat(LogPriority.ERROR) { "Error: ${response.errorMessageOrNull()}" }
+//                    Toast.makeText(
+//                        this.context,
+//                        response.errorMessageOrNull(),
+//                        Toast.LENGTH_SHORT
+//                    )
+//                        .show()
+//                }
+//                is StoreResponse.Loading ->
+//                    logcat { "Resource.Status.LOADING" }
+//                is StoreResponse.NoNewData -> TODO()
+//                is StoreResponse.Error.Message -> TODO()
+//            }
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -135,9 +135,9 @@ class RaceListFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         val item: MenuItem = menu.findItem(R.id.spinner)
         val spinner = item.actionView as Spinner
-        spinner.adapter = ArrayAdapter(
-            requireContext(), R.layout.spinner_season, viewModel.seasonList
-        ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+//        spinner.adapter = ArrayAdapter(
+//            requireContext(), R.layout.spinner_season, viewModel.seasonList
+//        ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
         spinner.onItemSelectedListener = this
 //        viewModel.seasonPosition.value?.let { spinner.setSelection(it) }
     }

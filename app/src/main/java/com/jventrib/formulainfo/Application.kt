@@ -4,6 +4,7 @@ import android.app.Application
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.SvgDecoder
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import logcat.AndroidLogcatLogger
@@ -13,15 +14,16 @@ import logcat.LogPriority
 
 @ExperimentalCoroutinesApi
 @FlowPreview
+@HiltAndroidApp
 class Application: Application(), ImageLoaderFactory {
-    lateinit var appContainer: AppContainer
+//    lateinit var appContainer: AppContainer
 
     override fun onCreate() {
         super.onCreate()
 //        LeakCanary.config = LeakCanary.config.copy(retainedVisibleThreshold = 1)
 
         AndroidLogcatLogger.installOnDebuggableApp(this, minPriority = LogPriority.VERBOSE)
-        appContainer = AppContainer(this)
+//        appContainer = AppContainer(this)
     }
 
     override fun newImageLoader(): ImageLoader {

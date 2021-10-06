@@ -17,9 +17,8 @@
 package com.skydoves.disneycompose.di
 
 import com.jventrib.formulainfo.race.data.RaceRepository
-import com.skydoves.disneycompose.network.DisneyService
-import com.skydoves.disneycompose.persistence.PosterDao
-import com.skydoves.disneycompose.repository.MainRepository
+import com.jventrib.formulainfo.race.data.db.AppRoomDatabase
+import com.jventrib.formulainfo.race.data.remote.RaceRemoteDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,10 +31,10 @@ object RepositoryModule {
 
   @Provides
   @ViewModelScoped
-  fun provideMainRepository(
-    disneyService: DisneyService,
-    posterDao: PosterDao
-  ): MainRepository {
-    return RaceRepository(disneyService, posterDao)
+  fun provideRaceRepository(
+    roomDb: AppRoomDatabase,
+    raceRemoteDataSource: RaceRemoteDataSource
+  ): RaceRepository {
+    return RaceRepository(roomDb, raceRemoteDataSource)
   }
 }

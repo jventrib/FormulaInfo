@@ -39,7 +39,6 @@ class AppContainer(context: Context) {
     private val raceRemoteDataSource =
         RaceRemoteDataSource(mrdService, wikipediaService, f1CalendarService)
 
-    val raceRepository = RaceRepository(AppRoomDatabase.getDatabase(context), raceRemoteDataSource)
 
     private inline fun <reified T> buildRetrofit(url: String): T {
         val httpClient = OkHttpClient.Builder()
@@ -53,12 +52,4 @@ class AppContainer(context: Context) {
             .build()
             .create(T::class.java)
     }
-
-    @Suppress("UNCHECKED_CAST")
-    fun getViewModelFactory(vm: (RaceRepository) -> ViewModel): ViewModelProvider.Factory =
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return vm(raceRepository) as T
-            }
-        }
 }

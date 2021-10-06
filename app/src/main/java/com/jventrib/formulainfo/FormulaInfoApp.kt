@@ -1,12 +1,15 @@
 package com.jventrib.formulainfo
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.about.About
@@ -16,19 +19,18 @@ import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun FormulaInfoApp(viewModel: MainViewModel) {
+fun FormulaInfoApp() {
     FormulaInfoTheme {
         val navController = rememberNavController()
-        val raceList by viewModel.races.observeAsState(
-            StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
-        )
-        val seasonList = viewModel.seasonList
-        val fullRace by viewModel.fullRace.observeAsState()
-        val raceResults by viewModel.raceResultsRaceResult.observeAsState()
         val scope = rememberCoroutineScope()
 
         NavHost(navController = navController, startDestination = "races") {
             composable("races") {
+                val viewModel: MainViewModel = hiltViewModel()
+                val raceList by viewModel.races.observeAsState(
+                    StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
+                )
+                val seasonList = viewModel.seasonList
                 Races(
                     raceList = raceList,
                     onRaceClicked = { race -> navController.navigate("race/${race.race.season}/${race.race.round}") },
@@ -48,6 +50,9 @@ fun FormulaInfoApp(viewModel: MainViewModel) {
                     navArgument("season") { type = NavType.IntType },
                     navArgument("round") { type = NavType.IntType })
             ) { navBackStackEntry ->
+                val viewModel: MainViewModel = hiltViewModel()
+                val fullRace by viewModel.fullRace.observeAsState()
+                val raceResults by viewModel.raceResultsRaceResult.observeAsState()
                 val season = navBackStackEntry.arguments?.get("season") as Int
                 val round = navBackStackEntry.arguments?.get("round") as Int
                 viewModel.season.value = season

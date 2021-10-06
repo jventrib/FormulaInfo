@@ -20,9 +20,6 @@ import android.app.Application
 import androidx.room.Room
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.race.data.db.*
-import com.skydoves.disneycompose.R
-import com.skydoves.disneycompose.persistence.AppDatabase
-import com.skydoves.disneycompose.persistence.PosterDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
