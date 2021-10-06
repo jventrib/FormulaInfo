@@ -6,8 +6,11 @@ import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.race.data.RaceRepository
 import com.jventrib.formulainfo.race.model.db.FullRace
 import com.jventrib.formulainfo.race.model.db.FullRaceResult
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class MainViewModel(private val repository: RaceRepository) : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
 
     val seasonList = (1950..2021).toList().reversed()
 

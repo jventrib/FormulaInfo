@@ -61,7 +61,7 @@ class RaceDetailFragment : Fragment() {
 
         val raceDetailHeader = binding.raceDetailHeader
         initToolBar()
-        val viewModel = getViewModel()
+//        val viewModel = getViewModel()
 
 //        viewModel.setRace(args.race)
 //        viewModel.race.observe(viewLifecycleOwner) { (race, circuit) ->
@@ -73,12 +73,12 @@ class RaceDetailFragment : Fragment() {
         val adapter = RaceResultListAdapter()
         raceResultList.adapter = adapter
 
-        viewModel.raceResultsRaceResult.observe(viewLifecycleOwner) { storeResponse ->
-            storeResponse.throwIfError()
-            storeResponse.dataOrNull()?.let {
-                adapter.setRaceResult(it)
-            } ?: let { adapter.setRaceResult(listOf()) }
-        }
+//        viewModel.raceResultsRaceResult.observe(viewLifecycleOwner) { storeResponse ->
+//            storeResponse.throwIfError()
+//            storeResponse.dataOrNull()?.let {
+////                adapter.setRaceResult(it)
+//            } ?: let { adapter.setRaceResult(listOf()) }
+//        }
 
 
         //TODO navigate to driver fragment
@@ -94,13 +94,6 @@ class RaceDetailFragment : Fragment() {
         return view
     }
 
-    private fun getViewModel(): MainViewModel {
-        val appContainer = (requireActivity().application as Application).appContainer
-        val viewModel: MainViewModel by activityViewModels {
-            appContainer.getViewModelFactory { MainViewModel(it) }
-        }
-        return viewModel
-    }
 
     private fun displayHeader(
         race: Race,

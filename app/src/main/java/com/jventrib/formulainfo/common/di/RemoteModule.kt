@@ -24,6 +24,7 @@ import com.google.gson.JsonDeserializer
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.race.data.remote.F1CalendarService
 import com.jventrib.formulainfo.race.data.remote.MrdService
+import com.jventrib.formulainfo.race.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.race.data.remote.WikipediaService
 import dagger.Module
 import dagger.Provides
@@ -66,43 +67,53 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        return Retrofit.Builder()
-            .addConverterFactory(gsonConverterFactory)
-            .client(okHttpClient)
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideMrdService(retrofit: Retrofit, @ApplicationContext context: Context): MrdService =
+    fun provideMrdService(
+        okHttpClient: OkHttpClient,
+        @ApplicationContext context: Context
+    ): MrdService =
         buildRetrofit(
-            retrofit,
+            okHttpClient,
             context.getString(R.string.api_ergast)
         ).create(MrdService::class.java)
 
     @Provides
     @Singleton
-    fun provideWikipediaService(retrofit: Retrofit, @ApplicationContext context: Context): WikipediaService =
+    fun provideWikipediaService(
+        okHttpClient: OkHttpClient,
+        @ApplicationContext context: Context
+    ): WikipediaService =
         buildRetrofit(
-            retrofit,
+            okHttpClient,
             context.getString(R.string.api_wikipedia)
         ).create(WikipediaService::class.java)
 
     @Provides
     @Singleton
-    fun provideF1CalendarService(retrofit: Retrofit, @ApplicationContext context: Context): F1CalendarService =
+    fun provideF1CalendarService(
+        okHttpClient: OkHttpClient,
+        @ApplicationContext context: Context
+    ): F1CalendarService =
         buildRetrofit(
-            retrofit,
+            okHttpClient,
             context.getString(R.string.api_github_raw)
         ).create(F1CalendarService::class.java)
 
+    @Provides
+    @Singleton
+    fun provideRaceRemoteDataSource(
+        mrdService: MrdService,
+        wikipediaService: WikipediaService,
+        f1CalendarService: F1CalendarService
+    ) =
+        RaceRemoteDataSource(mrdService, wikipediaService, f1CalendarService)
+
     private fun buildRetrofit(
-        retrofit: Retrofit,
+        okHttpClient: OkHttpClient,
         baseUrl: String
-    ) = retrofit
-        .newBuilder()
+    ) = Retrofit.Builder()
         .baseUrl(baseUrl)
+        .addConverterFactory(gsonConverterFactory)
+        .client(okHttpClient)
         .build()
 
 

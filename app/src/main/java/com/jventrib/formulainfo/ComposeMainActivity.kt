@@ -4,18 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ComposeMainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val appContainer = (application as Application).appContainer
-        val viewModel: MainViewModel by viewModels {
-            appContainer.getViewModelFactory(::MainViewModel)
-        }
-
         super.onCreate(savedInstanceState)
         setContent {
-            FormulaInfoApp(viewModel)
+            FormulaInfoApp()
         }
     }
 
