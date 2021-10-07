@@ -11,8 +11,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface RaceDao {
 
+    @Query("SELECT * from race WHERE season = :season AND round = :round")
+    fun getRace(season: Int, round: Int): Flow<FullRace>
+
     @Query("SELECT * from race WHERE season = :season ORDER BY round ASC")
-    fun getSeasonRaces(season: Int): Flow<List<FullRace>>
+    fun getRaces(season: Int): Flow<List<FullRace>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(races: List<Race>)

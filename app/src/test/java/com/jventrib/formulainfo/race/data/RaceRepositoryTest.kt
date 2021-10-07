@@ -12,9 +12,7 @@ import io.mockk.mockk
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
 import java.time.Instant
@@ -85,7 +83,7 @@ class RaceRepositoryTest : TestCase() {
         val raceDao = mockk<RaceDao>()
         val raceRemoteDataSource = mockk<RaceRemoteDataSource>()
 
-        every { raceDao.getSeasonRaces(any()) } returns flowOf(listOf(race))
+        every { raceDao.getRaces(any()) } returns flowOf(listOf(race))
         coEvery { raceDao.insertAll(any()) } returns Unit
         coEvery { raceRemoteDataSource.getRaces(any()) } returns listOf(raceRemote)
         coEvery { raceRemoteDataSource.getCountryFlag(any()) } returns "flag1"

@@ -24,7 +24,7 @@ class RaceRepository(
     private val constructorDao: ConstructorDao = roomDb.constructorDao()
 
     fun getRaces(season: Int): Flow<StoreResponse<List<FullRace>>> =
-        raceDao.getSeasonRaces(season)
+        raceDao.getRaces(season)
             .distinctUntilChanged()
             .transformLatest { data ->
                 emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
@@ -34,10 +34,12 @@ class RaceRepository(
                     emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
                     raceRemoteDataSource.getRaces(season).also {
                         logcat { "Fetched Races from API: $it" }
-                        circuitDao.insertAll(RaceCircuitMapper.toEntity(it)
-                            .also { logcat { "Inserting Circuits $it" } })
-                        raceDao.insertAll(RaceMapper.toEntity(it)
-                            .also { logcat { "Inserting Races $it" } })
+                        roomDb.withTransaction {
+                            circuitDao.insertAll(RaceCircuitMapper.toEntity(it)
+                                .also { logcat { "Inserting Circuits $it" } })
+                            raceDao.insertAll(RaceMapper.toEntity(it)
+                                .also { logcat { "Inserting Races $it" } })
+                        }
                     }
                 } else {
                     logcat { "Got ${data.size} FullRaces from DB" }
@@ -60,7 +62,7 @@ class RaceRepository(
     ): Flow<StoreResponse<List<FullRaceResult>>> =
         raceResultDao.getFullRaceResults(season, round)
             .distinctUntilChanged()
-            .transformLatest { data ->
+            .transform { data ->
                 emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
                 logcat { "Getting FullRaceResults from DB" }
                 if (data.isEmpty()) {
@@ -68,12 +70,14 @@ class RaceRepository(
                     emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
                     raceRemoteDataSource.getRaceResults(season, round).also {
                         logcat { "Fetched RaceResults from API: $it" }
-                        driverDao.insertAll(RaceResultDriverMapper.toEntity(it)
-                            .also { logcat { "Inserting Drivers $it" } })
-                        constructorDao.insertAll(RaceResultConstructorMapper.toEntity(it)
-                            .also { logcat { "Inserting Constructors $it" } })
-                        raceResultDao.insertAll(RaceResultMapper.toEntity(season, round, it)
-                            .also { logcat { "Inserting Results $it" } })
+                        roomDb.withTransaction {
+                            driverDao.insertAll(RaceResultDriverMapper.toEntity(it)
+                                .also { logcat { "Inserting Drivers $it" } })
+                            constructorDao.insertAll(RaceResultConstructorMapper.toEntity(it)
+                                .also { logcat { "Inserting Constructors $it" } })
+                            raceResultDao.insertAll(RaceResultMapper.toEntity(season, round, it)
+                                .also { logcat { "Inserting Results $it" } })
+                        }
                     }
                 } else {
                     logcat { "Got ${data.size} FullRaceResults from DB" }
@@ -87,18 +91,13 @@ class RaceRepository(
 
 
     fun getRace(season: Int, round: Int): Flow<FullRace> {
-        return getRaces(season)
+        return raceDao.getRace(season, round)
             .distinctUntilChanged()
-            .transform { storeResponse ->
-                if (storeResponse is StoreResponse.Data) {
-                    val first = storeResponse.requireData().first { it.race.round == round }
-                    emit(first)
-                }
-            }
             .onEach {
                 logcat { "GetRace $it" }
             }
-            .flatMapLatest { getRace(it) }
+            .filterNotNull()
+            .flatMapLatest { completeRace(it) }
     }
 
     suspend fun refresh() {
@@ -111,7 +110,7 @@ class RaceRepository(
         }
     }
 
-    private fun getRace(r: FullRace) = flow {
+    private fun completeRace(r: FullRace) = flow {
         emit(r)
         if (r.circuit.imageUrl == null) {
             val circuitWithImage = r.circuit.copy(
