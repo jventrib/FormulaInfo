@@ -19,7 +19,7 @@ import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun FormulaInfoApp() {
+fun MainScreen() {
     FormulaInfoTheme {
         val navController = rememberNavController()
         val scope = rememberCoroutineScope()
