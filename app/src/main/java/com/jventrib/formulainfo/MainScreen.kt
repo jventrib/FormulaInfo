@@ -26,14 +26,19 @@ fun MainScreen() {
 
         NavHost(navController = navController, startDestination = "races") {
             composable("races") {
-                val viewModel: MainViewModel = hiltViewModel()
+                val viewModel: MainViewModel = hiltViewModel(navController.currentBackStackEntry!!)
                 val raceList by viewModel.races.observeAsState(
                     StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
                 )
                 val seasonList = viewModel.seasonList
                 Races(
                     raceList = raceList,
-                    onRaceClicked = { race -> navController.navigate("race/${race.race.season}/${race.race.round}") },
+                    onRaceClicked = { race ->
+//                        navController.popBackStack()
+//                        navController.popBackStack()
+                        navController.navigate("race/${race.race.season}/${race.race.round}")
+
+                    },
                     seasonList = seasonList,
                     selectedSeason = viewModel.season.observeAsState().value,
                     onSeasonSelected = {
@@ -50,7 +55,7 @@ fun MainScreen() {
                     navArgument("season") { type = NavType.IntType },
                     navArgument("round") { type = NavType.IntType })
             ) { navBackStackEntry ->
-                val viewModel: MainViewModel = hiltViewModel()
+                val viewModel: MainViewModel = hiltViewModel(navBackStackEntry)
                 val fullRace by viewModel.fullRace.observeAsState()
                 val raceResults by viewModel.raceResultsRaceResult.observeAsState()
                 val season = navBackStackEntry.arguments?.get("season") as Int
