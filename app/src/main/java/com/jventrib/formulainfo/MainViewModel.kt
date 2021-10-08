@@ -7,6 +7,7 @@ import com.jventrib.formulainfo.race.data.RaceRepository
 import com.jventrib.formulainfo.race.model.db.FullRace
 import com.jventrib.formulainfo.race.model.db.FullRaceResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import logcat.logcat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,5 +41,10 @@ class MainViewModel @Inject constructor(private val repository: RaceRepository) 
 
     suspend fun refresh() {
         repository.refresh()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        logcat { "MainViewModel cleared" }
     }
 }
