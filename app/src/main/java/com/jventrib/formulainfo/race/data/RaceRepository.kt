@@ -117,7 +117,6 @@ class RaceRepository(
                 imageUrl = raceRemoteDataSource.getCircuitImage(r.circuit.url, 500)
             )
             circuitDao.insert(circuitWithImage)
-            emit(r.copy(circuit = circuitWithImage))
         }
     }
 
