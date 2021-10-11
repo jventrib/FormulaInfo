@@ -113,6 +113,8 @@ class RaceRepository(
     private fun completeRace(r: FullRace) = flow {
         emit(r)
         if (r.circuit.imageUrl == null) {
+            logcat { "Completing circuit ${r.circuit.id} with Image " }
+
             val circuitWithImage = r.circuit.copy(
                 imageUrl = raceRemoteDataSource.getCircuitImage(r.circuit.url, 500)
             )

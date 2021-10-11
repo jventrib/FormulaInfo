@@ -33,9 +33,9 @@ class MainViewModel @Inject constructor(private val repository: RaceRepository) 
         }
 
     val raceResultsRaceResult: LiveData<StoreResponse<List<FullRaceResult>>> =
-        fullRace.distinctUntilChanged().switchMap {
+        round.distinctUntilChanged().switchMap {
             it?.let {
-                repository.getRaceResults(it.race.season, it.race.round).asLiveData()
+                repository.getRaceResults(season.value!!, it).asLiveData()
             } ?: MutableLiveData(StoreResponse.Loading(ResponseOrigin.Fetcher))
         }
 
