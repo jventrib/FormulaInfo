@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,46 +33,49 @@ fun Results(results: List<FullRaceResult>) {
 
 @Composable
 fun ResultItem(raceResult: FullRaceResult, onResultSelected: () -> Any) {
-    ItemCard(image = raceResult.driver?.image,
+    ItemCard(
+        image = raceResult.driver?.image,
         onItemSelected = {
 
-        })
-    {
-        Row(Modifier.fillMaxWidth()) {
-            Column {
-                Text(
-                    text = "${raceResult.raceResult.position}:${raceResult.driver?.givenName} ${raceResult.driver?.familyName}",
-                    style = MaterialTheme.typography.h6
-                )
-                Text(
-                    text = raceResult.constructor?.name ?: "",
-                    style = MaterialTheme.typography.body1
-                )
-                Text(
-                    text = raceResult.raceResult.time?.time ?: "",
-                    style = MaterialTheme.typography.body2
-                )
-            }
-            Column(horizontalAlignment = End, modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "${raceResult.raceResult.points.toInt()} pts",
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.align(End)
-                )
-                Row() {
-
+        },
+        content = {
+            Row(Modifier.fillMaxWidth()) {
+                Column {
                     Text(
-                        text = "Started${raceResult.raceResult.grid}",
+                        text = "${raceResult.raceResult.position}:${raceResult.driver?.givenName} ${raceResult.driver?.familyName}",
+                        style = MaterialTheme.typography.h6
+                    )
+                    Text(
+                        text = raceResult.constructor?.name ?: "",
                         style = MaterialTheme.typography.body1
                     )
-                    DeltaTextP(
-                        delta = raceResult.raceResult.position - raceResult.raceResult.grid,
-                        Modifier.padding(start = 8.dp)
+                    Text(
+                        text = raceResult.raceResult.time?.time ?: "",
+                        style = MaterialTheme.typography.body2
                     )
                 }
+                Column(horizontalAlignment = End, modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "${raceResult.raceResult.points.toInt()} pts",
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.align(End)
+                    )
+                    Row() {
+
+                        Text(
+                            text = "Started${raceResult.raceResult.grid}",
+                            style = MaterialTheme.typography.body1
+                        )
+                        DeltaTextP(
+                            delta = raceResult.raceResult.position - raceResult.raceResult.grid,
+                            Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
             }
-        }
-    }
+        },
+        shape = CircleShape
+    )
 }
 
 

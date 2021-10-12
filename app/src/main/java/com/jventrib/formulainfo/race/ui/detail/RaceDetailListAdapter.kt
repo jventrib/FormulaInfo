@@ -9,8 +9,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.clear
-import coil.transform.CircleCropTransformation
-import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformation
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.common.ui.loadImage
 import com.jventrib.formulainfo.databinding.ItemRaceResultBinding
@@ -93,14 +91,6 @@ class RaceResultListAdapter : RecyclerView.Adapter<RaceResultListAdapter.ViewHol
 
         current.driver?.image?.let {
             holder.binding.imageDriver.loadImage(it) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    transformations(
-                        listOf(
-                            CenterOnFaceTransformation(zoom = 80),
-                            CircleCropTransformation()
-                        )
-                    )
-                }
             }
         } ?: let {
             holder.binding.imageDriver.clear()

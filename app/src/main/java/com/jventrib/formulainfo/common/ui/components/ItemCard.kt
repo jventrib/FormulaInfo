@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jventrib.formulainfo.common.ui.components.Image
@@ -22,20 +24,20 @@ fun ItemCard(
     bottomText: String,
     onItemSelected: () -> Unit
 ) {
-    ItemCard(image, onItemSelected)
-    {
+    ItemCard(image, onItemSelected, {
         Text(text = topText, style = MaterialTheme.typography.h6)
         Text(
             text = bottomText, style = MaterialTheme.typography.body2
         )
-    }
+    }, CircleShape)
 }
 
 @Composable
 fun ItemCard(
     image: Any?,
     onItemSelected: () -> Unit,
-    content: @Composable() (ColumnScope.() -> Unit)
+    content: @Composable() (ColumnScope.() -> Unit),
+    shape: Shape = RectangleShape
 ) {
     Card(
         modifier = Modifier
@@ -52,7 +54,7 @@ fun ItemCard(
                 image, Modifier
                     .padding(horizontal = 8.dp)
                     .size(64.dp)
-                    .clip(CircleShape)
+                    .clip(shape)
             )
             Column(content = content)
         }
