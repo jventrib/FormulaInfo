@@ -24,12 +24,16 @@ fun ItemCard(
     bottomText: String,
     onItemSelected: () -> Unit
 ) {
-    ItemCard(image, onItemSelected, {
-        Text(text = topText, style = MaterialTheme.typography.h6)
-        Text(
-            text = bottomText, style = MaterialTheme.typography.body2
-        )
-    }, CircleShape)
+    ItemCard(
+        image, onItemSelected,
+        {
+            Text(text = topText, style = MaterialTheme.typography.h6)
+            Text(
+                text = bottomText, style = MaterialTheme.typography.body2
+            )
+        },
+        CircleShape,
+    )
 }
 
 @Composable
@@ -37,7 +41,8 @@ fun ItemCard(
     image: Any?,
     onItemSelected: () -> Unit,
     content: @Composable() (ColumnScope.() -> Unit),
-    shape: Shape = RectangleShape
+    shape: Shape = RectangleShape,
+    centerOnFace: Boolean = false
 ) {
     Card(
         modifier = Modifier
@@ -51,12 +56,16 @@ fun ItemCard(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
-                image, Modifier
+                imageModel = image,
+                modifier = Modifier
                     .padding(horizontal = 8.dp)
                     .size(64.dp)
-                    .clip(shape)
+                    .clip(shape),
+                centerOnFace = centerOnFace
+
             )
             Column(content = content)
+
         }
     }
 }
