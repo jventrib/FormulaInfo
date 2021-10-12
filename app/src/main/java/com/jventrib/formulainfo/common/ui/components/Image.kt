@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformation
 import com.jventrib.formulainfo.R
-import com.jventrib.formulainfo.common.ui.CenterOnFaceTransformation2
 
 @Composable
 fun Image(imageModel: Any?, modifier: Modifier = Modifier, centerOnFace: Boolean = false) {
