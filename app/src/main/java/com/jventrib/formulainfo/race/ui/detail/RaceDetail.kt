@@ -2,6 +2,7 @@ package com.jventrib.formulainfo.race.ui.detail
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -31,7 +32,7 @@ fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>) {
         }) {
         Column {
             RaceItem(fullRace = fullRace)
-            Image(imageModel = fullRace.circuit.imageUrl)
+            Image(imageModel = fullRace.circuit.imageUrl, modifier = Modifier.fillMaxWidth())
             Results(results = raceResults)
         }
     }
