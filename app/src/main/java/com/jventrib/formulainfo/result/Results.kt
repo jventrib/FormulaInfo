@@ -34,7 +34,7 @@ fun Results(results: List<FullRaceResult>) {
 @Composable
 fun ResultItem(raceResult: FullRaceResult, onResultSelected: () -> Any) {
     ItemCard(
-        image = raceResult.driver?.image,
+        image = raceResult.driver.image,
         onItemSelected = {
 
         },
@@ -74,7 +74,8 @@ fun ResultItem(raceResult: FullRaceResult, onResultSelected: () -> Any) {
                 }
             }
         },
-        shape = CircleShape
+        shape = CircleShape,
+        centerOnFace = true
     )
 }
 
