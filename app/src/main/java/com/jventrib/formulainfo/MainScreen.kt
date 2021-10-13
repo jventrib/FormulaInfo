@@ -14,7 +14,9 @@ import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.race.RaceDetail
-import com.jventrib.formulainfo.ui.races.Races
+import com.jventrib.formulainfo.ui.race.RaceViewModel
+import com.jventrib.formulainfo.ui.season.Season
+import com.jventrib.formulainfo.ui.season.SeasonViewModel
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlinx.coroutines.launch
 
@@ -26,12 +28,12 @@ fun MainScreen() {
 
         NavHost(navController = navController, startDestination = "races") {
             composable("races") {
-                val viewModel: MainViewModel = hiltViewModel(navController.currentBackStackEntry!!)
+                val viewModel: SeasonViewModel = hiltViewModel(navController.currentBackStackEntry!!)
                 val raceList by viewModel.races.observeAsState(
                     StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
                 )
                 val seasonList = viewModel.seasonList
-                Races(
+                Season(
                     raceList = raceList,
                     onRaceClicked = { race ->
 //                        navController.popBackStack()
@@ -55,7 +57,7 @@ fun MainScreen() {
                     navArgument("season") { type = NavType.IntType },
                     navArgument("round") { type = NavType.IntType })
             ) { navBackStackEntry ->
-                val viewModel: MainViewModel = hiltViewModel(navBackStackEntry)
+                val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
                 val fullRace by viewModel.fullRace.observeAsState()
                 val raceResults by viewModel.raceResultsRaceResult.observeAsState()
                 val season = navBackStackEntry.arguments?.get("season") as Int
