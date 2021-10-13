@@ -32,7 +32,6 @@ class Application: Application(), ImageLoaderFactory {
                 add(SvgDecoder(applicationContext))
             }
             .crossfade(300)
-
             .build()
     }
 }
