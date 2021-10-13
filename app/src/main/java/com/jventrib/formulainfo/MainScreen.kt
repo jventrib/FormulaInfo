@@ -12,9 +12,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
-import com.jventrib.formulainfo.about.About
-import com.jventrib.formulainfo.race.ui.detail.RaceDetail
-import com.jventrib.formulainfo.race.ui.list.Races
+import com.jventrib.formulainfo.ui.about.About
+import com.jventrib.formulainfo.ui.race.RaceDetail
+import com.jventrib.formulainfo.ui.races.Races
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlinx.coroutines.launch
 
