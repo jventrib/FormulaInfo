@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.races
+package com.jventrib.formulainfo.ui.season
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,10 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.model.db.FullRace
-import com.jventrib.formulainfo.ui.races.item.RaceItem
+import com.jventrib.formulainfo.ui.season.item.RaceItem
 
 @Composable
-fun Races(
+fun Season(
     raceList: StoreResponse<List<FullRace>>,
     onRaceClicked: (FullRace) -> Unit,
     seasonList: List<Int>,

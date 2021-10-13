@@ -18,7 +18,7 @@ import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.google.common.truth.Truth.assertThat
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.FullRace
-import com.jventrib.formulainfo.ui.races.RaceListFragment
+import com.jventrib.formulainfo.ui.season.RaceListFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import org.hamcrest.Matchers.*

@@ -13,7 +13,7 @@ import com.jventrib.formulainfo.getRaceFullSample
 import com.jventrib.formulainfo.model.db.FullRace
 import com.jventrib.formulainfo.model.db.FullRaceResult
 import com.jventrib.formulainfo.ui.common.components.Image
-import com.jventrib.formulainfo.ui.races.item.RaceItem
+import com.jventrib.formulainfo.ui.season.item.RaceItem
 import com.jventrib.formulainfo.result.Results
 
 @Composable
