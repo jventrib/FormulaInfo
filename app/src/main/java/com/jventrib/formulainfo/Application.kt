@@ -15,23 +15,13 @@ import logcat.LogPriority
 @ExperimentalCoroutinesApi
 @FlowPreview
 @HiltAndroidApp
-class Application: Application(), ImageLoaderFactory {
-//    lateinit var appContainer: AppContainer
+class Application: Application() {
 
     override fun onCreate() {
         super.onCreate()
 //        LeakCanary.config = LeakCanary.config.copy(retainedVisibleThreshold = 1)
 
         AndroidLogcatLogger.installOnDebuggableApp(this, minPriority = LogPriority.VERBOSE)
-//        appContainer = AppContainer(this)
     }
 
-    override fun newImageLoader(): ImageLoader {
-        return ImageLoader.Builder(applicationContext)
-            .componentRegistry {
-                add(SvgDecoder(applicationContext))
-            }
-            .crossfade(300)
-            .build()
-    }
 }
