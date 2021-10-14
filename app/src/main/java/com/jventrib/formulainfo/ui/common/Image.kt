@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.ui.common.components
 
+import android.graphics.Rect
 import android.util.LruCache
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
@@ -13,17 +14,16 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.commit451.coiltransformations.facedetection.CenterOnFaceTransformation
 import com.jventrib.formulainfo.R
+import com.jventrib.formulainfo.utils.FaceCrop
 
 @ExperimentalCoilApi
 @Composable
-fun Image(imageModel: Any?, modifier: Modifier = Modifier, centerOnFace: Boolean = false) {
+fun Image(imageModel: Any?, modifier: Modifier = Modifier, faceBox: Rect? = null) {
     Image(
         painter = rememberImagePainter(
             imageModel,
             builder = {
-                if (centerOnFace) {
-                    transformations(CenterOnFaceTransformation(zoom = 100, cache = LruCache(32)))
-                }
+                faceBox?.let { transformations(FaceCrop(it)) }
             }
         ),
         null,
