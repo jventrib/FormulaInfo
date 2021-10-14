@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.htmlEncode
 import com.jventrib.formulainfo.ui.common.components.DeltaTextP
 import com.jventrib.formulainfo.model.db.Constructor
 import com.jventrib.formulainfo.model.db.Driver
