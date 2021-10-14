@@ -16,6 +16,7 @@ object RaceResultDriverMapper: Mapper<RaceResultRemote, Driver> {
             driver.dateOfBirth,
             driver.nationality,
             null,
+            null,
         )
     }
 }

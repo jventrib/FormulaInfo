@@ -1,21 +1,34 @@
 package com.jventrib.formulainfo.data
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Point
+import android.graphics.drawable.BitmapDrawable
 import androidx.room.withTransaction
+import coil.imageLoader
+import coil.request.ImageRequest
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
 import com.jventrib.formulainfo.data.db.*
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.data.remote.WikipediaService
+import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.FullRace
 import com.jventrib.formulainfo.model.db.FullRaceResult
 import com.jventrib.formulainfo.model.mapper.*
+import com.jventrib.formulainfo.utils.detect
 import kotlinx.coroutines.flow.*
 import logcat.LogPriority
 import logcat.logcat
+import kotlin.math.hypot
 
 class RaceRepository(
-    val roomDb: AppRoomDatabase,
-    private val raceRemoteDataSource: RaceRemoteDataSource
+    private val roomDb: AppRoomDatabase,
+    private val raceRemoteDataSource: RaceRemoteDataSource,
+    private val context: Context
 ) {
     private val raceDao: RaceDao = roomDb.raceDao()
     private val circuitDao: CircuitDao = roomDb.circuitDao()
@@ -151,12 +164,26 @@ class RaceRepository(
         )
     )
 
-    private suspend fun getDriverWithImage(fullRaceResult: FullRaceResult) =
-        fullRaceResult.driver.copy(
-            image = raceRemoteDataSource.getWikipediaImageFromUrl(
-                fullRaceResult.driver.url, 200, WikipediaService.Licence.FREE
-            ) ?: "NONE"
+    private suspend fun getDriverWithImage(
+        fullRaceResult: FullRaceResult,
+    ): Driver {
+        val imageUrl = raceRemoteDataSource.getWikipediaImageFromUrl(
+            fullRaceResult.driver.url, 200, WikipediaService.Licence.FREE
+        ) ?: "NONE"
+
+        val drawable = context.imageLoader.execute(
+            ImageRequest.Builder(context).data(imageUrl).build()
+        ).drawable
+
+        val bitmap =
+            (drawable as? BitmapDrawable)?.bitmap?.copy(Bitmap.Config.ARGB_8888, true)
+        val centerRect = bitmap?.let { detect(it) }
+
+        return fullRaceResult.driver.copy(
+            image = imageUrl,
+            faceBox = centerRect?.flattenToString()
         )
+    }
 
     private suspend fun getConstructorWithImage(result: FullRaceResult) =
         result.constructor.copy(

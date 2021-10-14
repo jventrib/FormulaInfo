@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.ui.components
 
+import android.graphics.Rect
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,6 +15,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.ui.common.components.Image
 import com.jventrib.formulainfo.ui.theme.LightLightGrey
 
@@ -36,13 +38,14 @@ fun ItemCard(
     )
 }
 
+@ExperimentalCoilApi
 @Composable
 fun ItemCard(
     image: Any?,
     onItemSelected: () -> Unit,
     content: @Composable() (ColumnScope.() -> Unit),
     shape: Shape = RectangleShape,
-    centerOnFace: Boolean = false
+    faceBox: Rect? = null
 ) {
     Card(
         modifier = Modifier
@@ -61,7 +64,7 @@ fun ItemCard(
                     .padding(horizontal = 8.dp)
                     .size(64.dp)
                     .clip(shape),
-                centerOnFace = centerOnFace
+                faceBox = faceBox
 
             )
             Column(content = content)

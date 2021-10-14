@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.result
 
+import android.graphics.Rect
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -75,7 +76,7 @@ fun ResultItem(raceResult: FullRaceResult, onResultSelected: () -> Any) {
             }
         },
         shape = CircleShape,
-        centerOnFace = true
+        faceBox = Rect.unflattenFromString(raceResult.driver.faceBox)
     )
 }
 
@@ -115,7 +116,8 @@ fun ResultItemPreview() {
             "Verstappen",
             "1999",
             "NL",
-            "img"
+            "img",
+            null
         ),
         Constructor("RedBull", "url", "RedBull", "UK", "img")
     )
