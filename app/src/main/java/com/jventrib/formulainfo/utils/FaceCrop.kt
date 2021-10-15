@@ -26,7 +26,9 @@ class FaceCrop(private val faceBox: Rect, val factor: Float = 1.3f) : Transforma
 
         left -= (diffHorizontal / 2f).toInt()
         right += (diffHorizontal / 2f).toInt()
-        return Rect(left, top, right, bottom).also { bound(size) }
+        val rect = Rect(left, top, right, bottom)
+        rect.bound(size)
+        return rect
     }
 
     private fun Rect.bound(size: PixelSize) {
