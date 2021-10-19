@@ -21,10 +21,11 @@ import com.jventrib.formulainfo.utils.FaceCrop
 fun Image(imageModel: Any?, modifier: Modifier = Modifier, faceBox: Rect? = null) {
     Image(
         painter = rememberImagePainter(
-            imageModel,
+            data = imageModel,
             builder = {
                 faceBox?.let { transformations(FaceCrop(it)) }
-            }
+            },
+
         ),
         null,
         modifier = modifier,
@@ -37,8 +38,19 @@ fun Image(imageModel: Any?, modifier: Modifier = Modifier, faceBox: Rect? = null
 @Composable
 fun ImagePreview() {
     Image(
-        imageModel = painterResource(R.drawable.sirotkin),
+        imageModel = "",
         modifier = Modifier.size(64.dp)
+    )
+
+}
+@ExperimentalCoilApi
+@Preview
+@Composable
+fun ImagePreview_cropped() {
+    Image(
+        imageModel = R.drawable.vettel,
+        modifier = Modifier.size(64.dp),
+        faceBox = Rect.unflattenFromString("72 19 120 67")
     )
 
 }
