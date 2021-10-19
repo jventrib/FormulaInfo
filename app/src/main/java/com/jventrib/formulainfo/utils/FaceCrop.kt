@@ -35,7 +35,7 @@ class FaceCrop(private val faceBox: Rect, val factor: Float = 1.3f) : Transforma
         this.left = max(this.left, 0)
         this.top = max(this.top, 0)
         this.right = min(this.right, size.width - 1)
-        this.bottom = min(this.right, size.height - 1)
+        this.bottom = min(this.bottom, size.height - 1)
     }
 }
 
