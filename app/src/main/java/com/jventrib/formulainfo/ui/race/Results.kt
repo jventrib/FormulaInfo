@@ -1,10 +1,7 @@
 package com.jventrib.formulainfo.result
 
 import android.graphics.Rect
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -15,7 +12,6 @@ import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.htmlEncode
 import com.jventrib.formulainfo.ui.common.components.DeltaTextP
 import com.jventrib.formulainfo.model.db.Constructor
 import com.jventrib.formulainfo.model.db.Driver
@@ -24,8 +20,12 @@ import com.jventrib.formulainfo.model.db.FullRaceResult
 import com.jventrib.formulainfo.ui.components.ItemCard
 
 @Composable
-fun Results(results: List<FullRaceResult>) {
-    LazyColumn {
+fun Results(
+    results: List<FullRaceResult>,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues
+) {
+    LazyColumn(contentPadding = contentPadding, modifier = modifier) {
         items(results) {
             ResultItem(it, onResultSelected = { })
         }

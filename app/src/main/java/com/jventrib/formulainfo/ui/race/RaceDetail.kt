@@ -1,5 +1,7 @@
 package com.jventrib.formulainfo.ui.race
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
@@ -8,6 +10,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -42,7 +45,7 @@ fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>) {
             )
         }) {
 
-        val circuitHeight = 192.dp
+        val circuitHeight = 246.dp
         val circuitHeightPx = with(LocalDensity.current) { circuitHeight.roundToPx().toFloat() }
         var circuitScrollHeightPx by remember { mutableStateOf(0f) }
         val nestedScrollConnection = remember {
@@ -51,33 +54,44 @@ fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>) {
                     val delta = available.y
                     logcat(LogPriority.VERBOSE) { "delta $delta" }
                     circuitScrollHeightPx += delta
-                    val height = circuitHeightPx + circuitScrollHeightPx
-                    logcat(LogPriority.VERBOSE) { "height $height" }
-                    return if (height > 0)
-                        Offset.Infinite
-                    else
-                        Offset.Zero
+                    circuitScrollHeightPx = circuitScrollHeightPx.coerceIn(-circuitHeightPx, 0f)
+                    return Offset.Zero
                 }
             }
         }
-        Column(Modifier.nestedScroll(nestedScrollConnection)) {
-            RaceItem(
-                fullRace = fullRace,
+        Box(Modifier.nestedScroll(nestedScrollConnection)) {
+            Results(
+                results = raceResults,
+                contentPadding = PaddingValues(top = circuitHeight)
             )
             Box(
                 modifier = Modifier
-                    .height(with(LocalDensity.current) {
-                        (circuitHeightPx + circuitScrollHeightPx).coerceIn(0f, circuitHeightPx)
-                            .roundToInt().toDp()
+                    .fillMaxWidth()
+                    .height(circuitHeight)
+//                    .padding(top = 80.dp)
+                    .offset(0.dp, with(LocalDensity.current) {
+                        (circuitScrollHeightPx)
+//                            .coerceIn(-circuitHeightPx, 0f)
+                            .roundToInt()
+                            .toDp()
                     })
+                    .background(Color.White)
+//                    .border(1.dp, Color.Red),
             ) {
-                Image(
-                    imageModel = fullRace.circuit.imageUrl,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Fit
-                )
+                Column {
+
+                    RaceItem(
+                        fullRace = fullRace,
+                    )
+
+                    Image(
+                        imageModel = fullRace.circuit.imageUrl,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxWidth().height(circuitHeight - 80.dp)
+                    )
+                }
             }
-            Results(results = raceResults)
+
         }
     }
 }
