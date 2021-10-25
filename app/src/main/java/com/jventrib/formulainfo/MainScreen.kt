@@ -38,10 +38,7 @@ fun MainScreen() {
                 Season(
                     raceList = raceList,
                     onRaceClicked = { race ->
-//                        navController.popBackStack()
-//                        navController.popBackStack()
                         navController.navigate("race/${race.race.season}/${race.race.round}")
-
                     },
                     seasonList = seasonList,
                     selectedSeason = viewModel.season.observeAsState().value,

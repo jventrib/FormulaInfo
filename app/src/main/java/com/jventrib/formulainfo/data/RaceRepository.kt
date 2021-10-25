@@ -23,6 +23,7 @@ import com.jventrib.formulainfo.utils.detect
 import kotlinx.coroutines.flow.*
 import logcat.LogPriority
 import logcat.logcat
+import java.time.Instant
 import kotlin.math.hypot
 
 class RaceRepository(
@@ -62,7 +63,14 @@ class RaceRepository(
             .completeFlowMissing({ it.circuit.location.flag }) {
                 logcat { "Completing circuit ${it.circuit.location.country} with image" }
                 circuitDao.insert(getCircuitWithFlag(it))
-            }.onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
+            }
+            .onEach { response ->
+                response.dataOrNull()?.forEach { it.nextRace = false }
+                response.dataOrNull()?.first { it.race.sessions.race.isAfter(Instant.now()) }
+                    ?.let { it.nextRace = true }
+
+            }
+            .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
 //
 //
 //        raceStore.stream(StoreRequest.cached(season, false)).onEach {

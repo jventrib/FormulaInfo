@@ -9,4 +9,7 @@ data class FullRace(
     val race: Race,
     @Relation(entityColumn = "id", parentColumn = "circuitId")
     val circuit: Circuit,
-    ): Serializable
+    ): Serializable {
+    @Transient
+    var nextRace: Boolean = false
+}

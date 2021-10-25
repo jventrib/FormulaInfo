@@ -52,7 +52,9 @@ fun RaceList(raceList: StoreResponse<List<FullRace>>, onRaceSelected: (FullRace)
     LazyColumn {
         raceList.dataOrNull()?.let { raceList ->
             items(raceList) {
-                RaceItem(it, onRaceSelected = onRaceSelected)
+                RaceItem(fullRace = it,
+                    expanded = it.nextRace,
+                    onRaceSelected = onRaceSelected)
             }
         }
     }
