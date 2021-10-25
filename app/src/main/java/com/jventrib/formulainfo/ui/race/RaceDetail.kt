@@ -1,7 +1,6 @@
 package com.jventrib.formulainfo.ui.race
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
@@ -44,16 +43,18 @@ fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>) {
                 }
             )
         }) {
-        val circuitHeight = 246.dp
+        val raceDetailHeight = 140.dp
+        val circuitHeight = 150.dp
+        val headerHeight = raceDetailHeight + circuitHeight
         var circuitScrollHeightPx by remember { mutableStateOf(0f) }
-        val circuitHeightPx = with(LocalDensity.current) { circuitHeight.roundToPx().toFloat() }
+        val headerHeightPx = with(LocalDensity.current) { headerHeight.roundToPx().toFloat() }
         val nestedScrollConnection = remember {
             object : NestedScrollConnection {
                 override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                     val delta = available.y
                     logcat(LogPriority.VERBOSE) { "delta $delta" }
                     circuitScrollHeightPx =
-                        (circuitScrollHeightPx + delta).coerceIn(-circuitHeightPx, 0f)
+                        (circuitScrollHeightPx + delta).coerceIn(-headerHeightPx, 0f)
                     return Offset.Zero
                 }
             }
@@ -61,7 +62,7 @@ fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>) {
         Box(Modifier.nestedScroll(nestedScrollConnection)) {
             Results(
                 results = raceResults,
-                contentPadding = PaddingValues(top = circuitHeight)
+                contentPadding = PaddingValues(top = headerHeight)
             )
             Box(
                 modifier = Modifier
@@ -73,13 +74,13 @@ fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>) {
                     .background(Color.White)
             ) {
                 Column {
-                    RaceItem(fullRace = fullRace)
+                    RaceItem(fullRace = fullRace, expanded = true)
                     Image(
                         imageModel = fullRace.circuit.imageUrl,
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(circuitHeight - 80.dp)
+                            .height(circuitHeight)
                     )
                 }
             }

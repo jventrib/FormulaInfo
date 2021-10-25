@@ -12,16 +12,43 @@ import com.jventrib.formulainfo.ui.components.ItemCard
 @Composable
 fun RaceItem(
     fullRace: FullRace,
+    expanded: Boolean = false,
     onRaceSelected: (FullRace) -> Unit = {}
 ) {
     ItemCard(
-        fullRace.circuit.location.flag,
-        {
-        onRaceSelected(fullRace)
-    },
-        {
-            Text(text = fullRace.race.raceName,
-                style = MaterialTheme.typography.h6)
+        image = fullRace.circuit.location.flag,
+        onItemSelected = { onRaceSelected(fullRace) },
+        content = {
+            Text(
+                text = fullRace.race.raceName,
+                style = MaterialTheme.typography.h6
+            )
+            if (expanded) {
+                fullRace.race.sessions.fp1?.let {
+                    Text(
+                        text = it.format(),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                fullRace.race.sessions.fp2?.let {
+                    Text(
+                        text = it.format(),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                fullRace.race.sessions.fp3?.let {
+                    Text(
+                        text = it.format(),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                fullRace.race.sessions.qualifying?.let {
+                    Text(
+                        text = it.format(),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+            }
             Text(
                 text = fullRace.race.sessions.race.format(),
                 style = MaterialTheme.typography.body2
@@ -34,6 +61,7 @@ fun RaceItem(
 @Composable
 fun RaceItemPreview() {
     RaceItem(
-        fullRace = getRaceFullSample(1, "Emilia Romagna Grand Prix")
+        fullRace = getRaceFullSample(1, "Emilia Romagna Grand Prix"),
+        expanded = true
     ) {}
 }

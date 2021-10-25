@@ -6,7 +6,13 @@ import com.jventrib.formulainfo.model.db.FullRace
 import java.time.Instant
 
 fun getRaceFullSample(round: Int, name: String? = null): FullRace {
-    val sessions = Race.Sessions(race = Instant.now())
+    val sessions = Race.Sessions(
+        fp1 = Instant.now(),
+        fp2 = Instant.now(),
+        fp3 = Instant.now(),
+        qualifying = Instant.now(),
+        race = Instant.now()
+    )
     val race = Race(2021, round, "", name ?: "Race$round", "Circuit$round", sessions)
     val circuit = Circuit(
         "Circuit1",
