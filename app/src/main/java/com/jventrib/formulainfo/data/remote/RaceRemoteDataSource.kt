@@ -35,7 +35,10 @@ open class RaceRemoteDataSource(
     }
 
     suspend fun getRaceResults(season: Int, round: Int): List<RaceResultRemote> {
-        return mrdService.getRaceResults(season, round).mrData.table.races.first().resultRemotes!!
+        return mrdService.getRaceResults(
+            season,
+            round
+        ).mrData.table.races.firstOrNull()?.resultRemotes ?: listOf()
     }
 
     suspend fun getCountryFlag(country: String) =

@@ -65,7 +65,7 @@ fun ResultItem(raceResult: FullRaceResult, onResultSelected: () -> Any) {
                     Row() {
 
                         Text(
-                            text = "Started${raceResult.raceResult.grid}",
+                            text = "Started ${raceResult.raceResult.grid}",
                             style = MaterialTheme.typography.body1
                         )
                         DeltaTextP(
