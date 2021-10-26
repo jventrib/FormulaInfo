@@ -62,6 +62,14 @@ fun RaceItem(
 fun RaceItemPreview() {
     RaceItem(
         fullRace = getRaceFullSample(1, "Emilia Romagna Grand Prix"),
+        expanded = false
+    ) {}
+}
+@Preview(showBackground = true)
+@Composable
+fun RaceItemPreviewExpanded() {
+    RaceItem(
+        fullRace = getRaceFullSample(1, "Emilia Romagna Grand Prix"),
         expanded = true
     ) {}
 }
