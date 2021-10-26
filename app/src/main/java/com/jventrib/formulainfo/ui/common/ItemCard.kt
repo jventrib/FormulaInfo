@@ -69,7 +69,10 @@ fun ItemCard(
                 contentScale = ContentScale.FillWidth
 
             )
-            Column(content = content)
+            Column(
+                Modifier.padding(bottom = 4.dp),
+                content = content
+            )
 
         }
     }
