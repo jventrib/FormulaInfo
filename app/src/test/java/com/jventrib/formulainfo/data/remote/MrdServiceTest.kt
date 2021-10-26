@@ -49,7 +49,7 @@ class MrdServiceTest {
         val file = "results.json"
         val response = MockResponse()
             .setResponseCode(HttpURLConnection.HTTP_OK)
-            .setBody(readFileContent(file))
+            .setBody(readFileContent(file)!!)
         mockWebServer.enqueue(response)
 // Act
         runBlocking {
