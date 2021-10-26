@@ -21,7 +21,7 @@ fun DeltaText(
         val wholeText = content(text)
         append(wholeText)
         addStyle(
-            SpanStyle(if (delta > 0) Color.Red else if (delta < 0) Color.Green else Color.Gray),
+            SpanStyle(if (delta > 0) Color.Red else if (delta < 0) Color(0, 185, 0, 255) else Color.Gray),
             0,
             wholeText.length
         )
