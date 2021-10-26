@@ -3,12 +3,16 @@ package com.jventrib.formulainfo.ui.season.item
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.common.ui.format
 import com.jventrib.formulainfo.getRaceFullSample
 import com.jventrib.formulainfo.model.db.FullRace
 import com.jventrib.formulainfo.ui.components.ItemCard
+import java.time.Instant
 
+@ExperimentalCoilApi
 @Composable
 fun RaceItem(
     fullRace: FullRace,
@@ -24,39 +28,26 @@ fun RaceItem(
                 style = MaterialTheme.typography.h6
             )
             if (expanded) {
-                fullRace.race.sessions.fp1?.let {
-                    Text(
-                        text = it.format(),
-                        style = MaterialTheme.typography.body2
-                    )
-                }
-                fullRace.race.sessions.fp2?.let {
-                    Text(
-                        text = it.format(),
-                        style = MaterialTheme.typography.body2
-                    )
-                }
-                fullRace.race.sessions.fp3?.let {
-                    Text(
-                        text = it.format(),
-                        style = MaterialTheme.typography.body2
-                    )
-                }
-                fullRace.race.sessions.qualifying?.let {
-                    Text(
-                        text = it.format(),
-                        style = MaterialTheme.typography.body2
-                    )
-                }
+                fullRace.race.sessions.fp1?.let { SessionDateText(it) }
+                fullRace.race.sessions.fp2?.let { SessionDateText(it) }
+                fullRace.race.sessions.fp3?.let { SessionDateText(it) }
+                fullRace.race.sessions.qualifying?.let { SessionDateText(it) }
             }
-            Text(
-                text = fullRace.race.sessions.race.format(),
-                style = MaterialTheme.typography.body2
-            )
-        },
+            SessionDateText(fullRace.race.sessions.race)
+        }
     )
 }
 
+@Composable
+private fun SessionDateText(it: Instant) {
+    Text(
+        text = it.format(),
+        style = MaterialTheme.typography.body2,
+        fontWeight = if (it.isAfter(Instant.now())) FontWeight.Bold else FontWeight.Normal
+    )
+}
+
+@ExperimentalCoilApi
 @Preview(showBackground = true)
 @Composable
 fun RaceItemPreview() {
@@ -65,6 +56,8 @@ fun RaceItemPreview() {
         expanded = false
     ) {}
 }
+
+@ExperimentalCoilApi
 @Preview(showBackground = true)
 @Composable
 fun RaceItemPreviewExpanded() {
