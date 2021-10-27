@@ -3,8 +3,8 @@ package com.jventrib.formulainfo.data.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.jventrib.formulainfo.utils.Converters
 import com.jventrib.formulainfo.model.db.*
+import com.jventrib.formulainfo.utils.Converters
 
 @Database(
     entities = [
@@ -12,9 +12,10 @@ import com.jventrib.formulainfo.model.db.*
         Circuit::class,
         RaceResult::class,
         Driver::class,
-        Constructor::class
+        Constructor::class,
+        LapTime::class
     ],
-    version = 3,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -25,4 +26,5 @@ abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun raceResultDao(): RaceResultDao
     abstract fun driverDao(): DriverDao
     abstract fun constructorDao(): ConstructorDao
+    abstract fun lapTimeDao(): LapTimeDao
 }

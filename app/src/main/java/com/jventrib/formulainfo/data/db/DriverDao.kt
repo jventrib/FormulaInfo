@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DriverDao {
 
+    @Query("SELECT * from driver where driverId = :driverId")
+    fun getDriver(driverId: String): Flow<Driver>
+
     @Query("SELECT * from driver")
     fun getAllDrivers(): Flow<List<Driver>>
 

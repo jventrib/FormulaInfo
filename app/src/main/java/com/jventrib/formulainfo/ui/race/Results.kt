@@ -12,34 +12,33 @@ import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.jventrib.formulainfo.model.db.*
 import com.jventrib.formulainfo.ui.common.components.DeltaTextP
-import com.jventrib.formulainfo.model.db.Constructor
-import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.model.db.RaceResult
-import com.jventrib.formulainfo.model.db.FullRaceResult
 import com.jventrib.formulainfo.ui.components.ItemCard
 
 @Composable
 fun Results(
     results: List<FullRaceResult>,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues
+    contentPadding: PaddingValues,
+    onDriverSelected: (driver: Driver) -> Unit
 ) {
     LazyColumn(contentPadding = contentPadding, modifier = modifier) {
-        items(results) {
-            ResultItem(it, onResultSelected = { })
+        items(results) { result ->
+            ResultItem(result, onResultSelected = { onDriverSelected(it.driver) })
         }
     }
 
 }
 
 @Composable
-fun ResultItem(raceResult: FullRaceResult, onResultSelected: () -> Any) {
+fun ResultItem(
+    raceResult: FullRaceResult,
+    onResultSelected: (raceResult: FullRaceResult) -> Any
+) {
     ItemCard(
         image = raceResult.driver.image,
-        onItemSelected = {
-
-        },
+        onItemSelected = { onResultSelected(raceResult) },
         content = {
             Row(Modifier.fillMaxWidth()) {
                 Column {

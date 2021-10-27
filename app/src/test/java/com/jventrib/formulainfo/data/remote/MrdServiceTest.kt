@@ -1,8 +1,7 @@
 package com.jventrib.formulainfo.data.remote
 
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializer
+import com.skydoves.disneycompose.di.RemoteModule
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -10,10 +9,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.net.HttpURLConnection
-import java.time.Instant
-import java.time.ZonedDateTime
 
 class MrdServiceTest {
     private var mockWebServer = MockWebServer()
@@ -21,18 +17,10 @@ class MrdServiceTest {
 
     @Before
     fun setup() {
-        val gsonConverterFactory = GsonConverterFactory.create(
-            GsonBuilder().registerTypeAdapter(
-                Instant::class.java,
-                JsonDeserializer { json, _, _ ->
-                    ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
-                }).create()
-        )
-
         mockWebServer.start()
         mrdService = Retrofit.Builder()
             .baseUrl(mockWebServer.url("/"))
-            .addConverterFactory(gsonConverterFactory)
+            .addConverterFactory(RemoteModule.provideGsonConverterFactory())
             .build()
             .create(MrdService::class.java)
 
@@ -55,9 +43,9 @@ class MrdServiceTest {
         runBlocking {
             val mrResponse = mrdService.getRaceResults(2020, 5)
             assertThat(mrResponse.mrData.table.races).hasSize(1)
-            assertThat(mrResponse.mrData.table.races.first().resultRemotes!!).hasSize(20)
-            val result = mrResponse.mrData.table.races.first().resultRemotes!!.first()
-            assertThat(mrResponse.mrData.table.races.first().resultRemotes!!).hasSize(20)
+            assertThat(mrResponse.mrData.table.races.first().results!!).hasSize(20)
+            val result = mrResponse.mrData.table.races.first().results!!.first()
+            assertThat(mrResponse.mrData.table.races.first().results!!).hasSize(20)
             assertThat(result.number).isEqualTo(33)
             assertThat(result.position).isEqualTo(1)
             assertThat(result.positionText).isEqualTo("1")
@@ -91,6 +79,28 @@ class MrdServiceTest {
 // Assert
 
     }
+
+
+    @Test
+    fun testLapTimes() {
+        // Assign
+        val file = "laps.json"
+        val response = MockResponse()
+            .setResponseCode(HttpURLConnection.HTTP_OK)
+            .setBody(readFileContent(file)!!)
+        mockWebServer.enqueue(response)
+// Act
+        runBlocking {
+            val mrResponse = mrdService.getLapTimes(2020, 5, "max_verstappen")
+            assertThat(mrResponse.mrData.table.races).hasSize(1)
+            assertThat(mrResponse.mrData.table.races.first().laps!!).hasSize(30)
+            val lap = mrResponse.mrData.table.races.first().laps!!.first()
+            assertThat(lap.number).isEqualTo(1)
+            assertThat(lap.timings.first().position).isEqualTo(2)
+            assertThat(lap.timings.first().time).isEqualTo("1:42.612")
+        }
+    }
+
 
     private fun readFileContent(file: String) =
         this::class.java.classLoader?.getResource(file)?.readText()

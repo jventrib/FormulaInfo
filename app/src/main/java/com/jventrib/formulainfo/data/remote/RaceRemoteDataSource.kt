@@ -10,9 +10,8 @@ const val DEFAULT_IMAGE_SIZE = 100
 open class RaceRemoteDataSource(
     private val mrdService: MrdService,
     private val wikipediaService: WikipediaService,
-    private val f1calendarService: F1CalendarService,
-
-    ) {
+    private val f1calendarService: F1CalendarService
+) {
 
     suspend fun getRaces(season: Int): List<RaceRemote> {
 
@@ -38,7 +37,7 @@ open class RaceRemoteDataSource(
         return mrdService.getRaceResults(
             season,
             round
-        ).mrData.table.races.firstOrNull()?.resultRemotes ?: listOf()
+        ).mrData.table.races.firstOrNull()?.results ?: listOf()
     }
 
     suspend fun getCountryFlag(country: String) =
@@ -68,5 +67,8 @@ open class RaceRemoteDataSource(
             Charsets.UTF_8.name()
         )
     }
+
+    suspend fun getLapTime(season: Int, round: Int, driver: String) =
+        mrdService.getLapTimes(season, round, driver).mrData.table.races.firstOrNull()?.laps ?: listOf()
 
 }

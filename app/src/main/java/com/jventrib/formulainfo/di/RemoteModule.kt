@@ -112,17 +112,28 @@ object RemoteModule {
         baseUrl: String
     ) = Retrofit.Builder()
         .baseUrl(baseUrl)
-        .addConverterFactory(gsonConverterFactory)
+        .addConverterFactory(provideGsonConverterFactory())
         .client(okHttpClient)
         .build()
 
-
-    private val gsonConverterFactory = GsonConverterFactory.create(
-        GsonBuilder().registerTypeAdapter(
-            Instant::class.java,
-            JsonDeserializer { json, _, _ ->
-                ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
-            }).create()
+    fun provideGsonConverterFactory(): GsonConverterFactory = GsonConverterFactory.create(
+        GsonBuilder()
+            .registerTypeAdapter(Instant::class.java,
+                JsonDeserializer { json, _, _ ->
+                    ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
+                })
+//            .registerTypeAdapter(Duration::class.java, InstanceCreator { Duration.ZERO })
+//            .registerTypeAdapter(Duration::class.java,
+//                JsonDeserializer { json, _, _ ->
+//                    val asString = json.asJsonPrimitive.asString
+//                    val min = asString.substringBefore(":").toInt()
+//                    val sec = asString.substringBefore(".").toInt()
+//                    val millis = asString.substringAfter(".").toInt()
+//                    val duration = Duration.minutes(min).plus(Duration.seconds(sec))
+//                        .plus(Duration.microseconds(millis))
+//                    duration
+//                })
+            .create()
     )
 
 }

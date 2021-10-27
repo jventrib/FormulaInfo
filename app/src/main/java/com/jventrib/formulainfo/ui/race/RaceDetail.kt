@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.getRaceFullSample
+import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.FullRace
 import com.jventrib.formulainfo.model.db.FullRaceResult
 import com.jventrib.formulainfo.result.Results
@@ -30,7 +31,7 @@ import kotlin.math.roundToInt
 
 @ExperimentalCoilApi
 @Composable
-fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>) {
+fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>, onDriverSelected: (driver: Driver) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -62,7 +63,8 @@ fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>) {
         Box(Modifier.nestedScroll(nestedScrollConnection)) {
             Results(
                 results = raceResults,
-                contentPadding = PaddingValues(top = headerHeight)
+                contentPadding = PaddingValues(top = headerHeight),
+                onDriverSelected = onDriverSelected
             )
             Box(
                 modifier = Modifier
@@ -92,5 +94,8 @@ fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>) {
 @Preview
 @Composable
 fun RaceDetailPreview() {
-    RaceDetail(fullRace = getRaceFullSample(3), listOf())
+    RaceDetail(
+        fullRace = getRaceFullSample(3),
+        raceResults = listOf(),
+        onDriverSelected = {})
 }

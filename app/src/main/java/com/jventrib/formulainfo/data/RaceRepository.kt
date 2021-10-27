@@ -2,29 +2,25 @@ package com.jventrib.formulainfo.data
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import androidx.room.withTransaction
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.face.FaceDetection
-import com.google.mlkit.vision.face.FaceDetectorOptions
 import com.jventrib.formulainfo.data.db.*
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.data.remote.WikipediaService
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.FullRace
 import com.jventrib.formulainfo.model.db.FullRaceResult
+import com.jventrib.formulainfo.model.db.LapTime
 import com.jventrib.formulainfo.model.mapper.*
 import com.jventrib.formulainfo.utils.detect
 import kotlinx.coroutines.flow.*
 import logcat.LogPriority
 import logcat.logcat
 import java.time.Instant
-import kotlin.math.hypot
 
 class RaceRepository(
     private val roomDb: AppRoomDatabase,
@@ -36,6 +32,7 @@ class RaceRepository(
     private val raceResultDao: RaceResultDao = roomDb.raceResultDao()
     private val driverDao: DriverDao = roomDb.driverDao()
     private val constructorDao: ConstructorDao = roomDb.constructorDao()
+    private val lapTimeDao: LapTimeDao = roomDb.lapTimeDao()
 
     fun getRaces(season: Int): Flow<StoreResponse<List<FullRace>>> =
         raceDao.getRaces(season)
@@ -71,11 +68,6 @@ class RaceRepository(
 
             }
             .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
-//
-//
-//        raceStore.stream(StoreRequest.cached(season, false)).onEach {
-//            logcat(LogPriority.VERBOSE) { "Races Response: $it" }
-//        }
 
     fun getRaceResults(
         season: Int,
@@ -83,7 +75,7 @@ class RaceRepository(
     ): Flow<StoreResponse<List<FullRaceResult>>> =
         raceResultDao.getFullRaceResults(season, round)
             .distinctUntilChanged()
-            .transform { data ->
+            .transformLatest { data ->
                 emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
                 logcat { "Getting FullRaceResults from DB" }
                 if (data.isEmpty()) {
@@ -111,6 +103,32 @@ class RaceRepository(
             }.onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
 
 
+    fun getLapTimes(
+        season: Int,
+        round: Int,
+        driver: String
+    ): Flow<StoreResponse<List<LapTime>>> =
+        lapTimeDao.getAll(season, round, driver)
+            .distinctUntilChanged()
+            .transformLatest { data ->
+                emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
+                logcat { "Getting LapTime from DB" }
+                if (data.isEmpty()) {
+                    logcat { "No LapTime in DB, fetching from API" }
+                    emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
+                    raceRemoteDataSource.getLapTime(season, round, driver).also {
+                        logcat { "Fetched LapTime from API: $it" }
+                            lapTimeDao.insertAll(LapTimeMapper.toEntity(season, round, driver, it)
+                                .also { logcat { "Inserting LapTime $it" } })
+                    }
+                } else {
+                    logcat { "Got ${data.size} LapTime from DB" }
+                    emit(StoreResponse.Data(data, ResponseOrigin.SourceOfTruth))
+                }
+            }
+            .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
+
+
     fun getRace(season: Int, round: Int): Flow<FullRace> {
         return raceDao.getRace(season, round)
             .distinctUntilChanged()
@@ -120,6 +138,9 @@ class RaceRepository(
             .filterNotNull()
             .flatMapLatest { completeRace(it) }
     }
+
+    fun getRaceResult(season: Int, round: Int, driverId: String): Flow<FullRaceResult> =
+        raceResultDao.getFullRaceResult(season, round, driverId)
 
     suspend fun refresh() {
         roomDb.withTransaction {
