@@ -14,6 +14,8 @@ import coil.annotation.ExperimentalCoilApi
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.ui.about.About
+import com.jventrib.formulainfo.ui.lap.LapViewModel
+import com.jventrib.formulainfo.ui.lap.LapsDetail
 import com.jventrib.formulainfo.ui.race.RaceDetail
 import com.jventrib.formulainfo.ui.race.RaceViewModel
 import com.jventrib.formulainfo.ui.season.Season
@@ -30,7 +32,8 @@ fun MainScreen() {
 
         NavHost(navController = navController, startDestination = "races") {
             composable("races") {
-                val viewModel: SeasonViewModel = hiltViewModel(navController.currentBackStackEntry!!)
+                val viewModel: SeasonViewModel =
+                    hiltViewModel(navController.currentBackStackEntry!!)
                 val raceList by viewModel.races.observeAsState(
                     StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
                 )
@@ -64,8 +67,28 @@ fun MainScreen() {
                 viewModel.season.value = season
                 viewModel.round.value = round
                 fullRace?.let {
-                    RaceDetail(it, raceResults?.dataOrNull() ?: listOf())
+                    RaceDetail(
+                        fullRace = it,
+                        raceResults = raceResults?.dataOrNull() ?: listOf(),
+                        onDriverSelected = { driver -> navController.navigate("laps/${season}/${round}/${driver.driverId}") }
+                    )
                 }
+            }
+            composable(
+                "laps/{season}/{round}/{driver}",
+                listOf(
+                    navArgument("season") { type = NavType.IntType },
+                    navArgument("round") { type = NavType.IntType },
+                    navArgument("driver") { type = NavType.StringType })
+            ) { navBackStackEntry ->
+                val viewModel: LapViewModel = hiltViewModel(navBackStackEntry)
+                val result by viewModel.result.observeAsState()
+                val lapTimes by viewModel.laps.observeAsState()
+
+                viewModel.season.value = navBackStackEntry.arguments?.get("season") as Int
+                viewModel.round.value = navBackStackEntry.arguments?.get("round") as Int
+                viewModel.driverId.value = navBackStackEntry.arguments?.get("driver") as String
+                result?.let { LapsDetail(it, lapTimes?.dataOrNull() ?: listOf()) }
             }
             composable("about") { About() }
         }

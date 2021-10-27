@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface RaceResultDao {
 
-    @Transaction
+    @Query("SELECT * from race_result WHERE season = :season and round = :round and driverId = :driverId")
+    fun getFullRaceResult(season: Int, round: Int, driverId: String): Flow<FullRaceResult>
+
     @Query("SELECT * from race_result WHERE season = :season and round = :round ORDER BY position ASC")
     fun getFullRaceResults(season: Int, round: Int): Flow<List<FullRaceResult>>
 
