@@ -1,7 +1,5 @@
 package com.jventrib.formulainfo.ui.lap
 
-import android.R.attr
-import android.text.format.DateUtils
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +15,6 @@ import com.jventrib.formulainfo.model.db.LapTime
 import com.jventrib.formulainfo.result.ResultItem
 import com.jventrib.formulainfo.ui.components.ItemCard
 import java.time.Duration
-import android.R.attr.duration
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -48,8 +45,6 @@ fun LapsDetail(result: FullRaceResult, laps: List<LapTime>) {
                         image = null
                     )
                 }
-
-
             }
         }
     }
