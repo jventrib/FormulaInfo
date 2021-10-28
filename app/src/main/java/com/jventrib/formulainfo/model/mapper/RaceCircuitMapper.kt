@@ -1,6 +1,6 @@
 package com.jventrib.formulainfo.model.mapper
 
-import com.jventrib.formulainfo.model.db.*
+import com.jventrib.formulainfo.model.db.Circuit
 import com.jventrib.formulainfo.model.remote.RaceRemote
 
 object RaceCircuitMapper : Mapper<RaceRemote, Circuit> {

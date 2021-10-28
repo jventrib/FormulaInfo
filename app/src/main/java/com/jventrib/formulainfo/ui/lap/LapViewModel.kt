@@ -17,7 +17,7 @@ class LapViewModel @Inject constructor(private val repository: RaceRepository) :
     val result =
         driverId.distinctUntilChanged().switchMap {
             it?.let {
-                repository.getRaceResult(season.value!!, round.value!!, it).asLiveData()
+                repository.getResult(season.value!!, round.value!!, it).asLiveData()
             } ?: MutableLiveData(null)
         }
 

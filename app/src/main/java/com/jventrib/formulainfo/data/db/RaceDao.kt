@@ -4,8 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.FullRace
+import com.jventrib.formulainfo.model.db.Race
 import kotlinx.coroutines.flow.Flow
 
 @Dao

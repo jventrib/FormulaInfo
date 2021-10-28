@@ -1,11 +1,11 @@
 package com.jventrib.formulainfo.model.mapper
 
 import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.model.remote.RaceResultRemote
+import com.jventrib.formulainfo.model.remote.ResultRemote
 
-object RaceResultDriverMapper: Mapper<RaceResultRemote, Driver> {
+object ResultDriverMapper: Mapper<ResultRemote, Driver> {
 
-    override fun toEntity(remote: RaceResultRemote) = remote.driver.let { driver ->
+    override fun toEntity(remote: ResultRemote) = remote.driver.let { driver ->
         Driver(
             driver.driverId,
             driver.permanentNumber,

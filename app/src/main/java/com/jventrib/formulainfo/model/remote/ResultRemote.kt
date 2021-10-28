@@ -3,7 +3,7 @@ package com.jventrib.formulainfo.model.remote
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-data class RaceResultRemote(
+data class ResultRemote(
     val number: Int,
     val position: Int,
     val positionText: String,

@@ -10,7 +10,7 @@ import com.jventrib.formulainfo.utils.Converters
     entities = [
         Race::class,
         Circuit::class,
-        RaceResult::class,
+        Result::class,
         Driver::class,
         Constructor::class,
         LapTime::class
@@ -23,7 +23,7 @@ abstract class AppRoomDatabase : RoomDatabase() {
 
     abstract fun raceDao(): RaceDao
     abstract fun circuitDao(): CircuitDao
-    abstract fun raceResultDao(): RaceResultDao
+    abstract fun resultDao(): ResultDao
     abstract fun driverDao(): DriverDao
     abstract fun constructorDao(): ConstructorDao
     abstract fun lapTimeDao(): LapTimeDao

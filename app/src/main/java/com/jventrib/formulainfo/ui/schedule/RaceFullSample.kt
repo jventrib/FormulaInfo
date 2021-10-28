@@ -1,8 +1,8 @@
 package com.jventrib.formulainfo
 
 import com.jventrib.formulainfo.model.db.Circuit
-import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.FullRace
+import com.jventrib.formulainfo.model.db.Race
 import java.time.Instant
 
 fun getRaceFullSample(round: Int, name: String? = null): FullRace {

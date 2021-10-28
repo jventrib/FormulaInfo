@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.season
+package com.jventrib.formulainfo.ui.schedule
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,11 +14,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.model.db.FullRace
-import com.jventrib.formulainfo.ui.season.item.RaceItem
+import com.jventrib.formulainfo.ui.schedule.item.Race
 import kotlinx.coroutines.launch
 
 @Composable
-fun Season(
+fun ScheduleScreen(
     raceList: StoreResponse<List<FullRace>>,
     onRaceClicked: (FullRace) -> Unit,
     seasonList: List<Int>,
@@ -74,7 +74,7 @@ fun RaceList(
     LazyColumn(state = listState) {
         raceList.dataOrNull()?.let { raceList ->
             items(raceList) {
-                RaceItem(
+                Race(
                     fullRace = it,
                     expanded = it.nextRace,
                     onRaceSelected = onRaceSelected

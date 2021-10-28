@@ -7,10 +7,10 @@ import retrofit2.http.Path
 
 interface MrdService {
     @GET("{season}.json")
-    suspend fun getRaces(@Path("season") season: Int): MRResponse<RaceTable>
+    suspend fun getSchedule(@Path("season") season: Int): MRResponse<RaceTable>
 
     @GET("{season}/{round}/results.json")
-    suspend fun getRaceResults(
+    suspend fun getResults(
         @Path("season") season: Int,
         @Path("round") round: Int
     ): MRResponse<RaceTable>

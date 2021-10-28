@@ -8,7 +8,7 @@ import java.io.Serializable
 
 @Entity(tableName = "race_result")
 //@Entity(tableName = "race_result", primaryKeys = ["season", "round", "number"])
-data class RaceResult(
+data class Result(
     @PrimaryKey
     val key: String,
     val season: Int,

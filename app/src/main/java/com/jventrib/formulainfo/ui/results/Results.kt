@@ -1,8 +1,12 @@
-package com.jventrib.formulainfo.ui.race
+@file:JvmName("ResultsKt")
+
+package com.jventrib.formulainfo.ui.results
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -21,17 +25,17 @@ import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.getRaceFullSample
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.FullRace
-import com.jventrib.formulainfo.model.db.FullRaceResult
-import com.jventrib.formulainfo.result.Results
+import com.jventrib.formulainfo.model.db.FullResult
+import com.jventrib.formulainfo.result.DriverResult
 import com.jventrib.formulainfo.ui.common.components.Image
-import com.jventrib.formulainfo.ui.season.item.RaceItem
+import com.jventrib.formulainfo.ui.schedule.item.Race
 import logcat.LogPriority
 import logcat.logcat
 import kotlin.math.roundToInt
 
 @ExperimentalCoilApi
 @Composable
-fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>, onDriverSelected: (driver: Driver) -> Unit) {
+fun ResultsScreen(fullRace: FullRace, results: List<FullResult>, onDriverSelected: (driver: Driver) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -61,8 +65,8 @@ fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>, onDriverSe
             }
         }
         Box(Modifier.nestedScroll(nestedScrollConnection)) {
-            Results(
-                results = raceResults,
+            ResultsList(
+                results = results,
                 contentPadding = PaddingValues(top = headerHeight),
                 onDriverSelected = onDriverSelected
             )
@@ -76,7 +80,7 @@ fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>, onDriverSe
                     .background(Color.White)
             ) {
                 Column {
-                    RaceItem(fullRace = fullRace, expanded = true)
+                    Race(fullRace = fullRace, expanded = true)
                     Image(
                         imageModel = fullRace.circuit.imageUrl,
                         contentScale = ContentScale.Fit,
@@ -90,12 +94,27 @@ fun RaceDetail(fullRace: FullRace, raceResults: List<FullRaceResult>, onDriverSe
     }
 }
 
+@Composable
+fun ResultsList(
+    results: List<FullResult>,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues,
+    onDriverSelected: (driver: Driver) -> Unit
+) {
+    LazyColumn(contentPadding = contentPadding, modifier = modifier) {
+        items(results) { result ->
+            DriverResult(result, onResultSelected = { onDriverSelected(it.driver) })
+        }
+    }
+
+}
+
 @ExperimentalCoilApi
 @Preview
 @Composable
 fun RaceDetailPreview() {
-    RaceDetail(
+    ResultsScreen(
         fullRace = getRaceFullSample(3),
-        raceResults = listOf(),
+        results = listOf(),
         onDriverSelected = {})
 }

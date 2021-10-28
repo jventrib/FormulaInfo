@@ -1,7 +1,6 @@
 package com.jventrib.formulainfo.model.remote
 
 import com.google.gson.annotations.SerializedName
-import com.jventrib.formulainfo.model.remote.RaceRemote
 
 data class RaceTable(
     val season: String,

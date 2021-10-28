@@ -1,13 +1,10 @@
-package com.jventrib.formulainfo.ui.season
+package com.jventrib.formulainfo.ui.schedule
 
 import androidx.lifecycle.*
-import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.data.RaceRepository
 import com.jventrib.formulainfo.model.db.FullRace
-import com.jventrib.formulainfo.model.db.FullRaceResult
 import dagger.hilt.android.lifecycle.HiltViewModel
-import logcat.logcat
 import javax.inject.Inject
 
 @HiltViewModel

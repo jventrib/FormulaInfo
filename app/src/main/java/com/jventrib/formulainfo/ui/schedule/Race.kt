@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.season.item
+package com.jventrib.formulainfo.ui.schedule.item
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -14,7 +14,7 @@ import java.time.Instant
 
 @ExperimentalCoilApi
 @Composable
-fun RaceItem(
+fun Race(
     fullRace: FullRace,
     expanded: Boolean = false,
     onRaceSelected: (FullRace) -> Unit = {}
@@ -51,7 +51,7 @@ private fun SessionDateText(it: Instant) {
 @Preview(showBackground = true)
 @Composable
 fun RaceItemPreview() {
-    RaceItem(
+    Race(
         fullRace = getRaceFullSample(1, "Emilia Romagna Grand Prix"),
         expanded = false
     ) {}
@@ -61,7 +61,7 @@ fun RaceItemPreview() {
 @Preview(showBackground = true)
 @Composable
 fun RaceItemPreviewExpanded() {
-    RaceItem(
+    Race(
         fullRace = getRaceFullSample(1, "Emilia Romagna Grand Prix"),
         expanded = true
     ) {}

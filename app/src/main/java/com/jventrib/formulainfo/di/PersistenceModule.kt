@@ -57,8 +57,8 @@ object PersistenceModule {
 
   @Provides
   @Singleton
-  fun provideRaceResultDao(appDatabase: AppRoomDatabase): RaceResultDao {
-    return appDatabase.raceResultDao()
+  fun provideResultDao(appDatabase: AppRoomDatabase): ResultDao {
+    return appDatabase.resultDao()
   }
 
   @Provides
