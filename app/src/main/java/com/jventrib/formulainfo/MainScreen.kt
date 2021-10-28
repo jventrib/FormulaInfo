@@ -14,8 +14,8 @@ import coil.annotation.ExperimentalCoilApi
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.ui.about.About
-import com.jventrib.formulainfo.ui.lap.LapViewModel
-import com.jventrib.formulainfo.ui.lap.LapsDetail
+import com.jventrib.formulainfo.ui.laps.LapsViewModel
+import com.jventrib.formulainfo.ui.laps.Laps
 import com.jventrib.formulainfo.ui.results.ResultsScreen
 import com.jventrib.formulainfo.ui.results.ResultsViewModel
 import com.jventrib.formulainfo.ui.schedule.ScheduleScreen
@@ -81,14 +81,14 @@ fun MainScreen() {
                     navArgument("round") { type = NavType.IntType },
                     navArgument("driver") { type = NavType.StringType })
             ) { navBackStackEntry ->
-                val viewModel: LapViewModel = hiltViewModel(navBackStackEntry)
+                val viewModel: LapsViewModel = hiltViewModel(navBackStackEntry)
                 val result by viewModel.result.observeAsState()
                 val lapTimes by viewModel.laps.observeAsState()
 
                 viewModel.season.value = navBackStackEntry.arguments?.get("season") as Int
                 viewModel.round.value = navBackStackEntry.arguments?.get("round") as Int
                 viewModel.driverId.value = navBackStackEntry.arguments?.get("driver") as String
-                result?.let { LapsDetail(it, lapTimes?.dataOrNull() ?: listOf()) }
+                result?.let { Laps(it, lapTimes?.dataOrNull() ?: listOf()) }
             }
             composable("about") { About() }
         }

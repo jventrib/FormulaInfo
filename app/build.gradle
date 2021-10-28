@@ -41,6 +41,8 @@ android {
                 "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 "-Xuse-experimental=com.dropbox.android.external.store4.ExperimentalStoreApi",
                 "-Xuse-experimental=kotlin.time.ExperimentalTime",
+                "-Xuse-experimental=coil.annotation.ExperimentalCoilApi",
+                "-Xuse-experimental=androidx.compose.foundation.ExperimentalFoundationApi",
                 "-Xuse-experimental=kotlinx.coroutines.FlowPreview"
         ]
     }

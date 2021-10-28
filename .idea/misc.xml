@@ -53,6 +53,12 @@
         <entry key="../../../../layout/compose-model-1635404638794.xml" value="0.12407407407407407" />
         <entry key="../../../../layout/compose-model-1635405776850.xml" value="0.12407407407407407" />
         <entry key="../../../../layout/compose-model-1635412300906.xml" value="0.1" />
+        <entry key="../../../../layout/compose-model-1635412932196.xml" value="0.3277777777777778" />
+        <entry key="../../../../layout/compose-model-1635440477481.xml" value="0.25" />
+        <entry key="../../../../layout/compose-model-1635440621635.xml" value="0.35648148148148145" />
+        <entry key="../../../../layout/compose-model-1635443224633.xml" value="0.25" />
+        <entry key="../../../../layout/compose-model-1635443311055.xml" value="0.2712962962962963" />
+        <entry key="../../../../layout/compose-model-1635444454612.xml" value="0.2712962962962963" />
         <entry key="..\:/dev/projects/FormulaInfo/app/src/main/res/layout/activity_main.xml" value="0.12960526315789472" />
         <entry key="..\:/dev/projects/FormulaInfo/app/src/main/res/layout/fragment_about.xml" value="0.16" />
         <entry key="..\:/dev/projects/FormulaInfo/app/src/main/res/layout/fragment_race_list.xml" value="0.1" />
@@ -63,7 +69,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
