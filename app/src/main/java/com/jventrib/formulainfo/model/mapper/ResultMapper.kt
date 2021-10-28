@@ -1,11 +1,11 @@
 package com.jventrib.formulainfo.model.mapper
 
-import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.model.db.ResultInfo
 import com.jventrib.formulainfo.model.remote.ResultRemote
 
 object ResultMapper {
 
-    fun toEntity(season: Int, round: Int, remote: ResultRemote) = Result(
+    fun toEntity(season: Int, round: Int, remote: ResultRemote) = ResultInfo(
         "${season}-${round}-${remote.position}",
         season,
         round,
@@ -18,13 +18,13 @@ object ResultMapper {
         remote.grid,
         remote.laps,
         remote.status,
-        remote.time?.let { Result.Time(it.millis, it.time) },
+        remote.time?.let { ResultInfo.Time(it.millis, it.time) },
         remote.fastestLap?.run {
-            Result.FastestLap(
+            ResultInfo.FastestLap(
                 rank,
                 lap,
-                Result.Time(time.millis, time.time),
-                Result.FastestLap.AverageSpeed(averageSpeed.units, averageSpeed.speed)
+                ResultInfo.Time(time.millis, time.time),
+                ResultInfo.FastestLap.AverageSpeed(averageSpeed.units, averageSpeed.speed)
             )
         },
     )

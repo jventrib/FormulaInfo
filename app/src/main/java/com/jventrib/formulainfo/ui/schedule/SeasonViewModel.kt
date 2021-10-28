@@ -3,7 +3,7 @@ package com.jventrib.formulainfo.ui.schedule
 import androidx.lifecycle.*
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.data.RaceRepository
-import com.jventrib.formulainfo.model.db.FullRace
+import com.jventrib.formulainfo.model.db.Race
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -16,7 +16,7 @@ class SeasonViewModel @Inject constructor(private val repository: RaceRepository
 
     val round: MutableLiveData<Int?> = MutableLiveData(null)
 
-    val races: LiveData<StoreResponse<List<FullRace>>> =
+    val races: LiveData<StoreResponse<List<Race>>> =
         season.distinctUntilChanged().switchMap {
             repository.getRaces(it).asLiveData()
         }

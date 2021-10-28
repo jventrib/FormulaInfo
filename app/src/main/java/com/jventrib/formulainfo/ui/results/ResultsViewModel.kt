@@ -4,8 +4,8 @@ import androidx.lifecycle.*
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.data.RaceRepository
-import com.jventrib.formulainfo.model.db.FullRace
-import com.jventrib.formulainfo.model.db.FullResult
+import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.model.db.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -16,7 +16,7 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
 
     val round: MutableLiveData<Int?> = MutableLiveData(null)
 
-    val fullRace: LiveData<FullRace?> =
+    val race: LiveData<Race?> =
         round.distinctUntilChanged().switchMap {
             it?.let {
                 repository.getRace(season.value!!, it)
@@ -24,7 +24,7 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
             } ?: MutableLiveData(null)
         }
 
-    val results: LiveData<StoreResponse<List<FullResult>>> =
+    val results: LiveData<StoreResponse<List<Result>>> =
         round.distinctUntilChanged().switchMap {
             it?.let {
                 repository.getResults(season.value!!, it).asLiveData()

@@ -41,7 +41,7 @@ fun MainScreen() {
                 ScheduleScreen(
                     raceList = raceList,
                     onRaceClicked = { race ->
-                        navController.navigate("race/${race.race.season}/${race.race.round}")
+                        navController.navigate("race/${race.raceInfo.season}/${race.raceInfo.round}")
                     },
                     seasonList = seasonList,
                     selectedSeason = viewModel.season.observeAsState().value,
@@ -60,15 +60,15 @@ fun MainScreen() {
                     navArgument("round") { type = NavType.IntType })
             ) { navBackStackEntry ->
                 val viewModel: ResultsViewModel = hiltViewModel(navBackStackEntry)
-                val fullRace by viewModel.fullRace.observeAsState()
+                val race by viewModel.race.observeAsState()
                 val results by viewModel.results.observeAsState()
                 val season = navBackStackEntry.arguments?.get("season") as Int
                 val round = navBackStackEntry.arguments?.get("round") as Int
                 viewModel.season.value = season
                 viewModel.round.value = round
-                fullRace?.let {
+                race?.let {
                     ResultsScreen(
-                        fullRace = it,
+                        race = it,
                         results = results?.dataOrNull() ?: listOf(),
                         onDriverSelected = { driver -> navController.navigate("laps/${season}/${round}/${driver.driverId}") }
                     )

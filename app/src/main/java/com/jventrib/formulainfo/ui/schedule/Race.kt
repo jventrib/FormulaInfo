@@ -7,33 +7,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.common.ui.format
-import com.jventrib.formulainfo.getRaceFullSample
-import com.jventrib.formulainfo.model.db.FullRace
+import com.jventrib.formulainfo.getRaceSample
+import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.ui.components.ItemCard
 import java.time.Instant
 
 @ExperimentalCoilApi
 @Composable
 fun Race(
-    fullRace: FullRace,
+    race: Race,
     expanded: Boolean = false,
-    onRaceSelected: (FullRace) -> Unit = {}
+    onRaceSelected: (Race) -> Unit = {}
 ) {
     ItemCard(
-        image = fullRace.circuit.location.flag,
-        onItemSelected = { onRaceSelected(fullRace) },
+        image = race.circuit.location.flag,
+        onItemSelected = { onRaceSelected(race) },
         content = {
             Text(
-                text = fullRace.race.raceName,
+                text = race.raceInfo.raceName,
                 style = MaterialTheme.typography.h6
             )
             if (expanded) {
-                fullRace.race.sessions.fp1?.let { SessionDateText(it) }
-                fullRace.race.sessions.fp2?.let { SessionDateText(it) }
-                fullRace.race.sessions.fp3?.let { SessionDateText(it) }
-                fullRace.race.sessions.qualifying?.let { SessionDateText(it) }
+                race.raceInfo.sessions.fp1?.let { SessionDateText(it) }
+                race.raceInfo.sessions.fp2?.let { SessionDateText(it) }
+                race.raceInfo.sessions.fp3?.let { SessionDateText(it) }
+                race.raceInfo.sessions.qualifying?.let { SessionDateText(it) }
             }
-            SessionDateText(fullRace.race.sessions.race)
+            SessionDateText(race.raceInfo.sessions.race)
         }
     )
 }
@@ -52,7 +52,7 @@ private fun SessionDateText(it: Instant) {
 @Composable
 fun RaceItemPreview() {
     Race(
-        fullRace = getRaceFullSample(1, "Emilia Romagna Grand Prix"),
+        race = getRaceSample(1, "Emilia Romagna Grand Prix"),
         expanded = false
     ) {}
 }
@@ -62,7 +62,7 @@ fun RaceItemPreview() {
 @Composable
 fun RaceItemPreviewExpanded() {
     Race(
-        fullRace = getRaceFullSample(1, "Emilia Romagna Grand Prix"),
+        race = getRaceSample(1, "Emilia Romagna Grand Prix"),
         expanded = true
     ) {}
 }

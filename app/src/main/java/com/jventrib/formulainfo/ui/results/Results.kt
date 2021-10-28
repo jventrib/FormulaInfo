@@ -22,10 +22,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.jventrib.formulainfo.getRaceFullSample
+import com.jventrib.formulainfo.getRaceSample
 import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.model.db.FullRace
-import com.jventrib.formulainfo.model.db.FullResult
+import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.result.DriverResult
 import com.jventrib.formulainfo.ui.common.components.Image
 import com.jventrib.formulainfo.ui.schedule.item.Race
@@ -35,7 +35,7 @@ import kotlin.math.roundToInt
 
 @ExperimentalCoilApi
 @Composable
-fun ResultsScreen(fullRace: FullRace, results: List<FullResult>, onDriverSelected: (driver: Driver) -> Unit) {
+fun ResultsScreen(race: Race, results: List<Result>, onDriverSelected: (driver: Driver) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -80,9 +80,9 @@ fun ResultsScreen(fullRace: FullRace, results: List<FullResult>, onDriverSelecte
                     .background(Color.White)
             ) {
                 Column {
-                    Race(fullRace = fullRace, expanded = true)
+                    Race(race = race, expanded = true)
                     Image(
-                        imageModel = fullRace.circuit.imageUrl,
+                        imageModel = race.circuit.imageUrl,
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -96,7 +96,7 @@ fun ResultsScreen(fullRace: FullRace, results: List<FullResult>, onDriverSelecte
 
 @Composable
 fun ResultsList(
-    results: List<FullResult>,
+    results: List<Result>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues,
     onDriverSelected: (driver: Driver) -> Unit
@@ -114,7 +114,7 @@ fun ResultsList(
 @Composable
 fun RaceDetailPreview() {
     ResultsScreen(
-        fullRace = getRaceFullSample(3),
+        race = getRaceSample(3),
         results = listOf(),
         onDriverSelected = {})
 }
