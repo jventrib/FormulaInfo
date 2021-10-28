@@ -73,45 +73,47 @@ fun DriverResult(
 @Preview
 @Composable
 fun DriverResultPreview() {
-    val rr = Result(
-        ResultInfo(
-            "11",
-            2021,
-            2,
-            33,
-            1,
-            "1",
-            25.0f,
-            "verstappen",
-            "RedBull",
-            2,
-            70,
-            "Finished",
-            ResultInfo.Time(111, "111"),
-
-            ResultInfo.FastestLap(
-                1,
-                1,
-                ResultInfo.Time(111, "111"),
-                ResultInfo.FastestLap.AverageSpeed("Kph", 170.0f)
-            )
-        ),
-        Driver(
-            "verstappen",
-            33,
-            "verst",
-            "url",
-            "Max",
-            "Verstappen",
-            "1999",
-            "NL",
-            "img",
-            null
-        ),
-        Constructor("RedBull", "url", "RedBull", "UK", "img")
-    )
+    val rr = getResultSample()
     DriverResult(result = rr) {
 
     }
 
 }
+
+fun getResultSample() = Result(
+    ResultInfo(
+        "11",
+        2021,
+        2,
+        33,
+        1,
+        "1",
+        25.0f,
+        "verstappen",
+        "RedBull",
+        2,
+        70,
+        "Finished",
+        ResultInfo.Time(111, "111"),
+
+        ResultInfo.FastestLap(
+            1,
+            1,
+            ResultInfo.Time(111, "111"),
+            ResultInfo.FastestLap.AverageSpeed("Kph", 170.0f)
+        )
+    ),
+    Driver(
+        "verstappen",
+        33,
+        "verst",
+        "url",
+        "Max",
+        "Verstappen",
+        "1999",
+        "NL",
+        "img",
+        null
+    ),
+    Constructor("RedBull", "url", "RedBull", "UK", "img")
+)

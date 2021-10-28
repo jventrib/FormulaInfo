@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.lap
+package com.jventrib.formulainfo.ui.laps
 
 import androidx.lifecycle.*
 import com.dropbox.android.external.store4.ResponseOrigin
@@ -8,7 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class LapViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
+class LapsViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
 
     val season = MutableLiveData(2021)
     val round: MutableLiveData<Int?> = MutableLiveData(null)
