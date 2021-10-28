@@ -32,7 +32,7 @@ class MrdServiceTest {
     }
 
     @Test
-    fun testRaceResults() {
+    fun testResults() {
         // Assign
         val file = "results.json"
         val response = MockResponse()
@@ -41,7 +41,7 @@ class MrdServiceTest {
         mockWebServer.enqueue(response)
 // Act
         runBlocking {
-            val mrResponse = mrdService.getRaceResults(2020, 5)
+            val mrResponse = mrdService.getResults(2020, 5)
             assertThat(mrResponse.mrData.table.races).hasSize(1)
             assertThat(mrResponse.mrData.table.races.first().results!!).hasSize(20)
             val result = mrResponse.mrData.table.races.first().results!!.first()

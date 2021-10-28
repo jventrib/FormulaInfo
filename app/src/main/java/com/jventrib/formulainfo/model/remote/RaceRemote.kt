@@ -18,7 +18,7 @@ class RaceRemote(
     lateinit var date: String
 
     @SerializedName("Results")
-    var results: List<RaceResultRemote>? = null
+    var results: List<ResultRemote>? = null
 
     @SerializedName("Laps")
     var laps: List<LapTimeRemote>? = null

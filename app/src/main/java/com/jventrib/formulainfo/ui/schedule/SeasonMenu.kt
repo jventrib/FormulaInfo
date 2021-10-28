@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.season
+package com.jventrib.formulainfo.ui.schedule
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

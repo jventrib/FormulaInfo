@@ -10,9 +10,9 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import coil.annotation.ExperimentalCoilApi
-import com.jventrib.formulainfo.model.db.FullRaceResult
+import com.jventrib.formulainfo.model.db.FullResult
 import com.jventrib.formulainfo.model.db.LapTime
-import com.jventrib.formulainfo.result.ResultItem
+import com.jventrib.formulainfo.result.DriverResult
 import com.jventrib.formulainfo.ui.components.ItemCard
 import java.time.Duration
 import java.time.LocalTime
@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter
 
 @ExperimentalCoilApi
 @Composable
-fun LapsDetail(result: FullRaceResult, laps: List<LapTime>) {
+fun LapsDetail(result: FullResult, laps: List<LapTime>) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -35,7 +35,7 @@ fun LapsDetail(result: FullRaceResult, laps: List<LapTime>) {
             )
         }) {
         Column {
-            ResultItem(raceResult = result, onResultSelected = {})
+            DriverResult(result = result, onResultSelected = {})
             LazyColumn {
                 items(laps) {
                     ItemCard(

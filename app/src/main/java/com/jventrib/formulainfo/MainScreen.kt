@@ -16,10 +16,10 @@ import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.lap.LapViewModel
 import com.jventrib.formulainfo.ui.lap.LapsDetail
-import com.jventrib.formulainfo.ui.race.RaceDetail
-import com.jventrib.formulainfo.ui.race.RaceViewModel
-import com.jventrib.formulainfo.ui.season.Season
-import com.jventrib.formulainfo.ui.season.SeasonViewModel
+import com.jventrib.formulainfo.ui.results.ResultsScreen
+import com.jventrib.formulainfo.ui.results.ResultsViewModel
+import com.jventrib.formulainfo.ui.schedule.ScheduleScreen
+import com.jventrib.formulainfo.ui.schedule.SeasonViewModel
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlinx.coroutines.launch
 
@@ -38,7 +38,7 @@ fun MainScreen() {
                     StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
                 )
                 val seasonList = viewModel.seasonList
-                Season(
+                ScheduleScreen(
                     raceList = raceList,
                     onRaceClicked = { race ->
                         navController.navigate("race/${race.race.season}/${race.race.round}")
@@ -59,17 +59,17 @@ fun MainScreen() {
                     navArgument("season") { type = NavType.IntType },
                     navArgument("round") { type = NavType.IntType })
             ) { navBackStackEntry ->
-                val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
+                val viewModel: ResultsViewModel = hiltViewModel(navBackStackEntry)
                 val fullRace by viewModel.fullRace.observeAsState()
-                val raceResults by viewModel.raceResultsRaceResult.observeAsState()
+                val results by viewModel.results.observeAsState()
                 val season = navBackStackEntry.arguments?.get("season") as Int
                 val round = navBackStackEntry.arguments?.get("round") as Int
                 viewModel.season.value = season
                 viewModel.round.value = round
                 fullRace?.let {
-                    RaceDetail(
+                    ResultsScreen(
                         fullRace = it,
-                        raceResults = raceResults?.dataOrNull() ?: listOf(),
+                        results = results?.dataOrNull() ?: listOf(),
                         onDriverSelected = { driver -> navController.navigate("laps/${season}/${round}/${driver.driverId}") }
                     )
                 }

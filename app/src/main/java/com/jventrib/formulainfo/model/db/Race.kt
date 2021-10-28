@@ -3,7 +3,7 @@ package com.jventrib.formulainfo.model.db
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Ignore
-import com.jventrib.formulainfo.model.remote.RaceResultRemote
+import com.jventrib.formulainfo.model.remote.ResultRemote
 import java.io.Serializable
 import java.time.Instant
 
@@ -24,7 +24,7 @@ data class Race(
     lateinit var date: String
 
     @Ignore
-    var resultRemotes: List<RaceResultRemote>? = null
+    var resultRemotes: List<ResultRemote>? = null
 
     val timeInitialized get() = ::time.isInitialized
 

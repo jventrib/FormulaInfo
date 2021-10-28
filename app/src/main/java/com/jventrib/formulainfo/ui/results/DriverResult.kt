@@ -1,9 +1,10 @@
 package com.jventrib.formulainfo.result
 
 import android.graphics.Rect
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -12,63 +13,51 @@ import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.jventrib.formulainfo.model.db.*
+import com.jventrib.formulainfo.model.db.Constructor
+import com.jventrib.formulainfo.model.db.Driver
+import com.jventrib.formulainfo.model.db.FullResult
+import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.components.DeltaTextP
 import com.jventrib.formulainfo.ui.components.ItemCard
 
 @Composable
-fun Results(
-    results: List<FullRaceResult>,
-    modifier: Modifier = Modifier,
-    contentPadding: PaddingValues,
-    onDriverSelected: (driver: Driver) -> Unit
-) {
-    LazyColumn(contentPadding = contentPadding, modifier = modifier) {
-        items(results) { result ->
-            ResultItem(result, onResultSelected = { onDriverSelected(it.driver) })
-        }
-    }
-
-}
-
-@Composable
-fun ResultItem(
-    raceResult: FullRaceResult,
-    onResultSelected: (raceResult: FullRaceResult) -> Any
+fun DriverResult(
+    result: FullResult,
+    onResultSelected: (result: FullResult) -> Any
 ) {
     ItemCard(
-        image = raceResult.driver.image,
-        onItemSelected = { onResultSelected(raceResult) },
+        image = result.driver.image,
+        onItemSelected = { onResultSelected(result) },
         content = {
             Row(Modifier.fillMaxWidth()) {
                 Column {
                     Text(
-                        text = "${raceResult.raceResult.position}:${raceResult.driver.givenName} ${raceResult.driver.familyName}",
+                        text = "${result.result.position}:${result.driver.givenName} ${result.driver.familyName}",
                         style = MaterialTheme.typography.h6
                     )
                     Text(
-                        text = raceResult.constructor.name,
+                        text = result.constructor.name,
                         style = MaterialTheme.typography.body1
                     )
                     Text(
-                        text = raceResult.raceResult.time?.time ?: "",
+                        text = result.result.time?.time ?: "",
                         style = MaterialTheme.typography.body2
                     )
                 }
                 Column(horizontalAlignment = End, modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "${raceResult.raceResult.points.toInt()} pts",
+                        text = "${result.result.points.toInt()} pts",
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.align(End)
                     )
                     Row() {
 
                         Text(
-                            text = "Started ${raceResult.raceResult.grid}",
+                            text = "Started ${result.result.grid}",
                             style = MaterialTheme.typography.body1
                         )
                         DeltaTextP(
-                            delta = raceResult.raceResult.position - raceResult.raceResult.grid,
+                            delta = result.result.position - result.result.grid,
                             Modifier.padding(start = 8.dp)
                         )
                     }
@@ -76,16 +65,16 @@ fun ResultItem(
             }
         },
         shape = CircleShape,
-        faceBox = Rect.unflattenFromString(raceResult.driver.faceBox)
+        faceBox = Rect.unflattenFromString(result.driver.faceBox)
     )
 }
 
 
 @Preview
 @Composable
-fun ResultItemPreview() {
-    val rr = FullRaceResult(
-        RaceResult(
+fun DriverResultPreview() {
+    val rr = FullResult(
+        Result(
             "11",
             2021,
             2,
@@ -98,13 +87,13 @@ fun ResultItemPreview() {
             2,
             70,
             "Finished",
-            RaceResult.Time(111, "111"),
+            Result.Time(111, "111"),
 
-            RaceResult.FastestLap(
+            Result.FastestLap(
                 1,
                 1,
-                RaceResult.Time(111, "111"),
-                RaceResult.FastestLap.AverageSpeed("Kph", 170.0f)
+                Result.Time(111, "111"),
+                Result.FastestLap.AverageSpeed("Kph", 170.0f)
             )
         ),
         Driver(
@@ -121,7 +110,7 @@ fun ResultItemPreview() {
         ),
         Constructor("RedBull", "url", "RedBull", "UK", "img")
     )
-    ResultItem(raceResult = rr) {
+    DriverResult(result = rr) {
 
     }
 

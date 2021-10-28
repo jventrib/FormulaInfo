@@ -1,7 +1,7 @@
 package com.jventrib.formulainfo.data.remote
 
 import com.jventrib.formulainfo.model.remote.RaceRemote
-import com.jventrib.formulainfo.model.remote.RaceResultRemote
+import com.jventrib.formulainfo.model.remote.ResultRemote
 import java.net.URLDecoder
 import java.time.ZonedDateTime
 
@@ -15,7 +15,7 @@ open class RaceRemoteDataSource(
 
     suspend fun getRaces(season: Int): List<RaceRemote> {
 
-        val races = mrdService.getRaces(season).mrData.table.races
+        val races = mrdService.getSchedule(season).mrData.table.races
         return try {
             races.zip(f1calendarService.getRaces(season).races) { mrd, f1c ->
                 mrd.sessions = f1c.sessions
@@ -33,8 +33,8 @@ open class RaceRemoteDataSource(
         }
     }
 
-    suspend fun getRaceResults(season: Int, round: Int): List<RaceResultRemote> {
-        return mrdService.getRaceResults(
+    suspend fun getResults(season: Int, round: Int): List<ResultRemote> {
+        return mrdService.getResults(
             season,
             round
         ).mrData.table.races.firstOrNull()?.results ?: listOf()
