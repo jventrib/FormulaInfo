@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import java.io.Serializable
 
 @Entity(tableName = "lap_time")
-data class LapTime(
+data class Lap(
     @PrimaryKey
     val key: String,
     val season: Int,

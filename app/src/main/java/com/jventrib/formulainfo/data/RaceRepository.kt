@@ -14,7 +14,7 @@ import com.jventrib.formulainfo.data.remote.WikipediaService
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.model.db.LapTime
+import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.mapper.*
 import com.jventrib.formulainfo.utils.detect
 import kotlinx.coroutines.flow.*
@@ -107,7 +107,7 @@ class RaceRepository(
         season: Int,
         round: Int,
         driver: String
-    ): Flow<StoreResponse<List<LapTime>>> =
+    ): Flow<StoreResponse<List<Lap>>> =
         lapTimeDao.getAll(season, round, driver)
             .distinctUntilChanged()
             .transformLatest { data ->
