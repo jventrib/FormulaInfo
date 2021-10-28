@@ -13,7 +13,7 @@ import com.jventrib.formulainfo.utils.Converters
         ResultInfo::class,
         Driver::class,
         Constructor::class,
-        LapTime::class
+        Lap::class
     ],
     version = 5,
     exportSchema = false

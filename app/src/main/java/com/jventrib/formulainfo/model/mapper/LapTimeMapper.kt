@@ -1,12 +1,12 @@
 package com.jventrib.formulainfo.model.mapper
 
-import com.jventrib.formulainfo.model.db.LapTime
+import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.remote.LapTimeRemote
 import java.time.Duration
 
 object LapTimeMapper {
 
-    fun toEntity(season: Int, round: Int, driver: String, remote: LapTimeRemote) = LapTime(
+    fun toEntity(season: Int, round: Int, driver: String, remote: LapTimeRemote) = Lap(
         "${season}-${round}-${driver}-${remote.number}",
         season,
         round,
