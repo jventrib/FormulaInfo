@@ -21,6 +21,7 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.result.DriverResult
 import com.jventrib.formulainfo.result.getResultSample
+import com.jventrib.formulainfo.ui.theme.LightLightGrey
 import java.time.Duration
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -71,7 +72,7 @@ fun Laps(result: Result, laps: List<Lap>) {
                         Modifier
                             .fillMaxWidth()
                             .border(.5.dp, Color.Black)
-                            .background(if (index % 2 == 1) Color.White else Color.LightGray)
+                            .background(if (index % 2 == 1) Color.White else LightLightGrey)
                             .padding(4.dp)
                     ) {
                         Column(
