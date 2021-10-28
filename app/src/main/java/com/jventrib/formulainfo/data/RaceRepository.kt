@@ -149,6 +149,7 @@ class RaceRepository(
             resultDao.deleteAll()
             driverDao.deleteAll()
             constructorDao.deleteAll()
+            lapTimeDao.deleteAll()
         }
     }
 

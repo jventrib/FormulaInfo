@@ -15,7 +15,7 @@ interface MrdService {
         @Path("round") round: Int
     ): MRResponse<RaceTable>
 
-    @GET("{season}/{round}/drivers/{driver}/laps.json")
+    @GET("{season}/{round}/drivers/{driver}/laps.json?limit=100")
     suspend fun getLapTimes(
         @Path("season") season: Int,
         @Path("round") round: Int,
