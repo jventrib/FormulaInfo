@@ -15,15 +15,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jventrib.formulainfo.model.db.Constructor
 import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.model.db.FullResult
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.model.db.ResultInfo
 import com.jventrib.formulainfo.ui.common.components.DeltaTextP
 import com.jventrib.formulainfo.ui.components.ItemCard
 
 @Composable
 fun DriverResult(
-    result: FullResult,
-    onResultSelected: (result: FullResult) -> Any
+    result: Result,
+    onResultSelected: (result: Result) -> Any
 ) {
     ItemCard(
         image = result.driver.image,
@@ -32,7 +32,7 @@ fun DriverResult(
             Row(Modifier.fillMaxWidth()) {
                 Column {
                     Text(
-                        text = "${result.result.position}:${result.driver.givenName} ${result.driver.familyName}",
+                        text = "${result.resultInfo.position}:${result.driver.givenName} ${result.driver.familyName}",
                         style = MaterialTheme.typography.h6
                     )
                     Text(
@@ -40,24 +40,24 @@ fun DriverResult(
                         style = MaterialTheme.typography.body1
                     )
                     Text(
-                        text = result.result.time?.time ?: "",
+                        text = result.resultInfo.time?.time ?: "",
                         style = MaterialTheme.typography.body2
                     )
                 }
                 Column(horizontalAlignment = End, modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "${result.result.points.toInt()} pts",
+                        text = "${result.resultInfo.points.toInt()} pts",
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.align(End)
                     )
                     Row() {
 
                         Text(
-                            text = "Started ${result.result.grid}",
+                            text = "Started ${result.resultInfo.grid}",
                             style = MaterialTheme.typography.body1
                         )
                         DeltaTextP(
-                            delta = result.result.position - result.result.grid,
+                            delta = result.resultInfo.position - result.resultInfo.grid,
                             Modifier.padding(start = 8.dp)
                         )
                     }
@@ -73,8 +73,8 @@ fun DriverResult(
 @Preview
 @Composable
 fun DriverResultPreview() {
-    val rr = FullResult(
-        Result(
+    val rr = Result(
+        ResultInfo(
             "11",
             2021,
             2,
@@ -87,13 +87,13 @@ fun DriverResultPreview() {
             2,
             70,
             "Finished",
-            Result.Time(111, "111"),
+            ResultInfo.Time(111, "111"),
 
-            Result.FastestLap(
+            ResultInfo.FastestLap(
                 1,
                 1,
-                Result.Time(111, "111"),
-                Result.FastestLap.AverageSpeed("Kph", 170.0f)
+                ResultInfo.Time(111, "111"),
+                ResultInfo.FastestLap.AverageSpeed("Kph", 170.0f)
             )
         ),
         Driver(

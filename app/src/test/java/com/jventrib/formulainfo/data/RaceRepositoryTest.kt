@@ -3,8 +3,8 @@ package com.jventrib.formulainfo.data
 import com.jventrib.formulainfo.data.db.*
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.model.db.Circuit
+import com.jventrib.formulainfo.model.db.RaceInfo
 import com.jventrib.formulainfo.model.db.Race
-import com.jventrib.formulainfo.model.db.FullRace
 import com.jventrib.formulainfo.model.remote.RaceRemote
 import io.mockk.coEvery
 import io.mockk.every
@@ -24,14 +24,14 @@ class RaceRepositoryTest : TestCase() {
 
     @Test
     fun testGetAllRaces_whenDBIsEmpty() {
-        val race = FullRace(
-            Race(
+        val race = Race(
+            RaceInfo(
                 2020,
                 1,
                 "http://test.com",
                 "race1",
                 "cir1",
-                Race.Sessions(
+                RaceInfo.Sessions(
                     Instant.now(),
                     Instant.now(),
                     Instant.now(),

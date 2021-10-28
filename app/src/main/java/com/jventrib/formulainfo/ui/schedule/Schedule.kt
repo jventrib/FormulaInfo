@@ -13,14 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.dropbox.android.external.store4.StoreResponse
-import com.jventrib.formulainfo.model.db.FullRace
+import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.ui.schedule.item.Race
 import kotlinx.coroutines.launch
 
 @Composable
 fun ScheduleScreen(
-    raceList: StoreResponse<List<FullRace>>,
-    onRaceClicked: (FullRace) -> Unit,
+    raceList: StoreResponse<List<Race>>,
+    onRaceClicked: (Race) -> Unit,
     seasonList: List<Int>,
     selectedSeason: Int?,
     onSeasonSelected: (Int) -> Unit,
@@ -67,15 +67,15 @@ fun ScheduleScreen(
 
 @Composable
 fun RaceList(
-    raceList: StoreResponse<List<FullRace>>,
-    onRaceSelected: (FullRace) -> Unit,
+    raceList: StoreResponse<List<Race>>,
+    onRaceSelected: (Race) -> Unit,
     listState: LazyListState
 ) {
     LazyColumn(state = listState) {
         raceList.dataOrNull()?.let { raceList ->
             items(raceList) {
                 Race(
-                    fullRace = it,
+                    race = it,
                     expanded = it.nextRace,
                     onRaceSelected = onRaceSelected
                 )

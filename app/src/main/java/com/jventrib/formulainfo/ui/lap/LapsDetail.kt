@@ -10,7 +10,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import coil.annotation.ExperimentalCoilApi
-import com.jventrib.formulainfo.model.db.FullResult
+import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.LapTime
 import com.jventrib.formulainfo.result.DriverResult
 import com.jventrib.formulainfo.ui.components.ItemCard
@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter
 
 @ExperimentalCoilApi
 @Composable
-fun LapsDetail(result: FullResult, laps: List<LapTime>) {
+fun LapsDetail(result: Result, laps: List<LapTime>) {
     Scaffold(
         topBar = {
             TopAppBar(

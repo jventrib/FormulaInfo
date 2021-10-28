@@ -12,8 +12,8 @@ import com.jventrib.formulainfo.data.db.*
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.data.remote.WikipediaService
 import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.model.db.FullRace
-import com.jventrib.formulainfo.model.db.FullResult
+import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.LapTime
 import com.jventrib.formulainfo.model.mapper.*
 import com.jventrib.formulainfo.utils.detect
@@ -34,14 +34,14 @@ class RaceRepository(
     private val constructorDao: ConstructorDao = roomDb.constructorDao()
     private val lapTimeDao: LapTimeDao = roomDb.lapTimeDao()
 
-    fun getRaces(season: Int): Flow<StoreResponse<List<FullRace>>> =
+    fun getRaces(season: Int): Flow<StoreResponse<List<Race>>> =
         raceDao.getRaces(season)
             .distinctUntilChanged()
             .transformLatest { data ->
                 emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
-                logcat { "Getting FullRaces from DB" }
+                logcat { "Getting races from DB" }
                 if (data.isEmpty()) {
-                    logcat { "No FullRaces in DB, fetching from API" }
+                    logcat { "No races in DB, fetching from API" }
                     emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
                     raceRemoteDataSource.getRaces(season).also {
                         logcat { "Fetched Races from API: $it" }
@@ -53,7 +53,7 @@ class RaceRepository(
                         }
                     }
                 } else {
-                    logcat { "Got ${data.size} FullRaces from DB" }
+                    logcat { "Got ${data.size} races from DB" }
                     emit(StoreResponse.Data(data, ResponseOrigin.SourceOfTruth))
                 }
             }
@@ -63,7 +63,7 @@ class RaceRepository(
             }
             .onEach { response ->
                 response.dataOrNull()?.forEach { it.nextRace = false }
-                response.dataOrNull()?.first { it.race.sessions.race.isAfter(Instant.now()) }
+                response.dataOrNull()?.first { it.raceInfo.sessions.race.isAfter(Instant.now()) }
                     ?.let { it.nextRace = true }
 
             }
@@ -72,14 +72,14 @@ class RaceRepository(
     fun getResults(
         season: Int,
         round: Int
-    ): Flow<StoreResponse<List<FullResult>>> =
-        resultDao.getFullResults(season, round)
+    ): Flow<StoreResponse<List<Result>>> =
+        resultDao.getResults(season, round)
             .distinctUntilChanged()
             .transformLatest { data ->
                 emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
-                logcat { "Getting FullResults from DB" }
+                logcat { "Getting Results from DB" }
                 if (data.isEmpty()) {
-                    logcat { "No FullResults in DB, fetching from API" }
+                    logcat { "No Results in DB, fetching from API" }
                     emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
                     raceRemoteDataSource.getResults(season, round).also {
                         logcat { "Fetched Results from API: $it" }
@@ -93,7 +93,7 @@ class RaceRepository(
                         }
                     }
                 } else {
-                    logcat { "Got ${data.size} FullResults from DB" }
+                    logcat { "Got ${data.size} Results from DB" }
                     emit(StoreResponse.Data(data, ResponseOrigin.SourceOfTruth))
                 }
             }
@@ -129,7 +129,7 @@ class RaceRepository(
             .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
 
 
-    fun getRace(season: Int, round: Int): Flow<FullRace> {
+    fun getRace(season: Int, round: Int): Flow<Race> {
         return raceDao.getRace(season, round)
             .distinctUntilChanged()
             .onEach {
@@ -139,8 +139,8 @@ class RaceRepository(
             .flatMapLatest { completeRace(it) }
     }
 
-    fun getResult(season: Int, round: Int, driverId: String): Flow<FullResult> =
-        resultDao.getFullResult(season, round, driverId)
+    fun getResult(season: Int, round: Int, driverId: String): Flow<Result> =
+        resultDao.getResult(season, round, driverId)
 
     suspend fun refresh() {
         roomDb.withTransaction {
@@ -152,7 +152,7 @@ class RaceRepository(
         }
     }
 
-    private fun completeRace(r: FullRace) = flow {
+    private fun completeRace(r: Race) = flow {
         emit(r)
         if (r.circuit.imageUrl == null) {
             logcat { "Completing circuit ${r.circuit.id} with Image " }
@@ -185,19 +185,19 @@ class RaceRepository(
         }
 
 
-    private suspend fun getCircuitWithFlag(fullRace: FullRace) = fullRace.circuit.copy(
-        location = fullRace.circuit.location.copy(
+    private suspend fun getCircuitWithFlag(race: Race) = race.circuit.copy(
+        location = race.circuit.location.copy(
             flag = raceRemoteDataSource.getCountryFlag(
-                fullRace.circuit.location.country
+                race.circuit.location.country
             )
         )
     )
 
     private suspend fun getDriverWithImage(
-        fullResult: FullResult,
+        result: Result,
     ): Driver {
         val imageUrl = raceRemoteDataSource.getWikipediaImageFromUrl(
-            fullResult.driver.url, 200, WikipediaService.Licence.FREE
+            result.driver.url, 200, WikipediaService.Licence.FREE
         ) ?: "NONE"
 
         val drawable = context.imageLoader.execute(
@@ -208,13 +208,13 @@ class RaceRepository(
             (drawable as? BitmapDrawable)?.bitmap?.copy(Bitmap.Config.ARGB_8888, true)
         val centerRect = bitmap?.let { detect(it) }
 
-        return fullResult.driver.copy(
+        return result.driver.copy(
             image = imageUrl,
             faceBox = centerRect?.flattenToString()
         )
     }
 
-    private suspend fun getConstructorWithImage(result: FullResult) =
+    private suspend fun getConstructorWithImage(result: Result) =
         result.constructor.copy(
             image = raceRemoteDataSource.getWikipediaImageFromUrl(
                 result.constructor.url, 200,

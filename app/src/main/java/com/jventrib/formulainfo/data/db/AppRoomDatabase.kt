@@ -8,9 +8,9 @@ import com.jventrib.formulainfo.utils.Converters
 
 @Database(
     entities = [
-        Race::class,
+        RaceInfo::class,
         Circuit::class,
-        Result::class,
+        ResultInfo::class,
         Driver::class,
         Constructor::class,
         LapTime::class
