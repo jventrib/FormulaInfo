@@ -34,29 +34,47 @@ class RaceRepository(
     private val constructorDao: ConstructorDao = roomDb.constructorDao()
     private val lapTimeDao: LapTimeDao = roomDb.lapTimeDao()
 
-    fun getRaces(season: Int): Flow<StoreResponse<List<Race>>> =
-        raceDao.getRaces(season)
+    inline fun <K, R : List<E>, reified E, reified S> repo(
+        key: K,
+        dbRead: (key: K) -> Flow<R>,
+        crossinline remoteFetch: suspend (key: K) -> List<S>,
+        crossinline dbInsert: suspend (l: List<S>) -> Unit
+    ): Flow<StoreResponse<R>> =
+        dbRead.invoke(key)
             .distinctUntilChanged()
             .transformLatest { data ->
                 emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
-                logcat { "Getting races from DB" }
+                logcat { "Getting ${E::class.simpleName} from DB" }
                 if (data.isEmpty()) {
-                    logcat { "No races in DB, fetching from API" }
+                    logcat { "No ${E::class.simpleName} in DB, fetching from remote" }
                     emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
-                    raceRemoteDataSource.getRaces(season).also {
-                        logcat { "Fetched Races from API: $it" }
-                        roomDb.withTransaction {
-                            circuitDao.insertAll(RaceCircuitMapper.toEntity(it)
-                                .also { logcat { "Inserting Circuits $it" } })
-                            raceDao.insertAll(RaceMapper.toEntity(it)
-                                .also { logcat { "Inserting Races $it" } })
-                        }
+                    remoteFetch.invoke(key).also {
+                        logcat { "Fetched ${S::class.simpleName} from API: $it" }
+                        dbInsert(it)
+                        logcat { "Insert in DB done" }
                     }
+
                 } else {
-                    logcat { "Got ${data.size} races from DB" }
-                    emit(StoreResponse.Data(data, ResponseOrigin.SourceOfTruth))
+                    logcat { "Got ${data.size} ${E::class.simpleName} from DB" }
+                    this.emit(StoreResponse.Data(data, ResponseOrigin.SourceOfTruth))
                 }
             }
+
+
+    suspend fun getRaces(season: Int): Flow<StoreResponse<List<Race>>> =
+        repo(
+            key = season,
+            dbRead = { raceDao.getRaces(season) },
+            remoteFetch = { raceRemoteDataSource.getRaces(season) },
+            dbInsert = {
+                roomDb.withTransaction {
+                    circuitDao.insertAll(RaceCircuitMapper.toEntity(it)
+                        .also { logcat { "Inserting Circuits $it" } })
+                    raceDao.insertAll(RaceMapper.toEntity(it)
+                        .also { logcat { "Inserting Races $it" } })
+                }
+            }
+        )
             .completeFlowMissing({ it.circuit.location.flag }) {
                 logcat { "Completing circuit ${it.circuit.location.country} with image" }
                 circuitDao.insert(getCircuitWithFlag(it))
@@ -68,6 +86,7 @@ class RaceRepository(
 
             }
             .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
+
 
     fun getResults(
         season: Int,
