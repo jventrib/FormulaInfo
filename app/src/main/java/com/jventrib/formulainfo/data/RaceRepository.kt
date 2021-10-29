@@ -34,13 +34,12 @@ class RaceRepository(
     private val constructorDao: ConstructorDao = roomDb.constructorDao()
     private val lapTimeDao: LapTimeDao = roomDb.lapTimeDao()
 
-    inline fun <K, R : List<E>, reified E, reified S> repo(
-        key: K,
-        dbRead: (key: K) -> Flow<R>,
-        crossinline remoteFetch: suspend (key: K) -> List<S>,
+    inline fun <R : List<E>, reified E, reified S> repo(
+        dbRead: () -> Flow<R>,
+        crossinline remoteFetch: suspend () -> List<S>,
         crossinline dbInsert: suspend (l: List<S>) -> Unit
     ): Flow<StoreResponse<R>> =
-        dbRead.invoke(key)
+        dbRead.invoke()
             .distinctUntilChanged()
             .transformLatest { data ->
                 emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
@@ -48,7 +47,7 @@ class RaceRepository(
                 if (data.isEmpty()) {
                     logcat { "No ${E::class.simpleName} in DB, fetching from remote" }
                     emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
-                    remoteFetch.invoke(key).also {
+                    remoteFetch.invoke().also {
                         logcat { "Fetched ${S::class.simpleName} from API: $it" }
                         dbInsert(it)
                         logcat { "Insert in DB done" }
@@ -61,9 +60,8 @@ class RaceRepository(
             }
 
 
-    suspend fun getRaces(season: Int): Flow<StoreResponse<List<Race>>> =
+    fun getRaces(season: Int): Flow<StoreResponse<List<Race>>> =
         repo(
-            key = season,
             dbRead = { raceDao.getRaces(season) },
             remoteFetch = { raceRemoteDataSource.getRaces(season) },
             dbInsert = {
@@ -73,8 +71,7 @@ class RaceRepository(
                     raceDao.insertAll(RaceMapper.toEntity(it)
                         .also { logcat { "Inserting Races $it" } })
                 }
-            }
-        )
+            })
             .completeFlowMissing({ it.circuit.location.flag }) {
                 logcat { "Completing circuit ${it.circuit.location.country} with image" }
                 circuitDao.insert(getCircuitWithFlag(it))
@@ -92,34 +89,26 @@ class RaceRepository(
         season: Int,
         round: Int
     ): Flow<StoreResponse<List<Result>>> =
-        resultDao.getResults(season, round)
-            .distinctUntilChanged()
-            .transformLatest { data ->
-                emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
-                logcat { "Getting Results from DB" }
-                if (data.isEmpty()) {
-                    logcat { "No Results in DB, fetching from API" }
-                    emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
-                    raceRemoteDataSource.getResults(season, round).also {
-                        logcat { "Fetched Results from API: $it" }
-                        roomDb.withTransaction {
-                            driverDao.insertAll(ResultDriverMapper.toEntity(it)
-                                .also { logcat { "Inserting Drivers $it" } })
-                            constructorDao.insertAll(ResultConstructorMapper.toEntity(it)
-                                .also { logcat { "Inserting Constructors $it" } })
-                            resultDao.insertAll(ResultMapper.toEntity(season, round, it)
-                                .also { logcat { "Inserting Results $it" } })
-                        }
-                    }
-                } else {
-                    logcat { "Got ${data.size} Results from DB" }
-                    emit(StoreResponse.Data(data, ResponseOrigin.SourceOfTruth))
+        repo(
+            dbRead = { resultDao.getResults(season, round) },
+            remoteFetch = { raceRemoteDataSource.getResults(season, round) },
+            dbInsert = {
+                roomDb.withTransaction {
+                    driverDao.insertAll(ResultDriverMapper.toEntity(it)
+                        .also { logcat { "Inserting Drivers $it" } })
+                    constructorDao.insertAll(ResultConstructorMapper.toEntity(it)
+                        .also { logcat { "Inserting Constructors $it" } })
+                    resultDao.insertAll(ResultMapper.toEntity(season, round, it)
+                        .also { logcat { "Inserting Results $it" } })
                 }
-            }
-            .completeFlowMissing({ it.driver.image }) {
+            })
+            .completeFlowMissing(
+                { it.driver.image })
+            {
                 logcat { "Completing driver ${it.driver.code} with image" }
                 driverDao.insert(getDriverWithImage(it))
-            }.onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
+            }
+            .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
 
 
     fun getLapTimes(
@@ -127,24 +116,13 @@ class RaceRepository(
         round: Int,
         driver: String
     ): Flow<StoreResponse<List<Lap>>> =
-        lapTimeDao.getAll(season, round, driver)
-            .distinctUntilChanged()
-            .transformLatest { data ->
-                emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
-                logcat { "Getting LapTime from DB" }
-                if (data.isEmpty()) {
-                    logcat { "No LapTime in DB, fetching from API" }
-                    emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
-                    raceRemoteDataSource.getLapTime(season, round, driver).also {
-                        logcat { "Fetched LapTime from API: $it" }
-                            lapTimeDao.insertAll(LapTimeMapper.toEntity(season, round, driver, it)
-                                .also { logcat { "Inserting LapTime $it" } })
-                    }
-                } else {
-                    logcat { "Got ${data.size} LapTime from DB" }
-                    emit(StoreResponse.Data(data, ResponseOrigin.SourceOfTruth))
-                }
-            }
+        repo(
+            dbRead = { lapTimeDao.getAll(season, round, driver) },
+            remoteFetch = { raceRemoteDataSource.getLapTime(season, round, driver) },
+            dbInsert = {
+                lapTimeDao.insertAll(LapTimeMapper.toEntity(season, round, driver, it)
+                    .also { logcat { "Inserting LapTime $it" } })
+            })
             .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
 
 
