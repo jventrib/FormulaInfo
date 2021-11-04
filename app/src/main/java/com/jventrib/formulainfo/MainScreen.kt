@@ -1,10 +1,13 @@
 package com.jventrib.formulainfo
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.map
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,6 +16,8 @@ import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.dropbox.android.external.store4.ResponseOrigin
 import com.dropbox.android.external.store4.StoreResponse
+import com.jventrib.formulainfo.model.db.Driver
+import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.laps.Laps
 import com.jventrib.formulainfo.ui.laps.LapsViewModel
@@ -21,6 +26,7 @@ import com.jventrib.formulainfo.ui.results.ResultsViewModel
 import com.jventrib.formulainfo.ui.schedule.ScheduleScreen
 import com.jventrib.formulainfo.ui.schedule.SeasonViewModel
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @ExperimentalCoilApi
@@ -41,7 +47,8 @@ fun MainScreen() {
                 ScheduleScreen(
                     raceList = raceList,
                     onRaceClicked = { race ->
-                        navController.navigate("race/${race.raceInfo.season}/${race.raceInfo.round}")
+                        navController.navigate("resultsGraph/${race.raceInfo.season}/${race.raceInfo.round}")
+//                        navController.navigate("race/${race.raceInfo.season}/${race.raceInfo.round}")
                     },
                     seasonList = seasonList,
                     selectedSeason = viewModel.season.observeAsState().value,
@@ -90,7 +97,36 @@ fun MainScreen() {
                 viewModel.driverId.value = navBackStackEntry.arguments?.get("driver") as String
                 result?.let { Laps(it, lapTimes?.dataOrNull() ?: listOf()) }
             }
+            composable(
+                "resultsGraph/{season}/{round}",
+                listOf(
+                    navArgument("season") { type = NavType.IntType },
+                    navArgument("round") { type = NavType.IntType })
+            ) { navBackStackEntry ->
+                val viewModel: ResultsViewModel = hiltViewModel(navBackStackEntry)
+                val season = navBackStackEntry.arguments?.get("season") as Int
+                val round = navBackStackEntry.arguments?.get("round") as Int
+
+//                val graph by viewModel.resultsGraph.observeAsState(null)
+                val graph by viewModel.resultsGraph
+                    .observeAsState(initial = mutableStateMapOf())
+
+                viewModel.season.value = season
+                viewModel.round.value = round
+                graph?.let {
+                    RaceGraphScreen(lapsByDriver = it)
+                }
+            }
             composable("about") { About() }
+        }
+    }
+}
+
+@Composable
+fun RaceGraphScreen(lapsByDriver: Map<Driver, List<Lap>>) {
+    LazyColumn {
+        items(lapsByDriver.entries.sortedBy { it.value.maxByOrNull { it.number }?.position }.toList()) {
+            Text(text = it.key.driverId + " -> " + it.value.size)
         }
     }
 }

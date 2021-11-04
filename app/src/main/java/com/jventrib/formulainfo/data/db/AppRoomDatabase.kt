@@ -15,7 +15,7 @@ import com.jventrib.formulainfo.utils.Converters
         Constructor::class,
         Lap::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -26,5 +26,5 @@ abstract class AppRoomDatabase : RoomDatabase() {
     abstract fun resultDao(): ResultDao
     abstract fun driverDao(): DriverDao
     abstract fun constructorDao(): ConstructorDao
-    abstract fun lapTimeDao(): LapTimeDao
+    abstract fun lapTimeDao(): LapDao
 }
