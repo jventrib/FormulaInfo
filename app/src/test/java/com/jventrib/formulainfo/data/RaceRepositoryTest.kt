@@ -1,20 +1,22 @@
 package com.jventrib.formulainfo.data
 
 import com.jventrib.formulainfo.data.db.*
+import com.jventrib.formulainfo.data.remote.MockRoomData
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
-import com.jventrib.formulainfo.model.db.Circuit
-import com.jventrib.formulainfo.model.db.RaceInfo
-import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.model.db.*
 import com.jventrib.formulainfo.model.remote.RaceRemote
+import com.jventrib.formulainfo.result.getResultSample
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
+import java.time.Duration
 import java.time.Instant
 
 @FlowPreview
@@ -101,4 +103,64 @@ class RaceRepositoryTest : TestCase() {
 //        }
     }
 
+    @Test
+    fun testgetRaceGraph() {
+
+        val roomDb = mockk<RaceRemoteDataSource>()
+        val raceRemoteDataSource = mockk<RaceRemoteDataSource>()
+
+        val result = getResultSample()
+        val result2 = result.copy(driver = result.driver.copy(driverId = "will"))
+        val resultDao = mockk<ResultDao>()
+        every { resultDao.getResults(any(), any()) } returns flowOf(listOf(result, result2))
+
+        val lapTimeDao = mockk<LapDao>()
+        val laps = listOf(
+            Lap("k", 2021, 1, "doe", 1, 1, Duration.ofSeconds(10)),
+            Lap("k", 2021, 1, "doe", 2, 1, Duration.ofSeconds(10)),
+            Lap("k", 2021, 1, "doe", 3, 1, Duration.ofSeconds(10)),
+            Lap("k", 2021, 1, "doe", 4, 1, Duration.ofSeconds(10)),
+        )
+        every { lapTimeDao.getAll(any(), any(), any()) } returns flowOf(laps)
+
+        val resultGraph = RaceRepository(
+            MockRoomData(resultDao = resultDao, lapDao = lapTimeDao),
+            raceRemoteDataSource, context = mockk()
+        ).getResultGraph(2021, 1)
+        testScope.runBlockingTest {
+            resultGraph.collect {
+                println(it)
+            }
+        }
+    }
+
+
+    @Test
+    fun testFlowListToMap() {
+        val driversFlow = flowOf(listOf("a", "b", "c"))
+
+        testScope.runBlockingTest {
+            val map = mutableMapOf<String, List<Int>>()
+            val transform = driversFlow
+                .transform { drivers ->
+                    drivers.forEach { driver ->
+                        getLaps(driver)
+                        .collect {
+                            println(it)
+                            map[driver] = it
+                            emit(map)
+                        }
+                    }
+                }
+            transform.collect {
+                println(it)
+            }
+        }
+
+
+    }
+
+
+    private fun getLaps(s: String) =
+        flowOf((1..10).toList())
 }

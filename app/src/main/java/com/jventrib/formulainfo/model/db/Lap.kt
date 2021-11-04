@@ -3,6 +3,7 @@ package com.jventrib.formulainfo.model.db
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
+import java.time.Duration
 
 @Entity(tableName = "lap_time")
 data class Lap(
@@ -10,8 +11,8 @@ data class Lap(
     val key: String,
     val season: Int,
     val round: Int,
-    val driver: String,
+    val driverId: String,
     val number: Int,
     val position: Int,
-    val time: java.time.Duration,
+    val time: Duration,
 ) : Serializable
