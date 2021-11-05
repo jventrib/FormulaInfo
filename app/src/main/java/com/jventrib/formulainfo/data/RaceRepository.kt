@@ -3,7 +3,6 @@ package com.jventrib.formulainfo.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.room.withTransaction
 import coil.imageLoader
 import coil.request.ImageRequest
@@ -112,19 +111,6 @@ class RaceRepository(
             .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
 
 
-    fun getResults2(
-        season: Int,
-        round: Int
-    ): Flow<StoreResponse<List<Result>>> = flowOf(
-        StoreResponse.Data(
-            listOf(
-                getResultSample(),
-                getResultSample().copy(driver = getResultSample().driver.copy(driverId = "will")),
-                getResultSample().copy(driver = getResultSample().driver.copy(driverId = "bob"))
-            ), ResponseOrigin.SourceOfTruth
-        )
-    )
-
     fun getLaps(
         season: Int,
         round: Int,
@@ -134,108 +120,36 @@ class RaceRepository(
             dbRead = { lapDao.getAll(season, round, driverId) },
             remoteFetch = { raceRemoteDataSource.getLapTime(season, round, driverId) },
             dbInsert = {
-                lapDao.insertAll(LapTimeMapper.toEntity(season, round, it)
+                lapDao.insertAll(LapTimeMapper.toEntity(season, round, driverId, it)
                     .also { logcat { "Inserting LapTime $it" } })
             })
+            .map { response ->
+                if (response is StoreResponse.Data)
+                    response.copy(value = response.value.filter { it.number >= 0 })
+                else response
+            }
             .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
 
 
-    fun getResultGraph(season: Int, round: Int): Flow<Map<Driver, List<Lap>>> {
-//        val repo: Flow<StoreResponse<List<DriverLap>>> = repo(
-//            dbRead = { lapDao.getAll(season, round) },
-//            remoteFetch = { raceRemoteDataSource.getLapTime(season, round) },
-//            dbInsert = {
-//                driverDao.insertAll(ResultDriverMapper.toEntity(it)
-//                    .also { logcat { "Inserting Drivers $it" } })
-//                lapDao.insertAll(LapTimeMapper.toEntity(season, round, it)
-//                    .also { logcat { "Inserting LapTime $it" } })
-//            })
-//            .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
-//
-//        return repo
-//            .filterIsInstance<StoreResponse.Data<List<DriverLap>>>()
-//            .map { laps ->
-//            laps.requireData().groupBy { driverLap -> driverLap.driver }
-//                .mapValues { driverLaps ->
-//                    driverLaps.value.map(DriverLap::lap)
-//                }
-//
-//        }
-
-        val map = mutableStateMapOf<Driver, List<Lap>>()
-        return getResults(season, round)
-            .filter { it is StoreResponse.Data }
-            .map { it.requireData() }
-            .transform { results ->
-                for (result in results) {
-                    logcat { "each Driver $result" }
-                    getLaps3(season, round, result.driver.driverId)
-                        .onEach { logcat { "onEach getLaps" } }
-                        .filterIsInstance<StoreResponse.Data<List<Lap>>>()
-                        .onEach { logcat { "Filtered $it" } }
-                        .map { it.value }
-                        .onEach { logcat { "Mapped $it" } }
-                        .collect {
-                            map[result.driver] = it
-                            emit(map)
-                        }
-                    //                        emit(map)
-                    delay(100)
-                }
-            }
-    }
-
-    private fun getLaps2(
+    fun getResultGraph(
         season: Int,
         round: Int,
-        driverId: String
-    ): Flow<StoreResponse<List<Lap>>> =
-        flow {
-            emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
-            logcat { "Loading" }
-            delay(1000)
-            logcat { "Loaded" }
-            emit(
-                StoreResponse.Data(
-                    listOf(
-                        Lap("k", 2021, 1, driverId, 1, 1, Duration.ofSeconds(10)),
-                        Lap("k", 2021, 1, driverId, 2, 1, Duration.ofSeconds(10)),
-                        Lap("k", 2021, 1, driverId, 3, 1, Duration.ofSeconds(10)),
-                        Lap("k", 2021, 1, driverId, 4, 1, Duration.ofSeconds(10)),
-                    ), ResponseOrigin.SourceOfTruth
-                )
-            )
+    ) = getResults(season, round)
+        .filterIsInstance<StoreResponse.Data<List<Result>>>()
+        .take(1)
+        .map { it.value }
+        .flatMapLatest { it.asFlow() }
+        .map { it.driver }
+        .flatMapMerge(20) { driver ->
+            getLaps(season, round, driver.driverId)
+                .filterIsInstance<StoreResponse.Data<List<Lap>>>()
+                .take(1)
+                .map { it.value }
+                .map { driver to it }
         }
+        .onEach { println("Pair: ${it.first} -> ${it.second.size}") }
+        .runningFold(mapOf<Driver, List<Lap>>()) { acc, value -> acc + value }
 
-
-    fun getLaps3(
-        season: Int,
-        round: Int,
-        driverId: String
-    ): Flow<StoreResponse<List<Lap>>> = lapDao.getAll(season, round, driverId)
-        .map { StoreResponse.Data(it, ResponseOrigin.SourceOfTruth) }
-
-    fun getLaps4(
-        season: Int,
-        round: Int,
-        driverId: String
-    ): Flow<StoreResponse<List<Lap>>> = flow {
-        val value = LapTimeMapper.toEntity(
-            season,
-            round,
-            raceRemoteDataSource.getLapTime(season, round, driverId)
-        )
-        lapDao.insertAll(value)
-        emit(
-            StoreResponse.Data(
-                value, ResponseOrigin.SourceOfTruth
-            )
-        )
-    }
-
-
-    fun getLapsByDriver(season: Int, round: Int, driverId: String) =
-        getLaps(season, round, driverId).map { it.requireData() }.map { driverId to it }
 
     fun getRace(season: Int, round: Int): Flow<Race> {
         return raceDao.getRace(season, round)
