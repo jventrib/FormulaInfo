@@ -1,11 +1,16 @@
 package com.jventrib.formulainfo
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.map
 import androidx.navigation.NavType
@@ -26,8 +31,13 @@ import com.jventrib.formulainfo.ui.results.ResultsViewModel
 import com.jventrib.formulainfo.ui.schedule.ScheduleScreen
 import com.jventrib.formulainfo.ui.schedule.SeasonViewModel
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
+import com.jventrib.formulainfo.ui.theme.Purple
+import com.madrapps.plot.line.DataPoint
+import com.madrapps.plot.line.LineGraph
+import com.madrapps.plot.line.LinePlot
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 @ExperimentalCoilApi
 @Composable
@@ -124,10 +134,45 @@ fun MainScreen() {
 
 @Composable
 fun RaceGraphScreen(lapsByDriver: Map<Driver, List<Lap>>) {
-    LazyColumn {
-        items(lapsByDriver.entries.sortedBy { it.value.maxByOrNull { it.number }?.position }.toList()) {
-            Text(text = it.key.driverId + " -> " + it.value.size)
+    val lapDataPoints = lapsByDriver.map { laps ->
+        laps.value.map {
+            DataPoint(it.number.toFloat(), it.position.toFloat())
         }
     }
+    val colors by remember {
+        mutableStateOf((0..20).map {
+            it to Color(
+                Random.nextInt(255),
+                Random.nextInt(255),
+                Random.nextInt(255)
+            )
+        }.toMap())
+    }
+
+
+    if (lapDataPoints.isNotEmpty()) LineGraph(
+        plot = LinePlot(
+            lapDataPoints.mapIndexed { index, list ->
+                val c = Color(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255))
+                LinePlot.Line(
+                    list,
+                    LinePlot.Connection(color = colors[index]!!),
+                    LinePlot.Intersection(color = colors[index]!!),
+                    LinePlot.Highlight(color = Color.Yellow),
+                )
+            },
+            grid = LinePlot.Grid(Color.Red, steps = 4),
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(800.dp),
+    )
+
+//    LazyColumn {
+//        items(lapsByDriver.entries.sortedBy { it.value.maxByOrNull { it.number }?.position }
+//            .toList()) {
+//            Text(text = it.key.driverId + " -> " + it.value.size)
+//        }
+//    }
 }
 
