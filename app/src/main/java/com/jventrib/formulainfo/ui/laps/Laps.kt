@@ -103,7 +103,7 @@ fun Laps(result: Result, laps: List<Lap>) {
 fun LapsPreview() {
     var i = 0
     Laps(
-        getResultSample(),
+        getResultSample("verstappen", 1),
         listOf(
             lap(++i, Random.nextLong(120000)),
             lap(++i, Random.nextLong(120000)),
@@ -135,17 +135,16 @@ fun LapsPreview() {
 
 }
 
-@Composable
 private fun lap(
     number: Int,
     time: Long
 ) = Lap(
-    "key",
     2021,
     1,
     "max_verstappen",
     number,
     2,
+    Duration.ofMillis(time),
     Duration.ofMillis(time)
 )
 

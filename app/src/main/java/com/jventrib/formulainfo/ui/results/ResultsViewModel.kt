@@ -10,13 +10,11 @@ import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.result.getResultSample
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import logcat.logcat
 import java.time.Duration
 import javax.inject.Inject
-import kotlin.coroutines.coroutineContext
 
 @HiltViewModel
 class ResultsViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
@@ -51,44 +49,5 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
                     .asLiveData()
             } ?: MutableLiveData(null)
         }
-
-    val resultsGraphFlow =
-        round.distinctUntilChanged().asFlow().flatMapLatest {
-            it?.let {
-                repository.getResultGraph(season.value!!, it)
-                    .onEach { logcat { "Map $it" } }
-            } ?: emptyFlow()
-        }
-
-    val resultsGraph2 = round.distinctUntilChanged().asFlow().transform {
-
-        val map = mutableMapOf(
-            getResultSample().driver to listOf(
-                Lap("k", 2021, 1, "one", 1, 1, Duration.ofSeconds(10)),
-                Lap("k", 2021, 1, "one", 2, 1, Duration.ofSeconds(10)),
-                Lap("k", 2021, 1, "one", 3, 1, Duration.ofSeconds(10)),
-                Lap("k", 2021, 1, "one", 4, 1, Duration.ofSeconds(10)),
-            )
-        )
-        emit(map.toMap())
-
-        delay(2000)
-
-        map.put(
-            getResultSample().driver.copy(driverId = "two"), listOf(
-                Lap("k", 2021, 1, "one", 1, 1, Duration.ofSeconds(10)),
-                Lap("k", 2021, 1, "one", 2, 1, Duration.ofSeconds(10)),
-                Lap("k", 2021, 1, "one", 3, 1, Duration.ofSeconds(10)),
-                Lap("k", 2021, 1, "one", 4, 1, Duration.ofSeconds(10)),
-                Lap("k", 2021, 1, "one", 4, 1, Duration.ofSeconds(10)),
-                Lap("k", 2021, 1, "one", 4, 1, Duration.ofSeconds(10)),
-                Lap("k", 2021, 1, "one", 4, 1, Duration.ofSeconds(10)),
-                Lap("k", 2021, 1, "one", 4, 1, Duration.ofSeconds(10)),
-            )
-        )
-        emit(map.toMap())
-
-
-    }.asLiveData()
 
 }

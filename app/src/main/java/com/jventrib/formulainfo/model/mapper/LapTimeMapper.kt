@@ -6,25 +6,32 @@ import java.time.Duration
 
 object LapTimeMapper {
 
-    fun toEntity(season: Int, round: Int, remote: LapTimeRemote) = Lap(
-        "${season}-${round}-${remote.timings.first().driverId}-${remote.number}",
+    fun toEntity(season: Int, round: Int, driverId: String, remote: LapTimeRemote, total: Duration) = Lap(
         season,
         round,
-        remote.timings[0].driverId,
+        driverId,
         remote.number,
         remote.timings[0].position,
-        remote.timings[0].time.toDuration()
+        remote.time,
+        total
     )
 
-    fun toEntity(season: Int, round: Int, remotes: List<LapTimeRemote>) =
-        remotes.map { toEntity(season, round, it) }
-
-    private fun String.toDuration(): Duration {
-        val min = this.substringBefore(":").toLong()
-        val sec = this.substringAfter(":").substringBefore(".").toLong()
-        val millis = this.substringAfter(".").toLong()
-        return Duration.ofMinutes(min).plus(Duration.ofSeconds(sec))
-            .plus(Duration.ofMillis(millis))
+    fun toEntity(
+        season: Int,
+        round: Int,
+        driverId: String,
+        remotes: List<LapTimeRemote>
+    ): List<Lap> {
+        if (remotes.isEmpty()) {
+            return listOf(Lap(season, round, driverId, -1, -1, Duration.ZERO, Duration.ZERO))
+        } else {
+            var total = Duration.ZERO
+            return remotes.map {
+                total += it.time
+                toEntity(season, round, driverId, it, total)
+            }
+        }
     }
+
 }
 

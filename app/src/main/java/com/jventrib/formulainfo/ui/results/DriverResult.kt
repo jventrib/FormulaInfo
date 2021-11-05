@@ -73,23 +73,23 @@ fun DriverResult(
 @Preview
 @Composable
 fun DriverResultPreview() {
-    val rr = getResultSample()
+    val rr = getResultSample("verstappen", 1)
     DriverResult(result = rr) {
 
     }
 
 }
 
-fun getResultSample() = Result(
+fun getResultSample(driver: String, position: Int) = Result(
     ResultInfo(
         "11",
         2021,
         2,
         33,
-        1,
+        position,
         "1",
         25.0f,
-        "verstappen",
+        driver,
         "RedBull",
         2,
         70,
@@ -97,14 +97,14 @@ fun getResultSample() = Result(
         ResultInfo.Time(111, "111"),
 
         ResultInfo.FastestLap(
-            1,
-            1,
+            position,
+            position,
             ResultInfo.Time(111, "111"),
             ResultInfo.FastestLap.AverageSpeed("Kph", 170.0f)
         )
     ),
     Driver(
-        "verstappen",
+        driver,
         33,
         "verst",
         "url",
