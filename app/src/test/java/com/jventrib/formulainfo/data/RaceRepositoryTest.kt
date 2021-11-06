@@ -1,9 +1,14 @@
 package com.jventrib.formulainfo.data
 
-import com.jventrib.formulainfo.data.db.*
+import com.jventrib.formulainfo.data.db.LapDao
+import com.jventrib.formulainfo.data.db.RaceDao
+import com.jventrib.formulainfo.data.db.ResultDao
 import com.jventrib.formulainfo.data.remote.MockRoomData
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
-import com.jventrib.formulainfo.model.db.*
+import com.jventrib.formulainfo.model.db.Circuit
+import com.jventrib.formulainfo.model.db.Lap
+import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.model.db.RaceInfo
 import com.jventrib.formulainfo.model.remote.RaceRemote
 import com.jventrib.formulainfo.result.getResultSample
 import io.mockk.coEvery
@@ -14,7 +19,10 @@ import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
@@ -132,10 +140,10 @@ class RaceRepositoryTest : TestCase() {
 
         val lapTimeDao = mockk<LapDao>()
         val laps = listOf(
-            Lap("k", 2021, 1, "doe", 1, 1, Duration.ofSeconds(10)),
-            Lap("k", 2021, 1, "doe", 2, 1, Duration.ofSeconds(10)),
-            Lap("k", 2021, 1, "doe", 3, 1, Duration.ofSeconds(10)),
-            Lap("k", 2021, 1, "doe", 4, 1, Duration.ofSeconds(10)),
+            Lap(2021, 1, "doe", 1, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
+            Lap(2021, 1, "doe", 2, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
+            Lap(2021, 1, "doe", 3, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
+            Lap(2021, 1, "doe", 4, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
         )
 
         val season = slot<Int>()
@@ -148,12 +156,12 @@ class RaceRepositoryTest : TestCase() {
 
                         (1..10).map {
                             Lap(
-                                "${season.captured}-${round.captured}-${driverId.captured}-${it}",
                                 season.captured,
                                 round.captured,
                                 driverId.captured,
                                 it,
                                 1,
+                                Duration.ofSeconds(65),
                                 Duration.ofSeconds(65)
                             )
                         }

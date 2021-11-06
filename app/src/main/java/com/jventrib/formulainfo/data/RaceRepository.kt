@@ -139,16 +139,15 @@ class RaceRepository(
         .take(1)
         .map { it.value }
         .flatMapLatest { it.asFlow() }
-        .map { it.driver }
-        .flatMapMerge(20) { driver ->
-            getLaps(season, round, driver.driverId)
+        .flatMapMerge(20) { result ->
+            getLaps(season, round, result.driver.driverId)
                 .filterIsInstance<StoreResponse.Data<List<Lap>>>()
                 .take(1)
                 .map { it.value }
-                .map { driver to it }
+                .map { result to it }
         }
         .onEach { println("Pair: ${it.first} -> ${it.second.size}") }
-        .runningFold(mapOf<Driver, List<Lap>>()) { acc, value -> acc + value }
+        .runningFold(mapOf<Result, List<Lap>>()) { acc, value -> acc + value }
 
 
     fun getRace(season: Int, round: Int): Flow<Race> {
