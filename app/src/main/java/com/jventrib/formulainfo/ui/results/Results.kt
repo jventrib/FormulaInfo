@@ -35,7 +35,12 @@ import kotlin.math.roundToInt
 
 @ExperimentalCoilApi
 @Composable
-fun ResultsScreen(race: Race, results: List<Result>, onDriverSelected: (driver: Driver) -> Unit) {
+fun ResultsScreen(
+    race: Race,
+    results: List<Result>,
+    onDriverSelected: (driver: Driver) -> Unit,
+    onRaceImageSelected: (Race) -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -85,6 +90,7 @@ fun ResultsScreen(race: Race, results: List<Result>, onDriverSelected: (driver: 
                         imageModel = race.circuit.imageUrl,
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
+                            .clickable { onRaceImageSelected(race) }
                             .fillMaxWidth()
                             .height(circuitHeight)
                     )
@@ -116,5 +122,7 @@ fun RaceDetailPreview() {
     ResultsScreen(
         race = getRaceSample(3),
         results = listOf(),
-        onDriverSelected = {})
+        onDriverSelected = {},
+        onRaceImageSelected = {}
+    )
 }
