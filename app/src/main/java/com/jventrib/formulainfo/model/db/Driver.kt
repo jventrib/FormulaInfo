@@ -19,5 +19,6 @@ data class Driver(
     val nationality: String,
     @ColumnInfo(name = "driverImage")
     val image: String?,
-    val faceBox: String?
+    val faceBox: String?,
+    val numberInTeam: Int
 )

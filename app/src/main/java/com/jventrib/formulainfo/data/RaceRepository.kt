@@ -78,7 +78,7 @@ class RaceRepository(
             }
             .onEach { response ->
                 response.dataOrNull()?.forEach { it.nextRace = false }
-                response.dataOrNull()?.first { it.raceInfo.sessions.race.isAfter(Instant.now()) }
+                response.dataOrNull()?.firstOrNull { it.raceInfo.sessions.race.isAfter(Instant.now()) }
                     ?.let { it.nextRace = true }
 
             }

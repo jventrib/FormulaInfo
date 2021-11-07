@@ -15,7 +15,7 @@ import com.jventrib.formulainfo.utils.Converters
         Constructor::class,
         Lap::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
