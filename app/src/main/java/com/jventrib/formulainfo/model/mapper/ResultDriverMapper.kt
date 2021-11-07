@@ -3,9 +3,9 @@ package com.jventrib.formulainfo.model.mapper
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.remote.ResultRemote
 
-object ResultDriverMapper: Mapper<ResultRemote, Driver> {
+object ResultDriverMapper {
 
-    override fun toEntity(remote: ResultRemote) = remote.driver.let { driver ->
+    fun toEntity(remote: ResultRemote, numberInTeam: Int) = remote.driver.let { driver ->
         Driver(
             driver.driverId,
             driver.permanentNumber,
@@ -17,6 +17,15 @@ object ResultDriverMapper: Mapper<ResultRemote, Driver> {
             driver.nationality,
             null,
             null,
+            numberInTeam
         )
     }
+
+    fun toEntity(remotes: List<ResultRemote>): List<Driver> {
+        val list = remotes.groupBy { it.constructor }.flatMap {
+            it.value.mapIndexed { index, result -> Pair(result, index) }
+        }
+        return list.map { toEntity(it.first, it.second) }
+    }
+
 }
