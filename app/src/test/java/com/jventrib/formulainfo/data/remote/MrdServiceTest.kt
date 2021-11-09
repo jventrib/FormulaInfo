@@ -1,7 +1,7 @@
 package com.jventrib.formulainfo.data.remote
 
 import com.google.common.truth.Truth.assertThat
-import com.skydoves.disneycompose.di.RemoteModule
+import com.jventrib.formulainfo.di.RemoteModule
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer

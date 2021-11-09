@@ -4,8 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
@@ -18,9 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.jventrib.formulainfo.data.sample.DriverSample
 import com.jventrib.formulainfo.data.sample.ResultSample
-import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.theme.teamColor
 
@@ -58,7 +54,7 @@ fun DriverSelectorPreview() {
             rememberDrawerState(initialValue = DrawerValue.Open)
         ),
         drawerShape = customShape(),
-        drawerContent = { DriverSelector(drivers = ResultSample.getResults(), mutableMapOf()) },
+        drawerContent = { DriverSelector(drivers = ResultSample.`get202101Results`(), mutableMapOf()) },
     ) {
         Box(
             Modifier
