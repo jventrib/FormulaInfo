@@ -9,9 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jventrib.formulainfo.data.sample.ResultSample
-import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.drivers.DriverSelector
@@ -21,6 +21,7 @@ import com.madrapps.plot.line.DataPoint
 import com.madrapps.plot.line.LineGraph
 import com.madrapps.plot.line.LinePlot
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.random.Random
 
 @Composable
@@ -36,7 +37,7 @@ fun RaceGraphScreen(lapsByResult: Map<Result, List<Lap>>) {
     Scaffold(
         scaffoldState = scaffoldState,
         drawerShape = customShape(),
-        drawerContent = { DriverSelector(drivers = ResultSample.getResults(), selectState) },
+        drawerContent = { DriverSelector(drivers = ResultSample.`get202101Results`(), selectState) },
         topBar = {
             TopAppBar(
                 title = { Text("Formula Info") },
@@ -94,4 +95,12 @@ fun RaceGraphScreen(lapsByResult: Map<Result, List<Lap>>) {
                 .fillMaxSize()
         )
     }
+}
+
+@Preview
+@Composable
+fun RaceGraphScreenPreview() {
+    RaceGraphScreen(lapsByResult = ResultSample.getLapsPerResults() )
+//    val resource = ResultSample.get202101Results()
+//    Text(resource.toString())
 }
