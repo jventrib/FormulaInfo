@@ -39,7 +39,7 @@ object LapSample {
         .map {
             it.key to (getContent(it.value).mrData.table.races.firstOrNull()?.laps ?: listOf())
         }
-        .map {
-            it.first to LapTimeMapper.toEntity(2021, 1, it.first, it.second)
+        .map { pair ->
+            pair.first to LapTimeMapper.toEntity(2021, 1, pair.first, pair.second)
         }.toMap()
 }

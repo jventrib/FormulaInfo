@@ -6,7 +6,13 @@ import java.time.Duration
 
 object LapTimeMapper {
 
-    fun toEntity(season: Int, round: Int, driverId: String, remote: LapTimeRemote, total: Duration) = Lap(
+    fun toEntity(
+        season: Int,
+        round: Int,
+        driverId: String,
+        remote: LapTimeRemote,
+        total: Duration
+    ) = Lap(
         season,
         round,
         driverId,
@@ -22,16 +28,11 @@ object LapTimeMapper {
         driverId: String,
         remotes: List<LapTimeRemote>
     ): List<Lap> {
-        if (remotes.isEmpty()) {
-            return listOf(Lap(season, round, driverId, -1, -1, Duration.ZERO, Duration.ZERO))
-        } else {
-            var total = Duration.ZERO
-            return remotes.map {
-                total += it.time
-                toEntity(season, round, driverId, it, total)
-            }
+        var total = Duration.ZERO
+        return remotes.map {
+            total += it.time
+            toEntity(season, round, driverId, it, total)
         }
     }
-
 }
 
