@@ -13,9 +13,7 @@ import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.data.remote.WikipediaService
 import com.jventrib.formulainfo.model.db.*
 import com.jventrib.formulainfo.model.mapper.*
-import com.jventrib.formulainfo.result.getResultSample
 import com.jventrib.formulainfo.utils.detect
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import logcat.LogPriority
 import logcat.logcat
@@ -78,7 +76,8 @@ class RaceRepository(
             }
             .onEach { response ->
                 response.dataOrNull()?.forEach { it.nextRace = false }
-                response.dataOrNull()?.firstOrNull { it.raceInfo.sessions.race.isAfter(Instant.now()) }
+                response.dataOrNull()
+                    ?.firstOrNull { it.raceInfo.sessions.race.isAfter(Instant.now()) }
                     ?.let { it.nextRace = true }
 
             }
@@ -120,8 +119,13 @@ class RaceRepository(
             dbRead = { lapDao.getAll(season, round, driverId) },
             remoteFetch = { raceRemoteDataSource.getLapTime(season, round, driverId) },
             dbInsert = {
-                lapDao.insertAll(LapTimeMapper.toEntity(season, round, driverId, it)
-                    .also { logcat { "Inserting LapTime $it" } })
+                val list = LapTimeMapper.toEntity(season, round, driverId, it).run {
+                    if (isEmpty())
+                        listOf(Lap(season, round, driverId, -1, -1, Duration.ZERO, Duration.ZERO))
+                    else
+                        this
+                }
+                lapDao.insertAll(list.also { logcat { "Inserting LapTime $it" } })
             })
             .map { response ->
                 if (response is StoreResponse.Data)

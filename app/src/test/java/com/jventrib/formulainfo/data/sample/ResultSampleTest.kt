@@ -8,7 +8,7 @@ class ResultSampleTest : TestCase() {
 
     @Test
     fun testtestFile() {
-        val results = ResultSample.getLapsPerResults()
+        val results = ResultSample.getLapsPerResults().filter {it.key.driver.driverId == "mazepin"}.entries.first().value
         println(results)
     }
 }
