@@ -1,5 +1,3 @@
-@file:JvmName("ResultsKt")
-
 package com.jventrib.formulainfo.ui.results
 
 import androidx.compose.foundation.background
