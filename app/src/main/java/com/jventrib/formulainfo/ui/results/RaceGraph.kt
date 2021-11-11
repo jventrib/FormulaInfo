@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jventrib.formulainfo.data.sample.ResultSample
@@ -63,7 +65,24 @@ fun RaceGraphScreen(lapsByResult: Map<Result, List<Lap>>) {
         val lapDataPoints = getDataPoints(lapsByResult, selectState)
 
         if (lapDataPoints.isNotEmpty()) LineGraph(
-            plot = LinePlot(lines = lapDataPoints, grid = LinePlot.Grid(Color.Red, steps = 4)),
+            plot = LinePlot(
+                lines = lapDataPoints,
+//                yAxis = LinePlot.YAxis { _, _, _ ->
+//                    lapsByResult.entries
+//                        .sortedByDescending { e -> e.key.resultInfo.grid.let { if (it == 0) 20 else it } }
+//                        .map { it.key.driver.code!! }
+//                        .forEach {
+//                            Text(
+//                                text = it,
+//                                overflow = TextOverflow.Ellipsis,
+//                                style = MaterialTheme.typography.caption,
+//                                color = MaterialTheme.colors.onSurface,
+//                            )
+//                        }
+//                },
+                yAxis = LinePlot.YAxis(steps = 20),
+                paddingTop = 8.dp
+            ),
             modifier = Modifier.fillMaxSize()
         )
     }
