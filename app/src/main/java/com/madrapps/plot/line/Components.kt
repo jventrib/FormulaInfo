@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.google.android.material.math.MathUtils.lerp
 import com.madrapps.plot.line.LinePlot.Grid
 import com.madrapps.plot.line.LinePlot.Highlight
 import com.madrapps.plot.line.LinePlot.Intersection
@@ -315,9 +316,9 @@ data class LinePlot(
         val roundToInt: Boolean = true,
         val paddingStart: Dp = 16.dp,
         val paddingEnd: Dp = 8.dp,
-        val content: @Composable (Float, Float, Float) -> Unit = { min, offset, _ ->
+        val content: @Composable (Float, Float, Float) -> Unit = { min, _, max ->
             for (it in 0 until steps) {
-                val value = it * offset + min
+                val value = lerp(min, max, it / (steps - 1).toFloat())
                 Text(
                     text = value.string(),
                     maxLines = 1,
@@ -327,7 +328,6 @@ data class LinePlot(
                 )
             }
         }
-    )
-}
+    )}
 
 private fun Float.string() = DecimalFormat("#.#").format(this)

@@ -9,6 +9,7 @@ data class Lap(
     val season: Int,
     val round: Int,
     val driverId: String,
+    val driverCode: String,
     val number: Int,
     val position: Int,
     val time: Duration,

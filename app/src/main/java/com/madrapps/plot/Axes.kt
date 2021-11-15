@@ -24,20 +24,21 @@ internal fun GraphYAxis(
     scale: Float,
     content: @Composable () -> Unit
 ) {
+//    content()
+
     Layout(content, modifier) { measurables, constraints ->
-        val steps = if (measurables.size <= 1) 1 else measurables.size
         val placeables = measurables.map { measurable ->
             measurable.measure(constraints.copy(minHeight = 0))
         }
         val width = placeables.maxOf { it.width }
-        layout(width, constraints.maxHeight) {
-            val yBottom = (constraints.maxHeight - paddingBottom)
-            val availableHeight = yBottom - paddingTop
-            var yPos = yBottom.toInt()
+        layout(width, constraints.maxHeight - paddingBottom.toInt()) {
+            val yBottom = constraints.maxHeight - paddingBottom
+
             placeables.forEachIndexed { index, placeable ->
                 val fraction = index / (placeables.size - 1).toFloat()
-                val y = lerp(yBottom, paddingTop, fraction).toInt()
-                placeable.place(x = 0, y = y)
+                val y = lerp(yBottom, paddingTop, fraction)
+                    .toInt() - placeable.height - placeable.height / 2
+                placeable.place(x = 0, y = 0)
             }
         }
     }
