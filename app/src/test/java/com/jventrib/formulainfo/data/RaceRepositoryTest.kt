@@ -140,10 +140,10 @@ class RaceRepositoryTest : TestCase() {
 
         val lapTimeDao = mockk<LapDao>()
         val laps = listOf(
-            Lap(2021, 1, "doe", 1, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
-            Lap(2021, 1, "doe", 2, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
-            Lap(2021, 1, "doe", 3, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
-            Lap(2021, 1, "doe", 4, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
+            Lap(2021, 1, "doe", "doe", 1, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
+            Lap(2021, 1, "doe", "doe", 2, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
+            Lap(2021, 1, "doe", "doe", 3, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
+            Lap(2021, 1, "doe", "doe", 4, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
         )
 
         val season = slot<Int>()
@@ -158,6 +158,7 @@ class RaceRepositoryTest : TestCase() {
                             Lap(
                                 season.captured,
                                 round.captured,
+                                driverId.captured,
                                 driverId.captured,
                                 it,
                                 1,

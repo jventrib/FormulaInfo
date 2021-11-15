@@ -11,7 +11,10 @@ import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.data.db.*
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.data.remote.WikipediaService
-import com.jventrib.formulainfo.model.db.*
+import com.jventrib.formulainfo.model.db.Driver
+import com.jventrib.formulainfo.model.db.Lap
+import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.mapper.*
 import com.jventrib.formulainfo.utils.detect
 import kotlinx.coroutines.flow.*
@@ -113,15 +116,32 @@ class RaceRepository(
     fun getLaps(
         season: Int,
         round: Int,
-        driverId: String
+        driver: Driver
     ): Flow<StoreResponse<List<Lap>>> =
         repo(
-            dbRead = { lapDao.getAll(season, round, driverId) },
-            remoteFetch = { raceRemoteDataSource.getLapTime(season, round, driverId) },
+            dbRead = { lapDao.getAll(season, round, driver.driverId) },
+            remoteFetch = { raceRemoteDataSource.getLapTime(season, round, driver.driverId) },
             dbInsert = {
-                val list = LapTimeMapper.toEntity(season, round, driverId, it).run {
+                val list = LapTimeMapper.toEntity(
+                    season,
+                    round,
+                    driver.driverId,
+                    driver.code ?: driver.driverId,
+                    it
+                ).run {
                     if (isEmpty())
-                        listOf(Lap(season, round, driverId, -1, -1, Duration.ZERO, Duration.ZERO))
+                        listOf(
+                            Lap(
+                                season,
+                                round,
+                                driver.driverId,
+                                driver.code ?: driver.driverId,
+                                -1,
+                                -1,
+                                Duration.ZERO,
+                                Duration.ZERO
+                            )
+                        )
                     else
                         this
                 }
@@ -144,7 +164,7 @@ class RaceRepository(
         .map { it.value }
         .flatMapLatest { it.asFlow() }
         .flatMapMerge(20) { result ->
-            getLaps(season, round, result.driver.driverId)
+            getLaps(season, round, result.driver)
                 .filterIsInstance<StoreResponse.Data<List<Lap>>>()
                 .take(1)
                 .map { it.value }
