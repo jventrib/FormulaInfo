@@ -16,6 +16,7 @@ import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.theme.teamColor
+import logcat.logcat
 import java.time.Duration
 
 
@@ -40,12 +41,15 @@ fun <E> Chart(
         valueBound: ValueBound
     ) {
         val seriePoints = serie.seriePoints
+        val screenCenterX = size.width / 2f
 
         fun getElementXY(dataPoint: DataPoint<E>): Offset {
             val xFraction = valueBound.run { (dataPoint.x - minX!!) / (maxX!! - minX) }
             val yFraction = valueBound.run { (dataPoint.y - minY!!) / (maxY!! - minY) }
-            val x =
-                lerp(0f, (size.width) * scale, xFraction) + scrollOffset
+            val delta = screenCenterX
+            val lerp = lerp(-delta, delta, xFraction)
+            val x = (lerp + scrollOffset) * scale
+//            * scale + delta
             val y =
                 lerp(0f, size.height, yFraction)
             return Offset(x, y)
