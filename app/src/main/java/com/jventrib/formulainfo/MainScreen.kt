@@ -14,6 +14,7 @@ import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.laps.Laps
 import com.jventrib.formulainfo.ui.laps.LapsViewModel
+import com.jventrib.formulainfo.ui.results.LapChart
 import com.jventrib.formulainfo.ui.results.RaceGraphScreen
 import com.jventrib.formulainfo.ui.results.ResultsScreen
 import com.jventrib.formulainfo.ui.results.ResultsViewModel
@@ -112,7 +113,7 @@ fun MainScreen() {
                 viewModel.season.value = season
                 viewModel.round.value = round
                 graph?.let {
-                    RaceGraphScreen(lapsByResult = it)
+                    LapChart(lapsByResult = it)
                 }
             }
             composable("about") { About() }
