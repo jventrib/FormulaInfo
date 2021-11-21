@@ -26,7 +26,7 @@ fun <E> Chart(
     valueBound: ValueBound? = null,
 ) {
     var scrollOffset by remember { mutableStateOf(0f) }
-    var scale by remember { mutableStateOf(1f) }
+    var scale by remember { mutableStateOf(2f) }
     var rotation by remember { mutableStateOf(0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     val transformState = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
@@ -35,18 +35,25 @@ fun <E> Chart(
         offset += offsetChange
     }
 
+    fun scaleCoerced() = scale.coerceAtLeast(1f)
+
+
     fun <E> DrawScope.drawSerie(
         serie: Serie<E>,
         valueBound: ValueBound
     ) {
         val seriePoints = serie.seriePoints
         val screenCenterX = size.width / 2f
+        fun scrollCoerced() = scrollOffset.coerceIn(
+            -screenCenterX + screenCenterX / scaleCoerced(),
+            screenCenterX - screenCenterX / scaleCoerced()
+        )
 
         fun getElementXY(dataPoint: DataPoint<E>): Offset {
             val xFraction = valueBound.run { (dataPoint.x - minX!!) / (maxX!! - minX) }
             val yFraction = valueBound.run { (dataPoint.y - minY!!) / (maxY!! - minY) }
             val lerp = lerp(-screenCenterX, screenCenterX, xFraction)
-            val x = (lerp + scrollOffset) * scale + screenCenterX
+            val x = (lerp + scrollCoerced()) * scaleCoerced() + screenCenterX
             val y = lerp(0f, size.height, yFraction)
             return Offset(x, y)
         }
@@ -79,7 +86,7 @@ fun <E> Chart(
                 .border(1.dp, Color.Black)
                 .scrollable(
                     state = rememberScrollableState { delta ->
-                        scrollOffset += delta / scale
+                        scrollOffset += delta / scaleCoerced()
                         delta
                     }, Orientation.Horizontal
                 )
@@ -156,7 +163,7 @@ fun ChartPreview() {
         Chart(
             series = series,
             modifier = Modifier
-                .fillMaxHeight(.5f)
+                .fillMaxHeight(1f)
                 .border(2.dp, Color.Red),
             valueBound = ValueBound(maxY = 20f)
         )
