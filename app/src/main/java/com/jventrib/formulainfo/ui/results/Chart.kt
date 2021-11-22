@@ -5,17 +5,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PointMode
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,7 +23,6 @@ import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
-import logcat.logcat
 import kotlin.random.Random
 
 @Composable
@@ -88,10 +86,8 @@ fun <E> Chart(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .padding(vertical = 16.dp, horizontal = 4.dp)
-//                .border(1.dp, Color.Black)
                 .scrollable(scrollState, Orientation.Horizontal)
                 .transformable(transformState)
-//                .clipToBounds()
                 .onGloballyPositioned { size = it.size.toSize() },
         ) {
             val minX =
