@@ -3,29 +3,31 @@ package com.jventrib.formulainfo.ui.results
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
+import androidx.compose.ui.unit.toSize
 import com.google.android.material.math.MathUtils.lerp
 import kotlin.random.Random
-
-val intervals = floatArrayOf(20f, 20f)
-val pathEffect = PathEffect.dashPathEffect(intervals)
 
 @Composable
 fun <E> Chart(
     series: List<Serie<E>>,
     modifier: Modifier = Modifier,
     boundary: Boundary? = null,
+    yAxisLabel: E.() -> String = { this.toString() }
 ) {
     var scrollOffset by remember { mutableStateOf(0f) }
     var scale by remember { mutableStateOf(2f) }
@@ -36,39 +38,37 @@ fun <E> Chart(
         rotation += rotationChange
         offset += offsetChange
     }
+    var size by remember { mutableStateOf(Size.Zero) }
+    val screenCenterX = size.width / 2f
     val scrollState = rememberScrollableState { delta ->
         scrollOffset = scrollOffset.plus(delta / scale)
         delta
     }
 
-    fun <E> DrawScope.drawSerie(
-        serie: Serie<E>,
-        boundary: Boundary
-    ) {
-        val seriePoints = serie.seriePoints
-        val screenCenterX = size.width / 2f
-        scrollOffset = scrollOffset.coerceIn(
-            -screenCenterX + screenCenterX / scale,
-            screenCenterX - screenCenterX / scale
-        )
+    //Coerce scrollOffset at each recomposition, so zoom out always keep inside boundaries
+    scrollOffset = scrollOffset.coerceIn(
+        -screenCenterX + screenCenterX / scale,
+        screenCenterX - screenCenterX / scale
+    )
 
-        val screen = Rect(Offset.Zero - Offset(size.width * 1, 0f), size * 4f)
-        val points = seriePoints.map {
-            getElementXY(it, boundary, scrollOffset, scale)
-        }.filter { screen.contains(it) }
-
-        drawPoints(
-            points,
-            PointMode.Polygon,
-            serie.color,
-            3.dp.toPx(),
-            StrokeCap.Round,
-        )
-        points.forEach { drawCircle(color = serie.color, 4.dp.toPx(), it) }
-    }
-
-
-    Box() {
+    Row {
+        BoxWithConstraints(
+            Modifier
+                .fillMaxHeight()
+                .wrapContentWidth()
+                .border(1.dp, Color.Red)
+        ) {
+            series.map { serie ->
+                val dataPoint = serie.seriePoints[0]
+                val lerp =
+                    lerp(
+                        0.dp,
+                        this.maxHeight,
+                        (dataPoint.y - 1) / series.size.toFloat()
+                    )
+                Text(text = dataPoint.element.yAxisLabel(), modifier = Modifier.offset(y = lerp))
+            }
+        }
         Canvas(
             modifier = modifier
                 .fillMaxWidth()
@@ -76,19 +76,50 @@ fun <E> Chart(
                 .padding(16.dp)
                 .border(1.dp, Color.Black)
                 .scrollable(scrollState, Orientation.Horizontal)
-                .transformable(transformState),
+                .transformable(transformState)
+                .clipToBounds()
+                .onGloballyPositioned { size = it.size.toSize() },
         ) {
-            val minX = boundary?.minX ?: series.minOfOrNull { it.seriePoints.minOf { it.x } }
-            val maxX = boundary?.maxX ?: series.maxOfOrNull { it.seriePoints.maxOf { it.x } }
-            val minY = boundary?.minY ?: series.minOfOrNull { it.seriePoints.minOf { it.y } }
-            val maxY = boundary?.maxY ?: series.maxOfOrNull { it.seriePoints.maxOf { it.y } }
+            val minX =
+                boundary?.minX ?: series.minOfOrNull { serie -> serie.seriePoints.minOf { it.x } }
+            val maxX =
+                boundary?.maxX ?: series.maxOfOrNull { serie -> serie.seriePoints.maxOf { it.x } }
+            val minY =
+                boundary?.minY ?: series.minOfOrNull { serie -> serie.seriePoints.minOf { it.y } }
+            val maxY =
+                boundary?.maxY ?: series.maxOfOrNull { serie -> serie.seriePoints.maxOf { it.y } }
 
             val vb = Boundary(minX, maxX, minY, maxY)
             series.forEach { serie ->
-                drawSerie(serie, vb)
+                drawSerie(serie, vb, size, scrollOffset, scale)
             }
         }
     }
+}
+
+fun <E> DrawScope.drawSerie(
+    serie: Serie<E>,
+    boundary: Boundary,
+    size: Size,
+    scrollOffset: Float,
+    scale: Float
+) {
+    val seriePoints = serie.seriePoints
+    val screenCenterX = size.width / 2f
+
+    val screen = Rect(Offset.Zero - Offset(size.width * 1f, 0f), size * 4f)
+    val points = seriePoints.map {
+        getElementXY(it, boundary, scrollOffset, scale)
+    }.filter { screen.contains(it) }
+
+    drawPoints(
+        points,
+        PointMode.Polygon,
+        serie.color,
+        3.dp.toPx(),
+        StrokeCap.Round,
+    )
+    points.forEach { drawCircle(color = serie.color, 4.dp.toPx(), it) }
 }
 
 
