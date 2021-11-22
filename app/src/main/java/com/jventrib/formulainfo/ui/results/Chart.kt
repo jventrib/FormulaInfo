@@ -1,6 +1,7 @@
 package com.jventrib.formulainfo.ui.results
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
@@ -21,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
 import logcat.logcat
 import kotlin.random.Random
@@ -33,7 +35,7 @@ fun <E> Chart(
     yAxisLabel: E.() -> String = { this.toString() }
 ) {
     var scrollOffset by remember { mutableStateOf(0f) }
-    var scale by remember { mutableStateOf(2f) }
+    var scale by remember { mutableStateOf(1f) }
     var rotation by remember { mutableStateOf(0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     val transformState = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
@@ -59,34 +61,37 @@ fun <E> Chart(
             modifier = Modifier
                 .fillMaxHeight()
                 .wrapContentWidth()
-                .padding(vertical = 16.dp),
+                .background(Color(.9f, .9f, .9f, .9f))
+                .padding(vertical = 16.dp)
+                .zIndex(1f),
             contentAlignment = Alignment.TopCenter
         ) {
             series.map { serie ->
-                val dataPoint = serie.seriePoints[0]
-                val lerp =
-                    lerp(
-                        0.dp,
-                        this.maxHeight,
-                        (dataPoint.y - 1) / (series.size - 1).toFloat()
+                val dataPoint = serie.seriePoints.firstOrNull { it.x == 0f }
+                dataPoint?.let {
+                    val lerp =
+                        lerp(
+                            0.dp,
+                            this.maxHeight,
+                            (dataPoint.y - 1) / (series.size - 1).toFloat()
+                        )
+                    Text(
+                        text = dataPoint.element.yAxisLabel(),
+                        modifier = Modifier
+                            .offset(y = lerp - 12.dp)
                     )
-                logcat { "size: ${size.height}, maxHeight: $maxHeight" }
-                Text(
-                    text = dataPoint.element.yAxisLabel(),
-                    modifier = Modifier
-                        .offset(y = lerp - 12.dp)
-                )
+                }
             }
         }
         Canvas(
             modifier = modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(vertical = 16.dp)
+                .padding(vertical = 16.dp, horizontal = 4.dp)
 //                .border(1.dp, Color.Black)
                 .scrollable(scrollState, Orientation.Horizontal)
                 .transformable(transformState)
-                .clipToBounds()
+//                .clipToBounds()
                 .onGloballyPositioned { size = it.size.toSize() },
         ) {
             val minX =

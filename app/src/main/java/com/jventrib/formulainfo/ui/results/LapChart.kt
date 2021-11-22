@@ -86,14 +86,14 @@ private fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result, 
                     if (entry.key.resultInfo.grid != 0) {
                         add(
                             0, Lap(
-                                entry.key.resultInfo.season,
-                                entry.key.resultInfo.round,
-                                entry.key.driver.driverId,
-                                entry.key.driver.code ?: entry.key.driver.driverId,
-                                0,
-                                entry.key.resultInfo.grid,
-                                Duration.ZERO,
-                                Duration.ZERO
+                                season = entry.key.resultInfo.season,
+                                round = entry.key.resultInfo.round,
+                                driverId = entry.key.driver.driverId,
+                                driverCode = entry.key.driver.code ?: entry.key.driver.driverId,
+                                number = 0,
+                                position = entry.key.resultInfo.grid,
+                                time = Duration.ZERO,
+                                total = Duration.ZERO
                             )
                         )
                     }
