@@ -3,7 +3,6 @@ package com.jventrib.formulainfo.ui.results
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -22,8 +21,6 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.drivers.DriverSelector
 import com.jventrib.formulainfo.ui.drivers.customShape
 import com.jventrib.formulainfo.ui.theme.teamColor
-import com.madrapps.plot.line.LineGraph
-import com.madrapps.plot.line.LinePlot
 import kotlinx.coroutines.launch
 import java.time.Duration
 
@@ -125,7 +122,7 @@ fun LapChartPreview() {
             modifier = Modifier
                 .fillMaxHeight(1f)
                 .border(2.dp, Color.Red),
-            valueBound = ValueBound(maxY = 20f)
+            boundary = Boundary(maxY = 20f)
         )
     }
 //    Chart(map, maxYValue = lapsWithStart.size.toFloat())
