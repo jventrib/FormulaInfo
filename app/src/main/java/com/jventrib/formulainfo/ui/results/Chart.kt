@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
@@ -20,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.toSize
 import com.google.android.material.math.MathUtils.lerp
+import logcat.logcat
 import kotlin.random.Random
 
 @Composable
@@ -53,10 +56,11 @@ fun <E> Chart(
 
     Row {
         BoxWithConstraints(
-            Modifier
+            modifier = Modifier
                 .fillMaxHeight()
                 .wrapContentWidth()
-                .border(1.dp, Color.Red)
+                .padding(vertical = 16.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
             series.map { serie ->
                 val dataPoint = serie.seriePoints[0]
@@ -64,17 +68,22 @@ fun <E> Chart(
                     lerp(
                         0.dp,
                         this.maxHeight,
-                        (dataPoint.y - 1) / series.size.toFloat()
+                        (dataPoint.y - 1) / (series.size - 1).toFloat()
                     )
-                Text(text = dataPoint.element.yAxisLabel(), modifier = Modifier.offset(y = lerp))
+                logcat { "size: ${size.height}, maxHeight: $maxHeight" }
+                Text(
+                    text = dataPoint.element.yAxisLabel(),
+                    modifier = Modifier
+                        .offset(y = lerp - 12.dp)
+                )
             }
         }
         Canvas(
             modifier = modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(16.dp)
-                .border(1.dp, Color.Black)
+                .padding(vertical = 16.dp)
+//                .border(1.dp, Color.Black)
                 .scrollable(scrollState, Orientation.Horizontal)
                 .transformable(transformState)
                 .clipToBounds()
