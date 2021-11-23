@@ -66,17 +66,12 @@ fun <E> Chart(
         ) {
             series.map { serie ->
                 val dataPoint = serie.seriePoints.firstOrNull { it.x == 0f }
-                dataPoint?.let {
+                dataPoint?.let { point ->
                     val lerp =
-                        lerp(
-                            0.dp,
-                            this.maxHeight,
-                            (dataPoint.y - 1) / (series.size - 1).toFloat()
-                        )
+                        lerp(0.dp, this.maxHeight, (point.y - 1) / (series.size - 1).toFloat())
                     Text(
-                        text = dataPoint.element.yAxisLabel(),
-                        modifier = Modifier
-                            .offset(y = lerp - 12.dp)
+                        text = point.element.yAxisLabel(),
+                        modifier = Modifier.offset(y = lerp - 12.dp)
                     )
                 }
             }
@@ -115,12 +110,12 @@ fun <E> DrawScope.drawSerie(
     scale: Float
 ) {
     val seriePoints = serie.seriePoints
-    val screenCenterX = size.width / 2f
+    val alpha = (20 * (scale - 1) / seriePoints.size).coerceIn(0f, 1f)
 
     val screen = Rect(Offset.Zero - Offset(size.width * 1f, 0f), size * 4f)
-    val points = seriePoints.map {
-        getElementXY(it, boundary, scrollOffset, scale)
-    }.filter { screen.contains(it) }
+    val points = seriePoints
+        .map { getElementXY(it, boundary, scrollOffset, scale) }
+        .filter { screen.contains(it) }
 
     drawPoints(
         points,
@@ -129,7 +124,7 @@ fun <E> DrawScope.drawSerie(
         3.dp.toPx(),
         StrokeCap.Round,
     )
-    points.forEach { drawCircle(color = serie.color, 4.dp.toPx(), it) }
+    points.forEach { drawCircle(color = serie.color, 4.dp.toPx(), it, alpha) }
 }
 
 
