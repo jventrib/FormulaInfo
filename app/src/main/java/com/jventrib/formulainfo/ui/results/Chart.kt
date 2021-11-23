@@ -12,17 +12,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.lerp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
+import logcat.logcat
+import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 @Composable
@@ -65,13 +69,12 @@ fun <E> Chart(
             contentAlignment = Alignment.TopCenter
         ) {
             series.map { serie ->
-                val dataPoint = serie.seriePoints.firstOrNull { it.x == 0f }
-                dataPoint?.let { point ->
-                    val lerp =
-                        lerp(0.dp, this.maxHeight, (point.y - 1) / (series.size - 1).toFloat())
+                serie.yAxisPoint?.let {
                     Text(
-                        text = point.element.yAxisLabel(),
-                        modifier = Modifier.offset(y = lerp - 12.dp)
+                        text = serie.label,
+                        modifier = Modifier.offset(offset = {
+                            IntOffset(0, it.y.roundToInt() - 12.dp.roundToPx())
+                        })
                     )
                 }
             }
@@ -86,13 +89,21 @@ fun <E> Chart(
                 .onGloballyPositioned { size = it.size.toSize() },
         ) {
             val minX =
-                boundary?.minX ?: series.minOfOrNull { serie -> serie.seriePoints.minOf { it.x } }
+                boundary?.minX ?: series.minOfOrNull { serie ->
+                    serie.seriePoints.minOfOrNull { it.x } ?: 0f
+                } ?: 0f
             val maxX =
-                boundary?.maxX ?: series.maxOfOrNull { serie -> serie.seriePoints.maxOf { it.x } }
+                boundary?.maxX ?: series.maxOfOrNull { serie ->
+                    serie.seriePoints.maxOfOrNull { it.x } ?: 0f
+                } ?: 0f
             val minY =
-                boundary?.minY ?: series.minOfOrNull { serie -> serie.seriePoints.minOf { it.y } }
+                boundary?.minY ?: series.minOfOrNull { serie ->
+                    serie.seriePoints.minOfOrNull { it.y } ?: 0f
+                } ?: 0f
             val maxY =
-                boundary?.maxY ?: series.maxOfOrNull { serie -> serie.seriePoints.maxOf { it.y } }
+                boundary?.maxY ?: series.maxOfOrNull { serie ->
+                    serie.seriePoints.maxOfOrNull { it.y } ?: 0f
+                } ?: 0f
 
             val vb = Boundary(minX, maxX, minY, maxY)
             series.forEach { serie ->
@@ -116,6 +127,18 @@ fun <E> DrawScope.drawSerie(
     val points = seriePoints
         .map { getElementXY(it, boundary, scrollOffset, scale) }
         .filter { screen.contains(it) }
+
+    val start = points.lastOrNull { it.x < 0 }
+    val stop = points.firstOrNull { it.x > 0 }
+    if (start != null && stop != null) stop.let {
+        val fraction = start.x.absoluteValue / (stop.x - start.x)
+        val yAxis = lerp(start, it, fraction).y
+        serie.yAxisPoint = DataPoint(0f, yAxis, serie.seriePoints.first().element)
+    } else {
+        logcat { "No stop" }
+        val pointOnAxis = points.firstOrNull { it.x == 0f }
+        serie.yAxisPoint = pointOnAxis?.let { DataPoint(0f, it.y, null) }
+    }
 
     drawPoints(
         points,
@@ -143,9 +166,11 @@ fun <E> DrawScope.getElementXY(
     return Offset(x, y)
 }
 
-data class Serie<E>(val seriePoints: List<DataPoint<E>>, val color: Color)
+data class Serie<E>(val seriePoints: List<DataPoint<E>>, val color: Color, val label: String) {
+    var yAxisPoint: DataPoint<E>? = null
+}
 
-data class DataPoint<E>(val x: Float, val y: Float, val element: E)
+data class DataPoint<E>(val x: Float, val y: Float, val element: E?)
 
 data class Boundary(
     val minX: Float? = null,
@@ -161,7 +186,8 @@ fun ChartPreview() {
         Serie(
             (0..10).map {
                 DataPoint(it.toFloat(), Random.nextInt(20).toFloat(), "TEST")
-            }, Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat())
+            }, Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()),
+            "TEST"
         )
     }
 
