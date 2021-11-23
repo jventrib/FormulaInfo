@@ -63,13 +63,17 @@ fun LapChart(lapsByResult: Map<Result, List<Lap>>) {
         val lapsWithStart = getLapsWithStart(lapsByResult)
 
         val series = lapsWithStart.map { entry ->
-            Serie(entry.value.map { lap ->
-                DataPoint(
-                    lap.number.toFloat(),
-                    lap.position.toFloat(),
-                    lap
-                )
-            }, teamColor[entry.key.constructor.id]!!)
+            Serie(
+                entry.value.map { lap ->
+                    DataPoint(
+                        lap.number.toFloat(),
+                        lap.position.toFloat(),
+                        lap
+                    )
+                },
+                teamColor[entry.key.constructor.id]!!,
+                entry.key.driver.code ?: entry.key.driver.driverId
+            )
         }
 
         Chart(series = series,
@@ -105,13 +109,17 @@ private fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result, 
 fun LapChartPreview() {
     val lapsWithStart = getLapsWithStart(ResultSample.getLapsPerResults())
     val series = lapsWithStart.map { entry ->
-        Serie(entry.value.map { lap ->
-            DataPoint(
-                lap.number.toFloat(),
-                lap.position.toFloat(),
-                lap
-            )
-        }, teamColor[entry.key.constructor.id]!!)
+        Serie(
+            entry.value.map { lap ->
+                DataPoint(
+                    lap.number.toFloat(),
+                    lap.position.toFloat(),
+                    lap
+                )
+            },
+            teamColor[entry.key.constructor.id]!!,
+            entry.key.driver.code ?: entry.key.driver.driverId
+        )
     }
     Box(
         Modifier
