@@ -76,9 +76,7 @@ fun LapChart(lapsByResult: Map<Result, List<Lap>>) {
             )
         }
 
-        Chart(series = series,
-            yAxisLabel = { driverCode }
-        )
+        Chart(series = series)
     }
 }
 
@@ -132,9 +130,7 @@ fun LapChartPreview() {
             modifier = Modifier
                 .fillMaxHeight(1f)
                 .border(2.dp, Color.Red),
-            boundary = Boundary(maxY = 20f),
-            yAxisLabel = { driverCode }
-        )
+            boundary = Boundary(maxY = 20f))
     }
 //    Chart(map, maxYValue = lapsWithStart.size.toFloat())
 }
