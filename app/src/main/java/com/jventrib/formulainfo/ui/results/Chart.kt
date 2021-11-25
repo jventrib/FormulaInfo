@@ -7,10 +7,10 @@ import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.lerp
 import androidx.compose.ui.graphics.Color
@@ -33,8 +33,7 @@ import kotlin.random.Random
 fun <E> Chart(
     series: List<Serie<E>>,
     modifier: Modifier = Modifier,
-    boundary: Boundary? = null,
-    yAxisLabel: E.() -> String = { this.toString() }
+    boundary: Boundary? = null
 ) {
     var scrollOffset by remember { mutableStateOf(0f) }
     var scale by remember { mutableStateOf(1f) }
@@ -51,6 +50,7 @@ fun <E> Chart(
         scrollOffset = scrollOffset.plus(delta / scale)
         delta
     }
+    val yOrigin = remember { mutableStateMapOf<Serie<E>, Offset?>() }
 
     //Coerce scrollOffset at each recomposition, so zoom out always keep inside boundaries
     scrollOffset = scrollOffset.coerceIn(
@@ -69,7 +69,7 @@ fun <E> Chart(
             contentAlignment = Alignment.TopCenter
         ) {
             series.map { serie ->
-                serie.yAxisPoint?.let {
+                yOrigin[serie]?.let {
                     Text(
                         text = serie.label,
                         modifier = Modifier.offset(offset = {
@@ -107,7 +107,7 @@ fun <E> Chart(
 
             val vb = Boundary(minX, maxX, minY, maxY)
             series.forEach { serie ->
-                drawSerie(serie, vb, size, scrollOffset, scale)
+                drawSerie(serie, vb, size, scrollOffset, scale, yOrigin)
             }
         }
     }
@@ -118,27 +118,28 @@ fun <E> DrawScope.drawSerie(
     boundary: Boundary,
     size: Size,
     scrollOffset: Float,
-    scale: Float
+    scale: Float,
+    yOrigin: SnapshotStateMap<Serie<E>, Offset?>
 ) {
     val seriePoints = serie.seriePoints
     val alpha = (20 * (scale - 1) / seriePoints.size).coerceIn(0f, 1f)
 
-    val screen = Rect(Offset.Zero - Offset(size.width * 1f, 0f), size * 4f)
+//    val screen = Rect(Offset.Zero - Offset(size.width * 1f, 0f), size * 4f)
     val points = seriePoints
         .map { getElementXY(it, boundary, scrollOffset, scale) }
-        .filter { screen.contains(it) }
+//        .filter { screen.contains(it) }
 
-    val start = points.lastOrNull { it.x < 0 }
-    val stop = points.firstOrNull { it.x > 0 }
+    val start = points.lastOrNull { it.x <= 0.1f }
+    val stop = points.firstOrNull { it.x > 0.1f }
     if (start != null && stop != null) stop.let {
         val fraction = start.x.absoluteValue / (stop.x - start.x)
-        val yAxis = lerp(start, it, fraction).y
-        serie.yAxisPoint = DataPoint(0f, yAxis, serie.seriePoints.first().element)
+        val yAxis = lerp(start, it, fraction)
+        yOrigin[serie] = yAxis
     } else {
-        logcat { "No stop" }
-        val pointOnAxis = points.firstOrNull { it.x == 0f }
-        serie.yAxisPoint = pointOnAxis?.let { DataPoint(0f, it.y, null) }
+        logcat { "No stop, start: $start" }
+        yOrigin[serie] = points.firstOrNull { it.x in -0.1f..0.1f }
     }
+    logcat { "yAxisPoint: ${yOrigin[serie]}, points:" + points.joinToString(",") { it.x.toString() } }
 
     drawPoints(
         points,
@@ -166,9 +167,7 @@ fun <E> DrawScope.getElementXY(
     return Offset(x, y)
 }
 
-data class Serie<E>(val seriePoints: List<DataPoint<E>>, val color: Color, val label: String) {
-    var yAxisPoint: DataPoint<E>? = null
-}
+data class Serie<E>(val seriePoints: List<DataPoint<E>>, val color: Color, val label: String)
 
 data class DataPoint<E>(val x: Float, val y: Float, val element: E?)
 
