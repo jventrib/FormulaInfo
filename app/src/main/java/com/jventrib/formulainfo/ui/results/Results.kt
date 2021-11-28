@@ -5,9 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MultilineChart
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -37,7 +38,8 @@ fun ResultsScreen(
     race: Race,
     results: List<Result>,
     onDriverSelected: (driver: Driver) -> Unit,
-    onRaceImageSelected: (Race) -> Unit
+    onRaceImageSelected: (Race) -> Unit,
+    onChartClicked: (Race) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -48,6 +50,9 @@ fun ResultsScreen(
                         modifier = Modifier.clickable {})
                 },
                 actions = {
+                    IconButton(onClick = { onChartClicked(race) }) {
+                        Icon(imageVector = Icons.Filled.MultilineChart, contentDescription = null)
+                    }
                 }
             )
         }) {
@@ -121,6 +126,7 @@ fun RaceDetailPreview() {
         race = getRaceSample(3),
         results = listOf(),
         onDriverSelected = {},
-        onRaceImageSelected = {}
+        onRaceImageSelected = {},
+        onChartClicked = {}
     )
 }

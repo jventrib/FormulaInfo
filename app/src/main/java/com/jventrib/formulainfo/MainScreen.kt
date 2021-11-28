@@ -1,7 +1,10 @@
 package com.jventrib.formulainfo
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,7 +18,6 @@ import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.laps.Laps
 import com.jventrib.formulainfo.ui.laps.LapsViewModel
 import com.jventrib.formulainfo.ui.results.LapChart
-import com.jventrib.formulainfo.ui.results.RaceGraphScreen
 import com.jventrib.formulainfo.ui.results.ResultsScreen
 import com.jventrib.formulainfo.ui.results.ResultsViewModel
 import com.jventrib.formulainfo.ui.schedule.ScheduleScreen
@@ -74,7 +76,8 @@ fun MainScreen() {
                         onDriverSelected = { driver ->
                             navController.navigate("laps/${season}/${round}/${driver.driverId}")
                         },
-                        onRaceImageSelected = { race ->
+                        onRaceImageSelected = {},
+                        onChartClicked = { race ->
                             navController.navigate("resultsGraph/${race.raceInfo.season}/${race.raceInfo.round}")
                         }
                     )
