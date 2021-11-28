@@ -7,7 +7,6 @@ import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -33,7 +32,7 @@ import kotlin.random.Random
 fun <E> Chart(
     series: List<Serie<E>>,
     modifier: Modifier = Modifier,
-    boundary: Boundary? = null
+    boundaries: Boundaries? = null
 ) {
     var scrollOffset by remember { mutableStateOf(0f) }
     var scale by remember { mutableStateOf(1f) }
@@ -50,13 +49,20 @@ fun <E> Chart(
         scrollOffset = scrollOffset.plus(delta / scale)
         delta
     }
-    val yOrigin = remember { mutableStateMapOf<Serie<E>, Offset?>() }
 
     //Coerce scrollOffset at each recomposition, so zoom out always keep inside boundaries
     scrollOffset = scrollOffset.coerceIn(
         -screenCenterX + screenCenterX / scale,
         screenCenterX - screenCenterX / scale
     )
+    val vb = getBoundaries(boundaries, series)
+
+    val maxOf = series.maxOfOrNull { it.seriePoints.size } ?: 1
+    val alpha = (20 * (scale - 1) / maxOf).coerceIn(0f, 1f)
+
+    val seriesPoints = series.map { serie ->
+        getSeriePoints(serie, size, scale, vb, scrollOffset)
+    }
 
     Row {
         BoxWithConstraints(
@@ -68,15 +74,16 @@ fun <E> Chart(
                 .zIndex(1f),
             contentAlignment = Alignment.TopCenter
         ) {
-            series.map { serie ->
-                yOrigin[serie]?.let {
+            seriesPoints.map { serie ->
+                val yOrigin = serie.yOrigin
+                if (yOrigin != null && !yOrigin.y.isNaN()) {
                     Text(
                         text = serie.label,
                         modifier = Modifier.offset(offset = {
-                            IntOffset(0, it.y.roundToInt() - 12.dp.roundToPx())
+                            IntOffset(0, yOrigin.y.roundToInt() - 12.dp.roundToPx())
                         })
                     )
-                }
+                } else null
             }
         }
         Canvas(
@@ -88,78 +95,85 @@ fun <E> Chart(
                 .transformable(transformState)
                 .onGloballyPositioned { size = it.size.toSize() },
         ) {
-            val minX =
-                boundary?.minX ?: series.minOfOrNull { serie ->
-                    serie.seriePoints.minOfOrNull { it.x } ?: 0f
-                } ?: 0f
-            val maxX =
-                boundary?.maxX ?: series.maxOfOrNull { serie ->
-                    serie.seriePoints.maxOfOrNull { it.x } ?: 0f
-                } ?: 0f
-            val minY =
-                boundary?.minY ?: series.minOfOrNull { serie ->
-                    serie.seriePoints.minOfOrNull { it.y } ?: 0f
-                } ?: 0f
-            val maxY =
-                boundary?.maxY ?: series.maxOfOrNull { serie ->
-                    serie.seriePoints.maxOfOrNull { it.y } ?: 0f
-                } ?: 0f
-
-            val vb = Boundary(minX, maxX, minY, maxY)
-            series.forEach { serie ->
-                drawSerie(serie, vb, size, scrollOffset, scale, yOrigin)
+            seriesPoints.forEach { serieScreen ->
+                drawSerie(serieScreen.points, serieScreen.color, alpha)
             }
         }
     }
 }
 
-fun <E> DrawScope.drawSerie(
-    serie: Serie<E>,
-    boundary: Boundary,
-    size: Size,
-    scrollOffset: Float,
-    scale: Float,
-    yOrigin: SnapshotStateMap<Serie<E>, Offset?>
+private fun <E> getBoundaries(
+    boundaries: Boundaries?,
+    series: List<Serie<E>>
+): Boundaries {
+    val minX =
+        boundaries?.minX ?: series.filterNot { it.seriePoints.isEmpty() }.minOfOrNull { serie ->
+            serie.seriePoints.minOfOrNull { it.x } ?: 0f
+        } ?: 0f
+    val maxX =
+        boundaries?.maxX ?: series.filterNot { it.seriePoints.isEmpty() }.maxOfOrNull { serie ->
+            serie.seriePoints.maxOfOrNull { it.x } ?: 0f
+        } ?: 0f
+    val minY =
+        boundaries?.minY ?: series.filterNot { it.seriePoints.isEmpty() }.minOfOrNull { serie ->
+            serie.seriePoints.minOfOrNull { it.y } ?: 0f
+        } ?: 0f
+    val maxY =
+        boundaries?.maxY ?: series.filterNot { it.seriePoints.isEmpty() }.maxOfOrNull { serie ->
+            serie.seriePoints.maxOfOrNull { it.y } ?: 0f
+        } ?: 0f
+
+    val vb = Boundaries(minX, maxX, minY, maxY)
+    return vb
+}
+
+fun DrawScope.drawSerie(
+    points: List<Offset>,
+    color: Color,
+    alpha: Float,
 ) {
-    val seriePoints = serie.seriePoints
-    val alpha = (20 * (scale - 1) / seriePoints.size).coerceIn(0f, 1f)
-
-//    val screen = Rect(Offset.Zero - Offset(size.width * 1f, 0f), size * 4f)
-    val points = seriePoints
-        .map { getElementXY(it, boundary, scrollOffset, scale) }
-//        .filter { screen.contains(it) }
-
-    val start = points.lastOrNull { it.x <= 0.1f }
-    val stop = points.firstOrNull { it.x > 0.1f }
-    if (start != null && stop != null) stop.let {
-        val fraction = start.x.absoluteValue / (stop.x - start.x)
-        val yAxis = lerp(start, it, fraction)
-        yOrigin[serie] = yAxis
-    } else {
-        logcat { "No stop, start: $start" }
-        yOrigin[serie] = points.firstOrNull { it.x in -0.1f..0.1f }
-    }
-    logcat { "yAxisPoint: ${yOrigin[serie]}, points:" + points.joinToString(",") { it.x.toString() } }
-
     drawPoints(
         points,
         PointMode.Polygon,
-        serie.color,
+        color,
         3.dp.toPx(),
         StrokeCap.Round,
     )
-    points.forEach { drawCircle(color = serie.color, 4.dp.toPx(), it, alpha) }
+    points.forEach { drawCircle(color = color, 4.dp.toPx(), it, alpha) }
+}
+
+private fun <E> getSeriePoints(
+    serie: Serie<E>,
+    size: Size,
+    scale: Float,
+    boundaries: Boundaries,
+    scrollOffset: Float,
+): SerieScreen {
+
+    val points = serie.seriePoints
+        .map { getElementXY(it, size, boundaries, scrollOffset, scale) }
+
+    val start = points.lastOrNull { it.x <= 0.1f }
+    val stop = points.firstOrNull { it.x > 0.1f }
+    val yOrigin = if (start != null && stop != null) {
+        val fraction = start.x.absoluteValue / (stop.x - start.x)
+        lerp(start, stop, fraction)
+    } else {
+        points.firstOrNull { it.x in -0.1f..0.1f }
+    }
+    return SerieScreen(points, yOrigin, serie.color, serie.label)
 }
 
 
-fun <E> DrawScope.getElementXY(
+private fun <E> getElementXY(
     dataPoint: DataPoint<E>,
-    boundary: Boundary,
+    size: Size,
+    boundaries: Boundaries,
     scrollOffset: Float,
     scale: Float
 ): Offset {
-    val xFraction = boundary.run { (dataPoint.x - minX!!) / (maxX!! - minX) }
-    val yFraction = boundary.run { (dataPoint.y - minY!!) / (maxY!! - minY) }
+    val xFraction = boundaries.run { (dataPoint.x - minX!!) / (maxX!! - minX) }
+    val yFraction = boundaries.run { (dataPoint.y - minY!!) / (maxY!! - minY) }
     val screenCenterX = size.width / 2f
     val lerp = lerp(-screenCenterX, screenCenterX, xFraction)
     val x = (lerp + scrollOffset) * scale + screenCenterX
@@ -168,10 +182,16 @@ fun <E> DrawScope.getElementXY(
 }
 
 data class Serie<E>(val seriePoints: List<DataPoint<E>>, val color: Color, val label: String)
+data class SerieScreen(
+    val points: List<Offset>,
+    val yOrigin: Offset?,
+    val color: Color,
+    val label: String
+)
 
 data class DataPoint<E>(val x: Float, val y: Float, val element: E?)
 
-data class Boundary(
+data class Boundaries(
     val minX: Float? = null,
     val maxX: Float? = null,
     val minY: Float? = null,
