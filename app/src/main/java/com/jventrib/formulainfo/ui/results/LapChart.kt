@@ -37,13 +37,6 @@ fun LapChart(lapsByResult: Map<Result, List<Lap>>) {
 
     Scaffold(
         scaffoldState = scaffoldState,
-        drawerShape = customShape(),
-        drawerContent = {
-            DriverSelector(
-                drivers = ResultSample.get202101Results(),
-                selectState
-            )
-        },
         topBar = {
             TopAppBar(
                 title = { Text("Formula Info") },
