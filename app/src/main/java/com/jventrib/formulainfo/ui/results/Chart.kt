@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
-import logcat.logcat
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -55,37 +54,17 @@ fun <E> Chart(
         -screenCenterX + screenCenterX / scale,
         screenCenterX - screenCenterX / scale
     )
-    val vb = getBoundaries(boundaries, series)
+    val adaptedBoundaries = getBoundaries(boundaries, series)
 
     val maxOf = series.maxOfOrNull { it.seriePoints.size } ?: 1
-    val alpha = (20 * (scale - 1) / maxOf).coerceIn(0f, 1f)
+    val pointAlpha = (20 * (scale - 1) / maxOf).coerceIn(0f, 1f)
 
-    val seriesPoints = series.map { serie ->
-        getSeriePoints(serie, size, scale, vb, scrollOffset)
+    val windowSeries = series.map { serie ->
+        getSeriePoints(serie, size, scale, adaptedBoundaries, scrollOffset)
     }
 
     Row {
-        BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxHeight()
-                .wrapContentWidth()
-                .background(Color(.9f, .9f, .9f, .9f))
-                .padding(vertical = 16.dp)
-                .zIndex(1f),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            seriesPoints.map { serie ->
-                val yOrigin = serie.yOrigin
-                if (yOrigin != null && !yOrigin.y.isNaN()) {
-                    Text(
-                        text = serie.label,
-                        modifier = Modifier.offset(offset = {
-                            IntOffset(0, yOrigin.y.roundToInt() - 12.dp.roundToPx())
-                        })
-                    )
-                } else null
-            }
-        }
+        YAxis(windowSeries)
         Canvas(
             modifier = modifier
                 .fillMaxWidth()
@@ -95,9 +74,34 @@ fun <E> Chart(
                 .transformable(transformState)
                 .onGloballyPositioned { size = it.size.toSize() },
         ) {
-            seriesPoints.forEach { serieScreen ->
-                drawSerie(serieScreen.points, serieScreen.color, alpha)
+            windowSeries.forEach { serieScreen ->
+                drawSerie(serieScreen.points, serieScreen.color, pointAlpha)
             }
+        }
+    }
+}
+
+@Composable
+private fun YAxis(seriesPoints: List<WindowSerie>) {
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxHeight()
+            .wrapContentWidth()
+            .background(Color(.9f, .9f, .9f, .9f))
+            .padding(vertical = 16.dp)
+            .zIndex(1f),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        seriesPoints.map { serie ->
+            val yOrigin = serie.yOrigin
+            if (yOrigin != null && !yOrigin.y.isNaN()) {
+                Text(
+                    text = serie.label,
+                    modifier = Modifier.offset(offset = {
+                        IntOffset(0, yOrigin.y.roundToInt() - 12.dp.roundToPx())
+                    })
+                )
+            } else null
         }
     }
 }
@@ -148,8 +152,7 @@ private fun <E> getSeriePoints(
     scale: Float,
     boundaries: Boundaries,
     scrollOffset: Float,
-): SerieScreen {
-
+): WindowSerie {
     val points = serie.seriePoints
         .map { getElementXY(it, size, boundaries, scrollOffset, scale) }
 
@@ -161,7 +164,7 @@ private fun <E> getSeriePoints(
     } else {
         points.firstOrNull { it.x in -0.1f..0.1f }
     }
-    return SerieScreen(points, yOrigin, serie.color, serie.label)
+    return WindowSerie(points, yOrigin, serie.color, serie.label)
 }
 
 
@@ -182,7 +185,7 @@ private fun <E> getElementXY(
 }
 
 data class Serie<E>(val seriePoints: List<DataPoint<E>>, val color: Color, val label: String)
-data class SerieScreen(
+data class WindowSerie(
     val points: List<Offset>,
     val yOrigin: Offset?,
     val color: Color,
