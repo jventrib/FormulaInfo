@@ -9,6 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.lerp
@@ -17,12 +18,14 @@ import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
+import logcat.logcat
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -33,49 +36,55 @@ fun <E> Chart(
     modifier: Modifier = Modifier,
     boundaries: Boundaries? = null
 ) {
-    var scrollOffset by remember { mutableStateOf(0f) }
-    var scale by remember { mutableStateOf(1f) }
-    var rotation by remember { mutableStateOf(0f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
-    val transformState = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
-        scale = (scale * zoomChange).coerceAtLeast(1f)
-        rotation += rotationChange
-        offset += offsetChange
-    }
-    var size by remember { mutableStateOf(Size.Zero) }
-    val screenCenterX = size.width / 2f
-    val scrollState = rememberScrollableState { delta ->
-        scrollOffset = scrollOffset.plus(delta / scale)
-        delta
-    }
+    BoxWithConstraints(modifier.fillMaxSize()) {
+        var scrollOffset by remember { mutableStateOf(0f) }
+        var scale by remember { mutableStateOf(1f) }
+        var rotation by remember { mutableStateOf(0f) }
+        var offset by remember { mutableStateOf(Offset.Zero) }
+        val transformState =
+            rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+                scale = (scale * zoomChange).coerceAtLeast(1f)
+                rotation += rotationChange
+                offset += offsetChange
+            }
+        val constraintSize = Size(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
+        var size by remember { mutableStateOf(constraintSize) }
+        val screenCenterX = size.width / 2f
+        val scrollState = rememberScrollableState { delta ->
+            scrollOffset = scrollOffset.plus(delta / scale)
+            delta
+        }
 
-    //Coerce scrollOffset at each recomposition, so zoom out always keep inside boundaries
-    scrollOffset = scrollOffset.coerceIn(
-        -screenCenterX + screenCenterX / scale,
-        screenCenterX - screenCenterX / scale
-    )
-    val adaptedBoundaries = getBoundaries(boundaries, series)
+//        logcat { "constraint size: $size, global size: $globalSize" }
 
-    val maxOf = series.maxOfOrNull { it.seriePoints.size } ?: 1
-    val pointAlpha = (20 * (scale - 1) / maxOf).coerceIn(0f, 1f)
+        //Coerce scrollOffset at each recomposition, so zoom out always keep inside boundaries
+        scrollOffset = scrollOffset.coerceIn(
+            -screenCenterX + screenCenterX / scale,
+            screenCenterX - screenCenterX / scale
+        )
+        val adaptedBoundaries = getBoundaries(boundaries, series)
 
-    val windowSeries = series.map { serie ->
-        getSeriePoints(serie, size, scale, adaptedBoundaries, scrollOffset)
-    }
+        val maxOf = series.maxOfOrNull { it.seriePoints.size } ?: 1
+        val pointAlpha = (20 * (scale - 1) / maxOf).coerceIn(0f, 1f)
 
-    Row {
-        YAxis(windowSeries)
-        Canvas(
-            modifier = modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(vertical = 16.dp, horizontal = 4.dp)
-                .scrollable(scrollState, Orientation.Horizontal)
-                .transformable(transformState)
-                .onGloballyPositioned { size = it.size.toSize() },
-        ) {
-            windowSeries.forEach { serieScreen ->
-                drawSerie(serieScreen.points, serieScreen.color, pointAlpha)
+        val windowSeries = series.map { serie ->
+            getSeriePoints(serie, size, scale, adaptedBoundaries, scrollOffset)
+        }
+
+        Row {
+            YAxis(windowSeries)
+            Canvas(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(vertical = 16.dp, horizontal = 4.dp)
+                    .scrollable(scrollState, Orientation.Horizontal)
+                    .transformable(transformState)
+                    .onGloballyPositioned { size = it.size.toSize() }
+            ) {
+                windowSeries.forEach { serieScreen ->
+                    drawSerie(serieScreen.points, serieScreen.color, pointAlpha)
+                }
             }
         }
     }
