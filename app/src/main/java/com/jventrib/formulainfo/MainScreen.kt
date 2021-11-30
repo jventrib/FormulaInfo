@@ -18,6 +18,7 @@ import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.laps.Laps
 import com.jventrib.formulainfo.ui.laps.LapsViewModel
 import com.jventrib.formulainfo.ui.results.LapChart
+import com.jventrib.formulainfo.ui.results.LapPositionChart
 import com.jventrib.formulainfo.ui.results.ResultsScreen
 import com.jventrib.formulainfo.ui.results.ResultsViewModel
 import com.jventrib.formulainfo.ui.schedule.ScheduleScreen
@@ -110,7 +111,7 @@ fun MainScreen() {
                 val round = navBackStackEntry.arguments?.get("round") as Int
 
 //                val graph by viewModel.resultsGraph.observeAsState(null)
-                val graph by viewModel.resultsGraph
+                val graph by viewModel.resultsWithLaps
                     .observeAsState(initial = mutableStateMapOf())
 
                 viewModel.season.value = season

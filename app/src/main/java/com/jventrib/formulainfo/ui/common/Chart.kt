@@ -34,7 +34,8 @@ import kotlin.random.Random
 fun <E> Chart(
     series: List<Serie<E>>,
     modifier: Modifier = Modifier,
-    boundaries: Boundaries? = null
+    boundaries: Boundaries? = null,
+    customDraw: DrawScope.(List<Serie<E>>) -> Unit = {}
 ) {
     BoxWithConstraints(modifier.fillMaxSize()) {
         var scrollOffset by remember { mutableStateOf(0f) }
@@ -83,15 +84,16 @@ fun <E> Chart(
                     .onGloballyPositioned { size = it.size.toSize() }
             ) {
                 windowSeries.forEach { serieScreen ->
-                    drawSerie(serieScreen.points, serieScreen.color, pointAlpha)
+                    drawSerie(serieScreen.seriePoints, serieScreen.color, pointAlpha)
                 }
+                customDraw(windowSeries)
             }
         }
     }
 }
 
 @Composable
-private fun YAxis(seriesPoints: List<WindowSerie>) {
+private fun <E> YAxis(seriesPoints: List<Serie<E>>) {
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxHeight()
@@ -140,19 +142,19 @@ private fun <E> getBoundaries(
     return vb
 }
 
-fun DrawScope.drawSerie(
-    points: List<Offset>,
+fun <E> DrawScope.drawSerie(
+    points: List<DataPoint<E>>,
     color: Color,
     alpha: Float,
 ) {
     drawPoints(
-        points,
+        points.map { it.offset },
         PointMode.Polygon,
         color,
         3.dp.toPx(),
         StrokeCap.Round,
     )
-    points.forEach { drawCircle(color = color, 4.dp.toPx(), it, alpha) }
+    points.forEach { drawCircle(color = color, 4.dp.toPx(), it.offset, alpha) }
 }
 
 private fun <E> getSeriePoints(
@@ -161,19 +163,25 @@ private fun <E> getSeriePoints(
     scale: Float,
     boundaries: Boundaries,
     scrollOffset: Float,
-): WindowSerie {
+): Serie<E> {
     val points = serie.seriePoints
-        .map { getElementXY(it, size, boundaries, scrollOffset, scale) }
+        .map { it.copy(offset = getElementXY(it, size, boundaries, scrollOffset, scale)) }
 
     val start = points.lastOrNull { it.x <= 0.1f }
     val stop = points.firstOrNull { it.x > 0.1f }
-    val yOrigin = if (start != null && stop != null) {
-        val fraction = start.x.absoluteValue / (stop.x - start.x)
-        lerp(start, stop, fraction)
-    } else {
-        points.firstOrNull { it.x in -0.1f..0.1f }
+    val yOrigin = when {
+        start?.y == stop?.y -> {
+            start?.offset
+        }
+        start?.offset != null && stop?.offset != null -> {
+            val fraction = start.x.absoluteValue / (stop.x - start.x)
+            lerp(start.offset, stop.offset, fraction)
+        }
+        else -> {
+            points.firstOrNull { it.x in -0.1f..0.1f }?.offset
+        }
     }
-    return WindowSerie(points, yOrigin, serie.color, serie.label)
+    return serie.copy(yOrigin = yOrigin, seriePoints = points)
 }
 
 
@@ -193,15 +201,15 @@ private fun <E> getElementXY(
     return Offset(x, y)
 }
 
-data class Serie<E>(val seriePoints: List<DataPoint<E>>, val color: Color, val label: String)
-data class WindowSerie(
-    val points: List<Offset>,
-    val yOrigin: Offset?,
+data class Serie<E>(
+    val seriePoints: List<DataPoint<E>>,
     val color: Color,
-    val label: String
+    val label: String,
+    val yOrigin: Offset? = null
 )
 
-data class DataPoint<E>(val x: Float, val y: Float, val element: E?)
+
+data class DataPoint<E>(val x: Float, val y: Float, val element: E?, val offset: Offset = Offset.Unspecified)
 
 data class Boundaries(
     val minX: Float? = null,

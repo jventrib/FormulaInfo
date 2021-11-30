@@ -52,30 +52,11 @@ fun LapChart(lapsByResult: Map<Result, List<Lap>>) {
             )
         },
     ) {
-
-        val lapsWithStart = getLapsWithStart(lapsByResult)
-
-        val series = lapsWithStart.map { entry ->
-            Serie(
-                entry.value.map { lap ->
-                    DataPoint(
-                        lap.number.toFloat(),
-                        lap.position.toFloat(),
-                        lap
-                    )
-                },
-                teamColor[entry.key.constructor.id]!!,
-                entry.key.driver.code ?: entry.key.driver.driverId
-            )
-        }
-
-        Chart(
-            series = series,
-        )
+        LapTimeChart(lapsByResult = lapsByResult)
     }
 }
 
-private fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result, List<Lap>> =
+internal fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result, List<Lap>> =
     lapsByResult
         .mapValues { entry ->
             entry.value
@@ -101,32 +82,5 @@ private fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result, 
 @Composable
 fun LapChartPreview() {
     val lapsWithStart = getLapsWithStart(ResultSample.getLapsPerResults())
-    val series = lapsWithStart.map { entry ->
-        Serie(
-            entry.value.map { lap ->
-                DataPoint(
-                    lap.number.toFloat(),
-                    lap.position.toFloat(),
-                    lap
-                )
-            },
-            teamColor[entry.key.constructor.id]!!,
-            entry.key.driver.code ?: entry.key.driver.driverId
-        )
-    }
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .border(3.dp, Color.Blue)
-    ) {
-        Chart(
-            series = series,
-            modifier = Modifier
-                .fillMaxHeight(1f)
-                .border(2.dp, Color.Red),
-            boundaries = Boundaries(minX = 1f, maxY = 19f)
-        )
-    }
-//    Chart(map, maxYValue = lapsWithStart.size.toFloat())
+    LapChart(lapsByResult = lapsWithStart)
 }
