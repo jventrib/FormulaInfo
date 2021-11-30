@@ -155,7 +155,7 @@ class RaceRepository(
             .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
 
 
-    fun getResultGraph(
+    fun getResultsWithLaps(
         season: Int,
         round: Int,
     ) = getResults(season, round)

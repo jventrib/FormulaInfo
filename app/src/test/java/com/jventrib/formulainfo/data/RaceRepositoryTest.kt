@@ -175,7 +175,7 @@ class RaceRepositoryTest : TestCase() {
         val resultGraph = RaceRepository(
             MockRoomData(resultDao = resultDao, lapDao = lapTimeDao),
             raceRemoteDataSource, context = mockk()
-        ).getResultGraph(2021, 1)
+        ).getResultsWithLaps(2021, 1)
         runBlocking {
             resultGraph.collect {
                 println(it)

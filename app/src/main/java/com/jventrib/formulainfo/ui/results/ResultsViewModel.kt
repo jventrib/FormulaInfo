@@ -8,12 +8,9 @@ import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.result.getResultSample
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import logcat.logcat
-import java.time.Duration
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,10 +37,10 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
             } ?: MutableLiveData(StoreResponse.Loading(ResponseOrigin.Fetcher))
         }
 
-    val resultsGraph =
+    val resultsWithLaps =
         round.distinctUntilChanged().switchMap {
             it?.let {
-                repository.getResultGraph(season.value!!, it)
+                repository.getResultsWithLaps(season.value!!, it)
 //                    .map { it.toMap() }
                     .onEach { logcat { "Map $it" } }
                     .asLiveData()
