@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.results
+package com.jventrib.formulainfo.ui.common
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -9,7 +9,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.lerp
@@ -18,14 +17,12 @@ import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
-import logcat.logcat
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -167,15 +164,16 @@ private fun <E> getSeriePoints(
     val points = serie.seriePoints
         .map { it.copy(offset = getElementXY(it, size, boundaries, scrollOffset, scale)) }
 
-    val start = points.lastOrNull { it.x <= 0.1f }
-    val stop = points.firstOrNull { it.x > 0.1f }
+    val pointsOffset = points.map { it.offset }
+    val start = pointsOffset.lastOrNull { it.x <= 0.1f }
+    val stop = pointsOffset.firstOrNull { it.x > 0.1f }
     val yOrigin = when {
         start?.y == stop?.y -> {
-            start?.offset
+            start
         }
-        start?.offset != null && stop?.offset != null -> {
+        start != null && stop != null -> {
             val fraction = start.x.absoluteValue / (stop.x - start.x)
-            lerp(start.offset, stop.offset, fraction)
+            lerp(start, stop, fraction)
         }
         else -> {
             points.firstOrNull { it.x in -0.1f..0.1f }?.offset

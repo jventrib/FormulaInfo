@@ -1,17 +1,10 @@
 package com.jventrib.formulainfo.ui.results
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
@@ -20,12 +13,10 @@ import androidx.compose.ui.unit.dp
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.ui.drivers.DriverSelector
-import com.jventrib.formulainfo.ui.drivers.customShape
+import com.jventrib.formulainfo.ui.common.Chart
+import com.jventrib.formulainfo.ui.common.DataPoint
+import com.jventrib.formulainfo.ui.common.Serie
 import com.jventrib.formulainfo.ui.theme.teamColor
-import kotlinx.coroutines.launch
-import java.time.Duration
-
 
 @Composable
 fun LapTimeChart(lapsByResult: Map<Result, List<Lap>>) {
