@@ -45,6 +45,7 @@ fun LapChartMenu(
     ) {
         ChartItem(onChartSelectAndClose, Charts.Position)
         ChartItem(onChartSelectAndClose, Charts.Time)
+        ChartItem(onChartSelectAndClose, Charts.LapsPerTime)
     }
 
 }
