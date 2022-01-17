@@ -17,6 +17,7 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.Chart
 import com.jventrib.formulainfo.ui.common.DataPoint
 import com.jventrib.formulainfo.ui.common.Serie
+import com.jventrib.formulainfo.ui.common.YOrientation
 import com.jventrib.formulainfo.ui.results.getLapsWithStart
 import com.jventrib.formulainfo.ui.theme.teamColor
 
@@ -48,7 +49,10 @@ fun LapTimeChart(lapsByResult: Map<Result, List<Lap>>) {
         )
     }
 
-    Chart(series = series) { series ->
+    Chart(
+        series = series,
+        yOrientation = YOrientation.Down,
+    ) { series ->
         series
             .flatMap { it.seriePoints }
             .groupBy { it.element?.number }

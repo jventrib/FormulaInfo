@@ -10,15 +10,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.ui.common.Chart
-import com.jventrib.formulainfo.ui.common.DataPoint
-import com.jventrib.formulainfo.ui.common.Serie
+import com.jventrib.formulainfo.ui.common.*
 import com.jventrib.formulainfo.ui.results.getLapsWithStart
 import com.jventrib.formulainfo.ui.theme.teamColor
+import java.time.Duration
 
 
 @Composable
-fun LapPerTimeChart(lapsByResult: Map<Result, List<Lap>>) {
+fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     val selectState = remember(lapsByResult) {
@@ -29,14 +28,16 @@ fun LapPerTimeChart(lapsByResult: Map<Result, List<Lap>>) {
 
     val lapsWithStart = getLapsWithStart(lapsByResult)
 
+    val leaderLaps = lapsWithStart.values.flatten().filter { l -> l.position == 1 }
+        .sortedBy { it.number }
     val series = lapsWithStart.map { entry ->
         Serie(
-            entry.value.take(5).map { lap ->
+            entry.value.mapIndexed { index, lap ->
                 DataPoint(
                     lap,
                     Offset(
                         lap.number.toFloat(),
-                        lap.total.toMillis().toFloat()
+                        (lap.total.toMillis() - leaderLaps[index].total.toMillis()).toFloat()
                     )
                 )
             },
@@ -47,13 +48,15 @@ fun LapPerTimeChart(lapsByResult: Map<Result, List<Lap>>) {
 
     Chart(
         series = series,
+        boundaries = Boundaries(maxY = Duration.ofMinutes(1).toMillis().toFloat()),
+        yOrientation = YOrientation.Down
     )
 }
 
 
 @Preview(showSystemUi = false)
 @Composable
-fun LapPerTimeChartPreview() {
+fun LeaderIntervalChartPreview() {
     val lapsWithStart = getLapsWithStart(ResultSample.getLapsPerResults())
-    LapPerTimeChart(lapsByResult = lapsWithStart)
+    LeaderIntervalChart(lapsByResult = lapsWithStart)
 }
