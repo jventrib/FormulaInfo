@@ -120,19 +120,19 @@ private fun <E> getBoundaries(
 ): Boundaries {
     val minX =
         boundaries?.minX ?: series.filterNot { it.seriePoints.isEmpty() }.minOfOrNull { serie ->
-            serie.seriePoints.minOfOrNull { it.x } ?: 0f
+            serie.seriePoints.minOfOrNull { it.offset.x } ?: 0f
         } ?: 0f
     val maxX =
         boundaries?.maxX ?: series.filterNot { it.seriePoints.isEmpty() }.maxOfOrNull { serie ->
-            serie.seriePoints.maxOfOrNull { it.x } ?: 0f
+            serie.seriePoints.maxOfOrNull { it.offset.x } ?: 0f
         } ?: 0f
     val minY =
         boundaries?.minY ?: series.filterNot { it.seriePoints.isEmpty() }.minOfOrNull { serie ->
-            serie.seriePoints.minOfOrNull { it.y } ?: 0f
+            serie.seriePoints.minOfOrNull { it.offset.y } ?: 0f
         } ?: 0f
     val maxY =
         boundaries?.maxY ?: series.filterNot { it.seriePoints.isEmpty() }.maxOfOrNull { serie ->
-            serie.seriePoints.maxOfOrNull { it.y } ?: 0f
+            serie.seriePoints.maxOfOrNull { it.offset.y } ?: 0f
         } ?: 0f
 
     val vb = Boundaries(minX, maxX, minY, maxY)
@@ -176,7 +176,7 @@ private fun <E> getSeriePoints(
             lerp(start, stop, fraction)
         }
         else -> {
-            points.firstOrNull { it.x in -0.1f..0.1f }?.offset
+            pointsOffset.firstOrNull { it.x in -0.1f..0.1f }
         }
     }
     return serie.copy(yOrigin = yOrigin, seriePoints = points)
@@ -190,8 +190,8 @@ private fun <E> getElementXY(
     scrollOffset: Float,
     scale: Float
 ): Offset {
-    val xFraction = boundaries.run { (dataPoint.x - minX!!) / (maxX!! - minX) }
-    val yFraction = boundaries.run { (dataPoint.y - minY!!) / (maxY!! - minY) }
+    val xFraction = boundaries.run { (dataPoint.offset.x - minX!!) / (maxX!! - minX) }
+    val yFraction = boundaries.run { (dataPoint.offset.y - minY!!) / (maxY!! - minY) }
     val screenCenterX = size.width / 2f
     val lerp = lerp(-screenCenterX, screenCenterX, xFraction)
     val x = (lerp + scrollOffset) * scale + screenCenterX
@@ -207,7 +207,7 @@ data class Serie<E>(
 )
 
 
-data class DataPoint<E>(val x: Float, val y: Float, val element: E?, val offset: Offset = Offset.Unspecified)
+data class DataPoint<E>(val element: E?, val offset: Offset = Offset.Unspecified)
 
 data class Boundaries(
     val minX: Float? = null,
@@ -222,7 +222,7 @@ fun ChartPreview() {
     val series = (0..5).map {
         Serie(
             (0..10).map {
-                DataPoint(it.toFloat(), Random.nextInt(20).toFloat(), "TEST")
+                DataPoint("TEST", Offset(it.toFloat(), Random.nextInt(20).toFloat()))
             }, Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()),
             "TEST"
         )

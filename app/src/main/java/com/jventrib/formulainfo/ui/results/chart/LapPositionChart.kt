@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
@@ -35,9 +36,11 @@ fun LapPositionChart(lapsByResult: Map<Result, List<Lap>>) {
         Serie(
             entry.value.map { lap ->
                 DataPoint(
-                    lap.number.toFloat(),
-                    lap.position.toFloat(),
-                    lap
+                    lap,
+                    Offset(
+                        lap.number.toFloat(),
+                        lap.position.toFloat()
+                    )
                 )
             },
             teamColor[entry.key.constructor.id]!!,

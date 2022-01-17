@@ -31,16 +31,14 @@ fun LapChart(lapsByResult: Map<Result, List<Lap>>) {
             )
         },
     ) {
-        when (selectedChart) {
-            Charts.Time -> LapTimeChart(lapsByResult = lapsByResult)
-            Charts.Position -> LapPositionChart(lapsByResult = lapsByResult)
-        }
+        selectedChart.compose(lapsByResult)
     }
 }
 
-enum class Charts(val label: String) {
-    Position("Position by lap"), Time("Time by lap")
-
+enum class Charts(val label: String, val compose: @Composable (Map<Result, List<Lap>>) -> Unit) {
+    Position("Position by lap", { LapPositionChart(it) }),
+    Time("Time by lap", { LapTimeChart(it) }),
+    LapsPerTime("Lap by Time", { LapPerTimeChart(it) })
 }
 
 internal fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result, List<Lap>> =
