@@ -10,7 +10,7 @@ import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.RaceInfo
 import com.jventrib.formulainfo.model.remote.RaceRemote
-import com.jventrib.formulainfo.result.getResultSample
+import com.jventrib.formulainfo.ui.results.getResultSample
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

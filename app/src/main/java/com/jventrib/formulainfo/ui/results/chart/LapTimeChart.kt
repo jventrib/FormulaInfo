@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.results
+package com.jventrib.formulainfo.ui.results.chart
 
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -17,6 +17,7 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.Chart
 import com.jventrib.formulainfo.ui.common.DataPoint
 import com.jventrib.formulainfo.ui.common.Serie
+import com.jventrib.formulainfo.ui.results.getLapsWithStart
 import com.jventrib.formulainfo.ui.theme.teamColor
 
 @Composable

@@ -19,8 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.Lap
-import com.jventrib.formulainfo.result.DriverResult
-import com.jventrib.formulainfo.result.getResultSample
+import com.jventrib.formulainfo.ui.results.DriverResult
+import com.jventrib.formulainfo.ui.results.getResultSample
 import com.jventrib.formulainfo.ui.theme.LightLightGrey
 import java.time.Duration
 import java.time.LocalTime
