@@ -18,7 +18,6 @@ import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.laps.Laps
 import com.jventrib.formulainfo.ui.laps.LapsViewModel
 import com.jventrib.formulainfo.ui.results.LapChart
-import com.jventrib.formulainfo.ui.results.LapPositionChart
 import com.jventrib.formulainfo.ui.results.ResultsScreen
 import com.jventrib.formulainfo.ui.results.ResultsViewModel
 import com.jventrib.formulainfo.ui.schedule.ScheduleScreen

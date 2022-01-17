@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MultilineChart
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -25,7 +24,6 @@ import com.jventrib.formulainfo.getRaceSample
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.result.DriverResult
 import com.jventrib.formulainfo.ui.common.components.Image
 import com.jventrib.formulainfo.ui.schedule.item.Race
 import logcat.LogPriority

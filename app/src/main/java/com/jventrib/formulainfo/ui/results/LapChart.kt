@@ -6,6 +6,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.ui.results.chart.LapPerTimeChart
+import com.jventrib.formulainfo.ui.results.chart.LapPositionChart
+import com.jventrib.formulainfo.ui.results.chart.LapTimeChart
 import java.time.Duration
 
 
