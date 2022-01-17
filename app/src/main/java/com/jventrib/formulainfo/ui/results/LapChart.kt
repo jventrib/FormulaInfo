@@ -6,7 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.ui.results.chart.LapPerTimeChart
+import com.jventrib.formulainfo.ui.results.chart.LeaderIntervalChart
 import com.jventrib.formulainfo.ui.results.chart.LapPositionChart
 import com.jventrib.formulainfo.ui.results.chart.LapTimeChart
 import java.time.Duration
@@ -41,7 +41,7 @@ fun LapChart(lapsByResult: Map<Result, List<Lap>>) {
 enum class Charts(val label: String, val compose: @Composable (Map<Result, List<Lap>>) -> Unit) {
     Position("Position by lap", { LapPositionChart(it) }),
     Time("Time by lap", { LapTimeChart(it) }),
-    LapsPerTime("Lap by Time", { LapPerTimeChart(it) })
+    LapsPerTime("Leader Interval", { LeaderIntervalChart(it) })
 }
 
 internal fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result, List<Lap>> =

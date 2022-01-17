@@ -32,6 +32,7 @@ fun <E> Chart(
     series: List<Serie<E>>,
     modifier: Modifier = Modifier,
     boundaries: Boundaries? = null,
+    yOrientation: YOrientation,
     customDraw: DrawScope.(List<Serie<E>>) -> Unit = {}
 ) {
     BoxWithConstraints(modifier.fillMaxSize()) {
@@ -66,7 +67,7 @@ fun <E> Chart(
         val pointAlpha = (20 * (scale - 1) / maxOf).coerceIn(0f, 1f)
 
         val windowSeries = series.map { serie ->
-            getSeriePoints(serie, size, scale, adaptedBoundaries, scrollOffset)
+            getSeriePoints(serie, size, scale, adaptedBoundaries, scrollOffset, yOrientation)
         }
 
         Row {
@@ -160,9 +161,10 @@ private fun <E> getSeriePoints(
     scale: Float,
     boundaries: Boundaries,
     scrollOffset: Float,
+    yOrientation: YOrientation,
 ): Serie<E> {
     val points = serie.seriePoints
-        .map { it.copy(offset = getElementXY(it, size, boundaries, scrollOffset, scale)) }
+        .map { it.copy(offset = getElementXY(it, size, boundaries, scrollOffset, scale, yOrientation)) }
 
     val pointsOffset = points.map { it.offset }
     val start = pointsOffset.lastOrNull { it.x <= 0.1f }
@@ -188,14 +190,18 @@ private fun <E> getElementXY(
     size: Size,
     boundaries: Boundaries,
     scrollOffset: Float,
-    scale: Float
+    scale: Float,
+    yOrientation: YOrientation
 ): Offset {
     val xFraction = boundaries.run { (dataPoint.offset.x - minX!!) / (maxX!! - minX) }
     val yFraction = boundaries.run { (dataPoint.offset.y - minY!!) / (maxY!! - minY) }
     val screenCenterX = size.width / 2f
     val lerp = lerp(-screenCenterX, screenCenterX, xFraction)
     val x = (lerp + scrollOffset) * scale + screenCenterX
-    val y = lerp(0f, size.height, yFraction)
+    val y = when (yOrientation) {
+        YOrientation.Down -> lerp(0f, size.height, yFraction)
+        YOrientation.Up -> lerp(size.height, 0f, yFraction)
+    }
     return Offset(x, y)
 }
 
@@ -238,7 +244,11 @@ fun ChartPreview() {
             series = series,
             modifier = Modifier
                 .fillMaxHeight(1f)
-                .border(2.dp, Color.Red),
+                .border(2.dp, Color.Red), yOrientation = YOrientation.Down
         )
     }
+}
+
+enum class YOrientation {
+    Up, Down
 }
