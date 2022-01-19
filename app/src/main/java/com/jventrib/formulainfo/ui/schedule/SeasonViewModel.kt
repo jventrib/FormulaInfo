@@ -15,7 +15,8 @@ class SeasonViewModel @Inject constructor(private val repository: RaceRepository
 
     val seasonList = (1950..Year.now().value).toList().reversed()
 
-    val season = MutableLiveData(Year.now().value)
+    val season = MutableLiveData(2021)
+//    val season = MutableLiveData(Year.now().value)
 
     val round: MutableLiveData<Int?> = MutableLiveData(null)
 
