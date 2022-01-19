@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
+import com.madrapps.plot.detectDragZoomGesture
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -36,24 +38,13 @@ fun <E> Chart(
     customDraw: DrawScope.(List<Serie<E>>) -> Unit = {}
 ) {
     BoxWithConstraints(modifier.fillMaxSize()) {
-        var scrollOffset by remember { mutableStateOf(Offset.Zero) }
-        var scale by remember { mutableStateOf(1f) }
+        var scrollOffset by remember { mutableStateOf(Offset(1f, 1f)) }
+        var scale by remember { mutableStateOf(2f) }
         var rotation by remember { mutableStateOf(0f) }
-        val transformState =
-            rememberTransformableState { zoomChange, offsetChange, rotationChange ->
-                scale = (scale * zoomChange).coerceAtLeast(1f)
-                rotation += rotationChange
-                scrollOffset += offsetChange / scale
-            }
         val constraintSize = Size(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
         var size by remember { mutableStateOf(constraintSize) }
         val screenCenterX = size.width / 2f
-        val scrollState = rememberScrollableState { delta ->
-            scrollOffset = scrollOffset.copy(scrollOffset.x.plus(delta / scale))
-            delta
-        }
-
-//        logcat { "constraint size: $size, global size: $globalSize" }
+        val screenCenterY = size.height / 2f
 
         //Coerce scrollOffset at each recomposition, so zoom out always keep inside boundaries
         scrollOffset = scrollOffset.let {
@@ -61,7 +52,10 @@ fun <E> Chart(
                 it.x.coerceIn(
                     -screenCenterX + screenCenterX / scale,
                     screenCenterX - screenCenterX / scale
-                ), it.y
+                ), it.y.coerceIn(
+                    -screenCenterY + screenCenterY / scale,
+                    screenCenterY - screenCenterY / scale
+                )
             )
         }
         val adaptedBoundaries = getBoundaries(boundaries, series)
@@ -80,8 +74,13 @@ fun <E> Chart(
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .padding(vertical = 16.dp, horizontal = 4.dp)
-                    .scrollable(scrollState, Orientation.Horizontal)
-                    .transformable(transformState)
+                    .pointerInput(Unit) {
+                        detectTransformGestures { _, offsetChange, zoomChange, rotationChange ->
+                            scale = (scale * zoomChange).coerceAtLeast(1f)
+                            rotation += rotationChange
+                            scrollOffset += offsetChange / scale
+                        }
+                    }
                     .onGloballyPositioned { size = it.size.toSize() }
             ) {
                 windowSeries.forEach { serieScreen ->
@@ -211,12 +210,14 @@ private fun <E> getElementXY(
     val xFraction = boundaries.run { (dataPoint.offset.x - minX!!) / (maxX!! - minX) }
     val yFraction = boundaries.run { (dataPoint.offset.y - minY!!) / (maxY!! - minY) }
     val screenCenterX = size.width / 2f
-    val lerp = lerp(-screenCenterX, screenCenterX, xFraction)
-    val x = (lerp + scrollOffset.x) * scale + screenCenterX
-    val y = when (yOrientation) {
-        YOrientation.Down -> lerp(0f, size.height, yFraction)
-        YOrientation.Up -> lerp(size.height, 0f, yFraction)
+    val screenCenterY = size.height / 2f
+    val lerpX = lerp(-screenCenterX, screenCenterX, xFraction)
+    val x = (lerpX + scrollOffset.x) * scale + screenCenterX
+    val lerpY = when (yOrientation) {
+        YOrientation.Down -> lerp(-screenCenterY, screenCenterY, yFraction)
+        YOrientation.Up -> lerp(screenCenterY, -screenCenterY, yFraction)
     }
+    val y = (lerpY + scrollOffset.y) * scale + screenCenterY
     return Offset(x, y)
 }
 
