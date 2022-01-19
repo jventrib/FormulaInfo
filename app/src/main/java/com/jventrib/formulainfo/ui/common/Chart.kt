@@ -39,7 +39,7 @@ fun <E> Chart(
 ) {
     BoxWithConstraints(modifier.fillMaxSize()) {
         var scrollOffset by remember { mutableStateOf(Offset(1f, 1f)) }
-        var scale by remember { mutableStateOf(2f) }
+        var scale by remember { mutableStateOf(Offset(1f, 1f)) }
         var rotation by remember { mutableStateOf(0f) }
         val constraintSize = Size(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
         var size by remember { mutableStateOf(constraintSize) }
@@ -50,18 +50,18 @@ fun <E> Chart(
         scrollOffset = scrollOffset.let {
             Offset(
                 it.x.coerceIn(
-                    -screenCenterX + screenCenterX / scale,
-                    screenCenterX - screenCenterX / scale
+                    -screenCenterX + screenCenterX / scale.x,
+                    screenCenterX - screenCenterX / scale.x
                 ), it.y.coerceIn(
-                    -screenCenterY + screenCenterY / scale,
-                    screenCenterY - screenCenterY / scale
+                    -screenCenterY + screenCenterY / scale.y,
+                    screenCenterY - screenCenterY / scale.y
                 )
             )
         }
         val adaptedBoundaries = getBoundaries(boundaries, series)
 
         val maxOf = series.maxOfOrNull { it.seriePoints.size } ?: 1
-        val pointAlpha = (20 * (scale - 1) / maxOf).coerceIn(0f, 1f)
+        val pointAlpha = (20 * (scale.getDistance() - 1) / maxOf).coerceIn(0f, 1f)
 
         val windowSeries = series.map { serie ->
             getSeriePoints(serie, size, scale, adaptedBoundaries, scrollOffset, yOrientation)
@@ -75,8 +75,10 @@ fun <E> Chart(
                     .fillMaxHeight()
                     .padding(vertical = 16.dp, horizontal = 4.dp)
                     .pointerInput(Unit) {
-                        detectTransformGestures { _, offsetChange, zoomChange, rotationChange ->
-                            scale = (scale * zoomChange).coerceAtLeast(1f)
+                        detectTransformGesturesXY { _, offsetChange, zoomChange, rotationChange ->
+                            println("zoomChange: $zoomChange")
+                            scale =
+                                abs(scale * zoomChange.coerceAtMost(Offset(2f,2f))).coerceIn(Offset(1f, 1f), Offset(50f, 25f))
                             rotation += rotationChange
                             scrollOffset += offsetChange / scale
                         }
@@ -91,6 +93,7 @@ fun <E> Chart(
         }
     }
 }
+
 
 
 @Composable
@@ -161,7 +164,7 @@ fun <E> DrawScope.drawSerie(
 private fun <E> getSeriePoints(
     serie: Serie<E>,
     size: Size,
-    scale: Float,
+    scale: Offset,
     boundaries: Boundaries,
     scrollOffset: Offset,
     yOrientation: YOrientation,
@@ -204,7 +207,7 @@ private fun <E> getElementXY(
     size: Size,
     boundaries: Boundaries,
     scrollOffset: Offset,
-    scale: Float,
+    scale: Offset,
     yOrientation: YOrientation
 ): Offset {
     val xFraction = boundaries.run { (dataPoint.offset.x - minX!!) / (maxX!! - minX) }
@@ -212,12 +215,12 @@ private fun <E> getElementXY(
     val screenCenterX = size.width / 2f
     val screenCenterY = size.height / 2f
     val lerpX = lerp(-screenCenterX, screenCenterX, xFraction)
-    val x = (lerpX + scrollOffset.x) * scale + screenCenterX
+    val x = (lerpX + scrollOffset.x) * scale.x + screenCenterX
     val lerpY = when (yOrientation) {
         YOrientation.Down -> lerp(-screenCenterY, screenCenterY, yFraction)
         YOrientation.Up -> lerp(screenCenterY, -screenCenterY, yFraction)
     }
-    val y = (lerpY + scrollOffset.y) * scale + screenCenterY
+    val y = (lerpY + scrollOffset.y) * scale.y + screenCenterY
     return Offset(x, y)
 }
 

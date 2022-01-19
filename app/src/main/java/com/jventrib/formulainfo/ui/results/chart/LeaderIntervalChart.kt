@@ -28,6 +28,11 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
 
     val lapsWithStart = getLapsWithStart(lapsByResult)
 
+
+    val lapCount = lapsWithStart.keys.maxOf { it.resultInfo.laps }
+    val secondLastLaps = lapsWithStart.values.mapNotNull { it.getOrNull(lapCount - 2) }
+
+    val longestTime = secondLastLaps.maxOf { it.total.toMillis() }
     val leaderLaps = lapsWithStart.values.flatten().filter { l -> l.position == 1 }
         .sortedBy { it.number }
     val series = lapsWithStart.map { entry ->
@@ -48,7 +53,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
 
     Chart(
         series = series,
-        boundaries = Boundaries(maxY = Duration.ofMinutes(1).toMillis().toFloat()),
+        boundaries = Boundaries(maxY = (longestTime - leaderLaps[lapCount - 2].total.toMillis()).toFloat()),
         yOrientation = YOrientation.Down
     )
 }
