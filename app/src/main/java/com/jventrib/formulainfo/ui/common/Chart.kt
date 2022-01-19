@@ -36,31 +36,34 @@ fun <E> Chart(
     customDraw: DrawScope.(List<Serie<E>>) -> Unit = {}
 ) {
     BoxWithConstraints(modifier.fillMaxSize()) {
-        var scrollOffset by remember { mutableStateOf(0f) }
+        var scrollOffset by remember { mutableStateOf(Offset.Zero) }
         var scale by remember { mutableStateOf(1f) }
         var rotation by remember { mutableStateOf(0f) }
-        var offset by remember { mutableStateOf(Offset.Zero) }
         val transformState =
             rememberTransformableState { zoomChange, offsetChange, rotationChange ->
                 scale = (scale * zoomChange).coerceAtLeast(1f)
                 rotation += rotationChange
-                offset += offsetChange
+                scrollOffset += offsetChange / scale
             }
         val constraintSize = Size(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
         var size by remember { mutableStateOf(constraintSize) }
         val screenCenterX = size.width / 2f
         val scrollState = rememberScrollableState { delta ->
-            scrollOffset = scrollOffset.plus(delta / scale)
+            scrollOffset = scrollOffset.copy(scrollOffset.x.plus(delta / scale))
             delta
         }
 
 //        logcat { "constraint size: $size, global size: $globalSize" }
 
         //Coerce scrollOffset at each recomposition, so zoom out always keep inside boundaries
-        scrollOffset = scrollOffset.coerceIn(
-            -screenCenterX + screenCenterX / scale,
-            screenCenterX - screenCenterX / scale
-        )
+        scrollOffset = scrollOffset.let {
+            Offset(
+                it.x.coerceIn(
+                    -screenCenterX + screenCenterX / scale,
+                    screenCenterX - screenCenterX / scale
+                ), it.y
+            )
+        }
         val adaptedBoundaries = getBoundaries(boundaries, series)
 
         val maxOf = series.maxOfOrNull { it.seriePoints.size } ?: 1
@@ -89,6 +92,7 @@ fun <E> Chart(
         }
     }
 }
+
 
 @Composable
 private fun <E> YAxis(seriesPoints: List<Serie<E>>) {
@@ -160,11 +164,22 @@ private fun <E> getSeriePoints(
     size: Size,
     scale: Float,
     boundaries: Boundaries,
-    scrollOffset: Float,
+    scrollOffset: Offset,
     yOrientation: YOrientation,
 ): Serie<E> {
     val points = serie.seriePoints
-        .map { it.copy(offset = getElementXY(it, size, boundaries, scrollOffset, scale, yOrientation)) }
+        .map {
+            it.copy(
+                offset = getElementXY(
+                    it,
+                    size,
+                    boundaries,
+                    scrollOffset,
+                    scale,
+                    yOrientation
+                )
+            )
+        }
 
     val pointsOffset = points.map { it.offset }
     val start = pointsOffset.lastOrNull { it.x <= 0.1f }
@@ -189,7 +204,7 @@ private fun <E> getElementXY(
     dataPoint: DataPoint<E>,
     size: Size,
     boundaries: Boundaries,
-    scrollOffset: Float,
+    scrollOffset: Offset,
     scale: Float,
     yOrientation: YOrientation
 ): Offset {
@@ -197,7 +212,7 @@ private fun <E> getElementXY(
     val yFraction = boundaries.run { (dataPoint.offset.y - minY!!) / (maxY!! - minY) }
     val screenCenterX = size.width / 2f
     val lerp = lerp(-screenCenterX, screenCenterX, xFraction)
-    val x = (lerp + scrollOffset) * scale + screenCenterX
+    val x = (lerp + scrollOffset.x) * scale + screenCenterX
     val y = when (yOrientation) {
         YOrientation.Down -> lerp(0f, size.height, yFraction)
         YOrientation.Up -> lerp(size.height, 0f, yFraction)
