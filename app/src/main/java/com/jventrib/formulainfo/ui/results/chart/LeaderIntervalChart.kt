@@ -54,7 +54,8 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
     Chart(
         series = series,
         boundaries = Boundaries(maxY = (longestTime - leaderLaps[anteLastLap].total.toMillis()).toFloat()),
-        yOrientation = YOrientation.Down
+        yOrientation = YOrientation.Down,
+        gridStep = Offset(10f, 5000f)
     )
 }
 

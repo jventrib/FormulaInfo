@@ -43,9 +43,9 @@ fun LapChartMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false }
     ) {
-        ChartItem(onChartSelectAndClose, Charts.Position)
-        ChartItem(onChartSelectAndClose, Charts.Time)
-        ChartItem(onChartSelectAndClose, Charts.LapsPerTime)
+        Charts.values().forEach {
+            ChartItem(onChartSelectAndClose, it)
+        }
     }
 
 }
