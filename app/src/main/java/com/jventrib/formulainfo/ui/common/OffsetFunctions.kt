@@ -7,6 +7,10 @@ operator fun Offset.div(other: Offset): Offset {
     return Offset(this.x / other.x, this.y / other.y)
 }
 
+operator fun Offset.rem(other: Offset): Offset {
+    return Offset(this.x % other.x, this.y % other.y)
+}
+
 operator fun Offset.times(other: Offset): Offset {
     return Offset(this.x * other.x, this.y * other.y)
 }

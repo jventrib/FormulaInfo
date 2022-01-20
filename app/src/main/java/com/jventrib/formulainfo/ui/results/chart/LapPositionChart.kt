@@ -47,7 +47,7 @@ fun LapPositionChart(lapsByResult: Map<Result, List<Lap>>) {
     }
 
     Chart(
-        series = series, yOrientation = YOrientation.Down,
+        series = series, yOrientation = YOrientation.Down, gridStep = Offset(10f, 1f),
     )
 }
 

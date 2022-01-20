@@ -116,7 +116,9 @@ fun MainScreen() {
                 viewModel.season.value = season
                 viewModel.round.value = round
                 graph?.let {
-                    LapChart(lapsByResult = it)
+                    if (it.isNotEmpty()) {
+                        LapChart(lapsByResult = it)
+                    }
                 }
             }
             composable("about") { About() }
