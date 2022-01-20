@@ -41,7 +41,7 @@ fun LapPositionChart(lapsByResult: Map<Result, List<Lap>>) {
                     )
                 )
             },
-            teamColor[entry.key.constructor.id]!!,
+            teamColor.getValue(entry.key.constructor.id),
             entry.key.driver.code ?: entry.key.driver.driverId
         )
     }
