@@ -6,10 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +18,7 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.ui.results.DriverResult
 import com.jventrib.formulainfo.ui.results.getResultSample
+import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import com.jventrib.formulainfo.ui.theme.LightLightGrey
 import java.time.Duration
 import java.time.LocalTime
@@ -72,7 +70,7 @@ fun Laps(result: Result, laps: List<Lap>) {
                         Modifier
                             .fillMaxWidth()
                             .border(.5.dp, Color.Black)
-                            .background(if (index % 2 == 1) Color.White else LightLightGrey)
+                            .background(if (index % 2 == 1) MaterialTheme.colors.background else MaterialTheme.colors.surface)
                             .padding(4.dp)
                     ) {
                         Column(
@@ -101,6 +99,19 @@ fun Laps(result: Result, laps: List<Lap>) {
 @Preview
 @Composable
 fun LapsPreview() {
+    getLaps()
+}
+
+@Preview
+@Composable
+fun LapsDarkPreview() {
+    FormulaInfoTheme(darkTheme = true) {
+        getLaps()
+    }
+}
+
+@Composable
+private fun getLaps() {
     var i = 0
     Laps(
         getResultSample("verstappen", 1),
@@ -132,7 +143,6 @@ fun LapsPreview() {
             lap(++i, Random.nextLong(120000)),
         )
     )
-
 }
 
 private fun lap(

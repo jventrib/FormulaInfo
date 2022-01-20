@@ -11,6 +11,7 @@ val Red = Color(0xFFBD0D01)
 val RedDark = Color(0xFF812019)
 val Purple = Color(0xFF3F51B5)
 val LightLightGrey = Color(0xFFEEEEEE)
+val DarkDarkGrey = Color(0xFF111111)
 
 val teamColor = mapOf(
     "mercedes" to Color(0xFF00D2BE),
@@ -23,4 +24,4 @@ val teamColor = mapOf(
     "williams" to Color(0xFF0082FA),
     "red_bull" to Color(0xFF0600EF),
     "haas" to Color(0xFF787878)
-    )
+).withDefault { Color.Gray }

@@ -13,7 +13,6 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.*
 import com.jventrib.formulainfo.ui.results.getLapsWithStart
 import com.jventrib.formulainfo.ui.theme.teamColor
-import java.time.Duration
 
 
 @Composable
@@ -29,8 +28,9 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
     val lapsWithStart = getLapsWithStart(lapsByResult)
 
 
-    val lapCount = lapsWithStart.keys.maxOf { it.resultInfo.laps }
-    val secondLastLaps = lapsWithStart.values.mapNotNull { it.getOrNull(lapCount - 2) }
+    val anteLastLap = (lapsWithStart.keys.maxOf { it.resultInfo.laps } -2).coerceAtLeast(0)
+    val secondLastLaps = lapsWithStart.values
+        .mapNotNull { it.getOrNull(anteLastLap) }
 
     val longestTime = secondLastLaps.maxOf { it.total.toMillis() }
     val leaderLaps = lapsWithStart.values.flatten().filter { l -> l.position == 1 }
@@ -46,14 +46,14 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
                     )
                 )
             },
-            teamColor[entry.key.constructor.id]!!,
+            teamColor.getValue(entry.key.constructor.id),
             entry.key.driver.code ?: entry.key.driver.driverId
         )
     }
 
     Chart(
         series = series,
-        boundaries = Boundaries(maxY = (longestTime - leaderLaps[lapCount - 2].total.toMillis()).toFloat()),
+        boundaries = Boundaries(maxY = (longestTime - leaderLaps[anteLastLap].total.toMillis()).toFloat()),
         yOrientation = YOrientation.Down
     )
 }

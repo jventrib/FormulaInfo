@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.ui.components
 
+import android.content.res.Resources
 import android.graphics.Rect
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -56,7 +57,7 @@ fun ItemCard(
                 onItemSelected()
             },
         elevation = 4.dp,
-        backgroundColor = LightLightGrey
+//        backgroundColor = LightLightGrey
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(

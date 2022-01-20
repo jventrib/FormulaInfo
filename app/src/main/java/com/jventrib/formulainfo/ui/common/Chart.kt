@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -76,7 +77,6 @@ fun <E> Chart(
                     .padding(vertical = 16.dp, horizontal = 4.dp)
                     .pointerInput(Unit) {
                         detectTransformGesturesXY { _, offsetChange, zoomChange, rotationChange ->
-                            println("zoomChange: $zoomChange")
                             scale =
                                 abs(scale * zoomChange.coerceAtMost(Offset(2f,2f))).coerceIn(Offset(1f, 1f), Offset(50f, 25f))
                             rotation += rotationChange
@@ -102,7 +102,7 @@ private fun <E> YAxis(seriesPoints: List<Serie<E>>) {
         modifier = Modifier
             .fillMaxHeight()
             .wrapContentWidth()
-            .background(Color(.9f, .9f, .9f, .9f))
+            .background(MaterialTheme.colors.surface.copy(alpha = .9f))
             .padding(vertical = 16.dp)
             .zIndex(1f),
         contentAlignment = Alignment.TopCenter
