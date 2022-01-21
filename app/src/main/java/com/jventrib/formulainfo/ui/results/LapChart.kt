@@ -13,6 +13,7 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.results.chart.LapPositionChart
 import com.jventrib.formulainfo.ui.results.chart.LapTimeChart
 import com.jventrib.formulainfo.ui.results.chart.LeaderIntervalChart
+import com.jventrib.formulainfo.ui.results.chart.MeanIntervalChart
 import java.time.Duration
 
 
@@ -20,7 +21,7 @@ import java.time.Duration
 fun LapChart(lapsByResult: Map<Result, List<Lap>>) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    var selectedChart by rememberSaveable { mutableStateOf(Charts.Position) }
+    var selectedChart by rememberSaveable { mutableStateOf(Charts.values().first()) }
     val selectState = remember(lapsByResult) {
         mutableStateMapOf<String, Boolean>().apply {
             putAll(lapsByResult.keys.map { it.driver.driverId to true })
@@ -43,9 +44,10 @@ fun LapChart(lapsByResult: Map<Result, List<Lap>>) {
 }
 
 enum class Charts(val label: String, val compose: @Composable (Map<Result, List<Lap>>) -> Unit) {
+    LeaderInterval("Leader Interval", { LeaderIntervalChart(it) }),
+    MeanInterval("Mean Interval", { MeanIntervalChart(it) }),
     Position("Position by lap", { LapPositionChart(it) }),
     Time("Time by lap", { LapTimeChart(it) }),
-    LeaderInterval("Leader Interval", { LeaderIntervalChart(it) }),
 }
 
 internal fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result, List<Lap>> =
