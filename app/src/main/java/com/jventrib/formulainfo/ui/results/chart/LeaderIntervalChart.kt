@@ -17,6 +17,7 @@ import com.jventrib.formulainfo.ui.theme.teamColor
 
 @Composable
 fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
+    if (lapsByResult.isEmpty()) return
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     val selectState = remember(lapsByResult) {
@@ -28,13 +29,15 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
     val lapsWithStart = getLapsWithStart(lapsByResult)
 
 
-    val anteLastLap = (lapsWithStart.keys.maxOf { it.resultInfo.laps } -2).coerceAtLeast(0)
+    val anteLastLap = (lapsWithStart.keys.maxOf { it.resultInfo.laps } - 2).coerceAtLeast(0)
     val secondLastLaps = lapsWithStart.values
         .mapNotNull { it.getOrNull(anteLastLap) }
 
     val longestTime = secondLastLaps.maxOf { it.total.toMillis() }
     val leaderLaps = lapsWithStart.values.flatten().filter { l -> l.position == 1 }
         .sortedBy { it.number }
+
+
     val series = lapsWithStart.map { entry ->
         Serie(
             entry.value.mapIndexed { index, lap ->
@@ -42,7 +45,8 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
                     lap,
                     Offset(
                         lap.number.toFloat(),
-                        (lap.total.toMillis() - leaderLaps[index].total.toMillis()).toFloat()
+                        (lap.total.toMillis() - (leaderLaps.getOrNull(index)
+                            ?: lap).total.toMillis()).toFloat()
                     )
                 )
             },
@@ -53,7 +57,10 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
 
     Chart(
         series = series,
-        boundaries = Boundaries(maxY = (longestTime - leaderLaps[anteLastLap].total.toMillis()).toFloat()),
+        boundaries = Boundaries(
+            maxY = if (anteLastLap < leaderLaps.size)
+                ((longestTime - leaderLaps[anteLastLap].total.toMillis()).toFloat()) else 5f
+        ),
         yOrientation = YOrientation.Down,
         gridStep = Offset(10f, 5000f)
     )

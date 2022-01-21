@@ -4,7 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,10 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.lerp
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PointMode
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -37,9 +36,8 @@ fun <E> Chart(
     yOrientation: YOrientation,
     gridStep: Offset? = null,
     customDraw: DrawScope.(List<Serie<E>>) -> Unit = {}
-
 ) {
-
+    val axisColor = colors.onBackground.toArgb()
     var scrollOffset by remember { mutableStateOf(Offset(1f, 1f)) }
     var scale by remember { mutableStateOf(Offset(1f, 1f)) }
     var rotation by remember { mutableStateOf(0f) }
@@ -81,12 +79,11 @@ fun <E> Chart(
         val pointAlpha = (20 * (scale.getDistance() - 1) / allSeriesSize).coerceIn(0f, 1f)
 
 
-        val windowSeries = series.map { serie ->
+        val onScreenSeries = series.map { serie ->
             getSeriePoints(serie, size, scale, adaptedBoundaries, scrollOffset, yOrientation)
         }
 
-        //Compute grid coord
-        val grid = getGrid(
+        val state = ChartState(
             series,
             size,
             adaptedBoundaries,
@@ -97,33 +94,85 @@ fun <E> Chart(
         )
 
         Row {
-            YAxis(windowSeries)
-            Series(
-                modifier,
-                onGesture,
-                onGloballyPositioned,
-                windowSeries,
-                pointAlpha,
-                grid,
-                customDraw
-            )
+            YAxis(onScreenSeries)
+            Canvas(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(vertical = 16.dp, horizontal = 4.dp)
+                    .pointerInput(Unit) { detectTransformGesturesXY(onGesture = onGesture) }
+                    .onGloballyPositioned(onGloballyPositioned)
+            ) {
+                //Draw Grid
+                drawGrid(state, axisColor)
+
+                //Series
+                onScreenSeries.forEach { serieScreen ->
+                    drawSerie(serieScreen.seriePoints, serieScreen.color, pointAlpha)
+                }
+
+                //custom
+                customDraw(onScreenSeries)
+            }
         }
     }
 }
 
-@Composable
-private fun <E> getGrid(
-    series: List<Serie<E>>,
-    size: Size,
-    adaptedBoundaries: Boundaries,
-    scrollOffset: Offset,
-    scale: Offset,
-    yOrientation: YOrientation,
-    gridStep: Offset?
-): Grid? {
-    val grid = if (gridStep != null && series.isNotEmpty()) {
+data class ChartState<E>(
+    val series: List<Serie<E>>,
+    val size: Size,
+    val adaptedBoundaries: Boundaries,
+    val scrollOffset: Offset,
+    val scale: Offset,
+    val yOrientation: YOrientation,
+    val gridStep: Offset?
+)
+
+private fun <E> DrawScope.drawGrid(state: ChartState<E>, axisColor: Int) {
+    //Compute grid coord
+    if (state.series.isNotEmpty() && state.gridStep != null) {
+        val onScreenGrid = getOnScreenGrid(state)
+        val verticalPadding = 16.dp.toPx() * 2
+        val horizontalPadding = 4.dp.toPx()
+        val axisLabelPaint = Paint().asFrameworkPaint().apply {
+            textSize = 32f
+            color = axisColor
+        }
+        val offsetX = onScreenGrid.offset.x  % onScreenGrid.step.x + onScreenGrid.step.x
+        generateSequence(-onScreenGrid.step.x) { it + onScreenGrid.step.x }.takeWhile { it <= this.size.width + onScreenGrid.step.x * 4 }
+            .forEachIndexed { index, x ->
+                drawLine(
+                    Color.LightGray,
+                    start = Offset(x + offsetX, -verticalPadding),
+                    end = Offset(x + offsetX, this.size.height + verticalPadding)
+                )
+                drawIntoCanvas {
+                    it.nativeCanvas.drawText(
+                        (onScreenGrid.offset.x / +index).toString(),
+                        x + offsetX,
+                        this.size.height + 12.dp.toPx(),
+                        axisLabelPaint
+                    )
+                }
+            }
+        generateSequence(-onScreenGrid.step.y * 4) { it + onScreenGrid.step.y }.takeWhile { it <= this.size.height + onScreenGrid.step.y * 4 }
+            .forEach {
+                drawLine(
+                    Color.LightGray,
+                    start = Offset(-horizontalPadding, it + onScreenGrid.offset.y),
+                    end = Offset(
+                        this.size.width + horizontalPadding,
+                        it + onScreenGrid.offset.y
+                    )
+                )
+            }
+    }
+}
+
+private fun <E> getOnScreenGrid(state: ChartState<E>): Grid {
+    val grid = state.run {
         val offset0 =
-            getElementXY(
+            getOnScreenPoint(
                 DataPoint("GridX", Offset(0f, 0f)),
                 size,
                 adaptedBoundaries,
@@ -133,8 +182,8 @@ private fun <E> getGrid(
             )
 
         val offset1 =
-            getElementXY(
-                DataPoint("GridX", gridStep),
+            getOnScreenPoint(
+                DataPoint("GridX", gridStep!!),
                 size,
                 adaptedBoundaries,
                 scrollOffset,
@@ -143,57 +192,9 @@ private fun <E> getGrid(
             )
 
         val step = offset1 - offset0
-        Grid(step, offset0 % step + step)
-    } else null
-    return grid
-}
-
-@Composable
-private fun <E> Series(
-    modifier: Modifier,
-    onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit,
-    onGloballyPositioned: (LayoutCoordinates) -> Unit,
-    windowSeries: List<Serie<E>>,
-    pointAlpha: Float,
-    grid: Grid?,
-    customDraw: DrawScope.(List<Serie<E>>) -> Unit
-) {
-    Canvas(
-        modifier = modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(vertical = 16.dp, horizontal = 4.dp)
-            .pointerInput(Unit) { detectTransformGesturesXY(onGesture = onGesture) }
-            .onGloballyPositioned(onGloballyPositioned)
-    ) {
-
-        //Draw Grid
-        if (windowSeries.isNotEmpty() && grid != null) {
-            val verticalPadding = 16.dp.toPx() * 2
-            val horizontalPadding = 4.dp.toPx()
-            generateSequence(-grid.step.x * 4) { it + grid.step.x }.takeWhile { it <= size.width + grid.step.x * 4 }
-                .forEach {
-                    drawLine(
-                        Color.LightGray,
-                        start = Offset(it + grid.offset.x, -verticalPadding),
-                        end = Offset(it + grid.offset.x, size.height + verticalPadding)
-                    )
-                }
-            generateSequence(-grid.step.y * 4) { it + grid.step.y }.takeWhile { it <= size.height + grid.step.y * 4 }
-                .forEach {
-                    drawLine(
-                        Color.LightGray,
-                        start = Offset(-horizontalPadding, it + grid.offset.y),
-                        end = Offset(size.width + horizontalPadding, it + grid.offset.y)
-                    )
-                }
-        }
-        //Series
-        windowSeries.forEach { serieScreen ->
-            drawSerie(serieScreen.seriePoints, serieScreen.color, pointAlpha)
-        }
-        customDraw(windowSeries)
+        Grid(step, offset0)
     }
+    return grid
 }
 
 data class Grid(val step: Offset, val offset: Offset)
@@ -205,7 +206,7 @@ private fun <E> YAxis(seriesPoints: List<Serie<E>>) {
         modifier = Modifier
             .fillMaxHeight()
             .wrapContentWidth()
-            .background(MaterialTheme.colors.surface.copy(alpha = .9f))
+            .background(colors.surface.copy(alpha = .9f))
             .padding(vertical = 16.dp)
             .zIndex(1f),
         contentAlignment = Alignment.TopCenter
@@ -275,7 +276,7 @@ private fun <E> getSeriePoints(
     val points = serie.seriePoints
         .map {
             it.copy(
-                offset = getElementXY(
+                offset = getOnScreenPoint(
                     it,
                     size,
                     boundaries,
@@ -305,7 +306,7 @@ private fun <E> getSeriePoints(
 }
 
 
-private fun <E> getElementXY(
+private fun <E> getOnScreenPoint(
     dataPoint: DataPoint<E>,
     size: Size,
     boundaries: Boundaries,
@@ -366,7 +367,9 @@ fun ChartPreview() {
             series = series,
             modifier = Modifier
                 .fillMaxHeight(1f)
-                .border(2.dp, Color.Red), yOrientation = YOrientation.Down, gridStep = Offset(1f, 1000f)
+                .border(2.dp, Color.Red),
+            yOrientation = YOrientation.Down,
+            gridStep = Offset(5f, 1000f)
         )
     }
 }
