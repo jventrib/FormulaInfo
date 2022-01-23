@@ -136,9 +136,11 @@ private fun <E> YAxis(seriesPoints: List<Serie<E>>) {
             if (yOrigin != null && !yOrigin.y.isNaN()) {
                 Text(
                     text = serie.label,
-                    modifier = Modifier.offset(offset = {
-                        IntOffset(0, yOrigin.y.roundToInt() - 12.dp.roundToPx())
-                    })
+                    modifier = Modifier
+                        .offset(offset = {
+                            IntOffset(0, yOrigin.y.roundToInt() - 12.dp.roundToPx())
+                        })
+                        .background(serie.color)
                 )
             } else null
         }
@@ -269,9 +271,6 @@ private fun <E> getSeriePoints(serie: Serie<E>, state: ChartState<E>): Serie<E> 
                 )
             )
         }
-        .windowed(3)
-        .filter { window -> window.any { state.size.toRect().contains(it.offset) } }
-        .flatten()
 
     val pointsOffset = points.map { it.offset }
     val start = pointsOffset.lastOrNull { it.x <= 0.1f }
