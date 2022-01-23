@@ -46,7 +46,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
                     Offset(
                         lap.number.toFloat(),
                         (lap.total.toMillis() - (leaderLaps.getOrNull(index)
-                            ?: lap).total.toMillis()).toFloat()
+                            ?: lap).total.toMillis()).toFloat() / 1000f
                     )
                 )
             },
@@ -58,11 +58,11 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
     Chart(
         series = series,
         boundaries = Boundaries(
-            maxY = if (anteLastLap < leaderLaps.size)
-                ((longestTime - leaderLaps[anteLastLap].total.toMillis()).toFloat()) else 5f
+            maxY = (if (anteLastLap < leaderLaps.size)
+                ((longestTime - leaderLaps[anteLastLap].total.toMillis()).toFloat()) else 5000f) / 1000f
         ),
         yOrientation = YOrientation.Down,
-        gridStep = Offset(10f, 5000f)
+        gridStep = Offset(5f, 5f)
     )
 }
 
