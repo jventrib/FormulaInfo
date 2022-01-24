@@ -97,7 +97,9 @@ fun MainScreen() {
                 viewModel.season.value = navBackStackEntry.arguments?.get("season") as Int
                 viewModel.round.value = navBackStackEntry.arguments?.get("round") as Int
                 viewModel.driverId.value = navBackStackEntry.arguments?.get("driver") as String
-                result?.let { Laps(it, lapTimes?.dataOrNull() ?: listOf()) }
+                val race by viewModel.race.observeAsState()
+
+                result?.let { Laps(race, it, lapTimes?.dataOrNull() ?: listOf()) }
             }
             composable(
                 "resultsGraph/{season}/{round}",
@@ -108,8 +110,8 @@ fun MainScreen() {
                 val viewModel: ResultsViewModel = hiltViewModel(navBackStackEntry)
                 val season = navBackStackEntry.arguments?.get("season") as Int
                 val round = navBackStackEntry.arguments?.get("round") as Int
+                val race by viewModel.race.observeAsState()
 
-//                val graph by viewModel.resultsGraph.observeAsState(null)
                 val graph by viewModel.resultsWithLaps
                     .observeAsState(initial = mutableStateMapOf())
 
@@ -117,7 +119,7 @@ fun MainScreen() {
                 viewModel.round.value = round
                 graph?.let {
                     if (it.isNotEmpty()) {
-                        LapChart(lapsByResult = it)
+                        LapChart(race, lapsByResult = it)
                     }
                 }
             }

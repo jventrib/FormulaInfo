@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
+import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.results.chart.LapPositionChart
 import com.jventrib.formulainfo.ui.results.chart.LapTimeChart
@@ -17,7 +18,7 @@ import java.time.Duration
 
 
 @Composable
-fun LapChart(lapsByResult: Map<Result, List<Lap>>) {
+fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     var selectedChart by rememberSaveable { mutableStateOf(Charts.values().first()) }
@@ -31,7 +32,9 @@ fun LapChart(lapsByResult: Map<Result, List<Lap>>) {
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
-                title = { Text("Formula Info") },
+                title = {
+                    Text(race?.raceInfo?.let { "${it.raceName} ${it.season}" } ?: "Formula Info")
+                },
                 actions = {
                     LapChartMenu(selectedChart.label) { selectedChart = it }
                 }
@@ -74,5 +77,5 @@ internal fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result,
 @Composable
 fun LapChartPreview() {
     val lapsWithStart = getLapsWithStart(ResultSample.getLapsPerResults())
-    LapChart(lapsByResult = lapsWithStart)
+    LapChart(race = null, lapsByResult = lapsWithStart)
 }
