@@ -11,12 +11,13 @@ import com.jventrib.formulainfo.model.db.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import logcat.logcat
+import java.time.Year
 import javax.inject.Inject
 
 @HiltViewModel
 class ResultsViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
 
-    val season = MutableLiveData(2021)
+    val season = MutableLiveData(Year.now().value)
 
     val round: MutableLiveData<Int?> = MutableLiveData(null)
 

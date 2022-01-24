@@ -26,6 +26,7 @@ import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.components.Image
 import com.jventrib.formulainfo.ui.schedule.item.Race
+import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import logcat.LogPriority
 import logcat.logcat
 import kotlin.math.roundToInt
@@ -44,7 +45,7 @@ fun ResultsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Formula Info",
+                        "${race.raceInfo.season} season",
                         modifier = Modifier.clickable {})
                 },
                 actions = {
@@ -83,7 +84,7 @@ fun ResultsScreen(
                             .roundToInt()
                             .toDp()
                     })
-                    .background(Color.White)
+                    .background(MaterialTheme.colors.background)
             ) {
                 Column {
                     Race(race = race, expanded = true)
@@ -94,6 +95,8 @@ fun ResultsScreen(
                             .clickable { onRaceImageSelected(race) }
                             .fillMaxWidth()
                             .height(circuitHeight)
+                            .background(Color.White)
+
                     )
                 }
             }
@@ -128,3 +131,19 @@ fun RaceDetailPreview() {
         onChartClicked = {}
     )
 }
+
+@ExperimentalCoilApi
+@Preview
+@Composable
+fun RaceDetailDarkPreview() {
+    FormulaInfoTheme(darkTheme = true) {
+        ResultsScreen(
+            race = getRaceSample(3),
+            results = listOf(),
+            onDriverSelected = {},
+            onRaceImageSelected = {},
+            onChartClicked = {}
+        )
+    }
+}
+

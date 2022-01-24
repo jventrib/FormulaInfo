@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.Lap
+import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.ui.results.DriverResult
 import com.jventrib.formulainfo.ui.results.getResultSample
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
@@ -26,14 +27,12 @@ import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 @Composable
-fun Laps(result: Result, laps: List<Lap>) {
+fun Laps(race: Race?, result: Result, laps: List<Lap>) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Formula Info",
-                        modifier = Modifier.clickable {})
+                    Text(race?.raceInfo?.let { "${it.raceName} ${it.season}" } ?: "Formula Info")
                 },
                 actions = {
                 }
@@ -114,6 +113,7 @@ fun LapsDarkPreview() {
 private fun getLaps() {
     var i = 0
     Laps(
+        null,
         getResultSample("verstappen", 1),
         listOf(
             lap(++i, Random.nextLong(120000)),

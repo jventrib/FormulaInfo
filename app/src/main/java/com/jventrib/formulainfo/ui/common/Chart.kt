@@ -75,7 +75,7 @@ fun <E> Chart(
         val actualBoundaries = getBoundaries(boundaries, series)
 
         val allSeriesSize = series.maxOfOrNull { it.seriePoints.size } ?: 1
-        val pointAlpha = (20 * (scale.getDistance() - 1) / allSeriesSize).coerceIn(0f, 1f)
+        val pointAlpha = (10 * (scale.getDistance() - 1) / allSeriesSize).coerceIn(0f, 1f)
 
         val state = ChartState(
             series,
