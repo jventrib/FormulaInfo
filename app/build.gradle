@@ -54,12 +54,11 @@ android {
         kotlinCompilerExtensionVersion compose_version
     }
     packagingOptions {
-        exclude 'META-INF/atomicfu.kotlin_module'
         resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            excludes += ['/META-INF/{AL2.0,LGPL2.1}', 'META-INF/atomicfu.kotlin_module']
         }
     }
-    lintOptions {
+    lint {
         abortOnError false
     }
 

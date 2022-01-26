@@ -73,7 +73,7 @@ class RaceRepository(
                         .also { logcat { "Inserting Races $it" } })
                 }
             })
-            .completeFlowMissing({ it.circuit.location.flag }) {
+            .completeMissing({ it.circuit.location.flag }) {
                 logcat { "Completing circuit ${it.circuit.location.country} with image" }
                 circuitDao.insert(getCircuitWithFlag(it))
             }
@@ -104,7 +104,7 @@ class RaceRepository(
                         .also { logcat { "Inserting Results $it" } })
                 }
             })
-            .completeFlowMissing(
+            .completeMissing(
                 { it.driver.image })
             {
                 logcat { "Completing driver ${it.driver.code} with image" }
@@ -210,16 +210,7 @@ class RaceRepository(
         }
     }
 
-    private fun <T : List<U>, U> Flow<T>.completeMissing(
-        attr: (U) -> Any?,
-        action: suspend (U) -> Unit
-    ): Flow<T> =
-        this.transform { response ->
-            emit(response)
-            response.firstOrNull { attr(it) == null }?.let { action(it) }
-        }
-
-    private fun <T : StoreResponse<List<U>>, U> Flow<T>.completeFlowMissing(
+    private fun <T : StoreResponse<List<U>>, U> Flow<T>.completeMissing(
         attr: (U) -> Any?,
         action: suspend (U) -> Unit
     ): Flow<T> =

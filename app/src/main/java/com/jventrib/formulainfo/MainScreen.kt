@@ -12,8 +12,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
-import com.dropbox.android.external.store4.ResponseOrigin
-import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.laps.Laps
 import com.jventrib.formulainfo.ui.laps.LapsViewModel

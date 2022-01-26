@@ -1,6 +1,8 @@
 package com.jventrib.formulainfo.ui.schedule
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -12,6 +14,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.ui.schedule.item.Race
