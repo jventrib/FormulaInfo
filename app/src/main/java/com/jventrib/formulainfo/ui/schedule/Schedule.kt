@@ -16,13 +16,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dropbox.android.external.store4.StoreResponse
+import com.jventrib.formulainfo.model.aggregate.RaceWithResult
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.ui.schedule.item.Race
 import kotlinx.coroutines.launch
 
 @Composable
 fun ScheduleScreen(
-    raceList: StoreResponse<List<Race>>,
+    raceList: StoreResponse<List<RaceWithResult>>,
     onRaceClicked: (Race) -> Unit,
     seasonList: List<Int>,
     selectedSeason: Int?,
@@ -50,7 +51,8 @@ fun ScheduleScreen(
                     IconButton(onClick = {
                         coroutineScope.launch {
                             listState.animateScrollToItem(
-                                index = raceList.dataOrNull()?.indexOfFirst { it.nextRace } ?: 0
+                                index = raceList.dataOrNull()?.indexOfFirst { it.race.nextRace }
+                                    ?: 0
                             )
                         }
                     }) {
@@ -70,7 +72,7 @@ fun ScheduleScreen(
 
 @Composable
 fun RaceList(
-    raceList: StoreResponse<List<Race>>,
+    raceList: StoreResponse<List<RaceWithResult>>,
     onRaceSelected: (Race) -> Unit,
     listState: LazyListState
 ) {
@@ -78,10 +80,16 @@ fun RaceList(
         raceList.dataOrNull()?.let { raceList ->
             items(raceList) {
                 Race(
-                    race = it,
-                    expanded = it.nextRace,
+                    race = it.race,
+                    expanded = it.race.nextRace,
                     onRaceSelected = onRaceSelected
                 )
+                Row {
+                    it.result.take(3).map {
+                        Text(text = it.driver.code.toString(),
+                        modifier = Modifier.padding(8.dp))
+                    }
+                }
             }
         }
     }
