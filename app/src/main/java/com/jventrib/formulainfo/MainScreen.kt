@@ -34,26 +34,36 @@ fun MainScreen() {
             composable("races") {
                 val viewModel: SeasonViewModel =
                     hiltViewModel(navController.currentBackStackEntry!!)
-                val raceList by viewModel.races.observeAsState(
-                    StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
-                )
+                val raceList by viewModel.racesWithResults.observeAsState()
                 val seasonList = viewModel.seasonList
-                ScheduleScreen(
-                    raceList = raceList,
-                    onRaceClicked = { race ->
-//                        navController.navigate("resultsGraph/${race.raceInfo.season}/${race.raceInfo.round}")
-                        navController.navigate("race/${race.raceInfo.season}/${race.raceInfo.round}")
-                    },
-                    seasonList = seasonList,
-                    selectedSeason = viewModel.season.observeAsState().value,
-                    onSeasonSelected = {
-                        viewModel.season.value = it
-                        viewModel.round.value = null
-                    },
-                    onAboutClicked = { navController.navigate("about") },
-                    onRefreshClicked = { scope.launch { viewModel.refresh() } }
-                )
+                raceList?.let { rl ->
+                    ScheduleScreen(
+                        raceList = rl,
+                        onRaceClicked = { race ->
+            //                        navController.navigate("resultsGraph/${race.raceInfo.season}/${race.raceInfo.round}")
+                            navController.navigate("race/${race.raceInfo.season}/${race.raceInfo.round}")
+                        },
+                        seasonList = seasonList,
+                        selectedSeason = viewModel.season.observeAsState().value,
+                        onSeasonSelected = {
+                            viewModel.season.value = it
+                            viewModel.round.value = null
+                        },
+                        onAboutClicked = { navController.navigate("about") },
+                        onRefreshClicked = { scope.launch { viewModel.refresh() } }
+                    )
+                }
             }
+//            composable("races/chart") {
+//                val viewModel: SeasonViewModel =
+//                    hiltViewModel(navController.currentBackStackEntry!!)
+//                val raceList by viewModel.races.observeAsState(
+//                    StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
+//                )
+//                val seasonList = viewModel.seasonList
+//                viewModel.getResults()
+//                SeasonChart(raceList)
+//            }
             composable(
                 "race/{season}/{round}",
                 listOf(

@@ -6,15 +6,13 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.room.withTransaction
 import coil.imageLoader
 import coil.request.ImageRequest
-import com.dropbox.android.external.store4.ResponseOrigin
+import com.dropbox.android.external.store4.ResponseOrigin.*
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.data.db.*
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.data.remote.WikipediaService
-import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.model.db.Lap
-import com.jventrib.formulainfo.model.db.Race
-import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.model.aggregate.RaceWithResult
+import com.jventrib.formulainfo.model.db.*
 import com.jventrib.formulainfo.model.mapper.*
 import com.jventrib.formulainfo.utils.detect
 import kotlinx.coroutines.flow.*
@@ -43,20 +41,22 @@ class RaceRepository(
         dbRead.invoke()
             .distinctUntilChanged()
             .transformLatest { data ->
-                emit(StoreResponse.Loading(ResponseOrigin.SourceOfTruth))
+//                emit(StoreResponse.Loading(SourceOfTruth))
                 logcat { "Getting ${E::class.simpleName} from DB" }
                 if (data.isEmpty()) {
                     logcat { "No ${E::class.simpleName} in DB, fetching from remote" }
-                    emit(StoreResponse.Loading(ResponseOrigin.Fetcher))
+                    emit(StoreResponse.Loading(Fetcher))
                     remoteFetch.invoke().also {
                         logcat { "Fetched ${S::class.simpleName} from API: $it" }
-                        dbInsert(it)
-                        logcat { "Insert in DB done" }
+                        if (it.isNotEmpty()) {
+                            dbInsert(it)
+                            logcat { "Insert in DB done" }
+                        }
                     }
 
                 } else {
                     logcat { "Got ${data.size} ${E::class.simpleName} from DB" }
-                    this.emit(StoreResponse.Data(data, ResponseOrigin.SourceOfTruth))
+                    this.emit(StoreResponse.Data(data, SourceOfTruth))
                 }
             }
 
@@ -217,7 +217,9 @@ class RaceRepository(
         this.transform { response ->
             emit(response)
             if (response is StoreResponse.Data<*>) {
-                response.dataOrNull()?.firstOrNull { attr(it) == null }?.let { action(it) }
+                response.dataOrNull()?.firstOrNull { attr(it) == null }?.let {
+                    action(it)
+                }
             }
         }
 
@@ -258,5 +260,52 @@ class RaceRepository(
             ) ?: "NONE"
         )
 
+
+    fun getRacesWithResults(
+        season: Int,
+    ): Flow<StoreResponse<List<RaceWithResult>>> {
+        val map = mutableMapOf<Int, RaceWithResult>()
+
+        val raceFlow = getRaces(season)
+            .transformLatest { response ->
+                when (response) {
+                    is StoreResponse.Loading -> emit(response)
+                    is StoreResponse.Data -> {
+                        val data = response.value
+                        data.forEach {
+                            val raceWithResult = map[it.raceInfo.round]
+                            if (raceWithResult == null) {
+                                map[it.raceInfo.round] = RaceWithResult(it, listOf())
+                            } else {
+                                map[it.raceInfo.round] = raceWithResult.copy(race = it)
+                            }
+                        }
+                        emit(StoreResponse.Data(map.values.toList(), SourceOfTruth))
+
+                        val allResults = data.asFlow()
+                            .flatMapMerge(data.size) { race ->
+                                getResults(season, race.raceInfo.round)
+                                    .filterIsInstance<StoreResponse.Data<List<Result>>>()
+                                    .map { RaceWithResult(race, it.value) }
+//                            flowOf(RaceWithResult(race, listOf(getResultSample("VER", 1))))
+                            }
+
+                        val toEmit = allResults.map {
+                            val raceWithResult = map.getValue(it.race.raceInfo.round)
+                            if (raceWithResult.result.isEmpty()) {
+                                map[it.race.raceInfo.round] = it
+                            }
+                            StoreResponse.Data(map.values.toList(), SourceOfTruth)
+                        }
+                        emitAll(toEmit)
+
+                    }
+                    is StoreResponse.NoNewData -> TODO()
+                    is StoreResponse.Error.Exception -> TODO()
+                    is StoreResponse.Error.Message -> TODO()
+                }
+            }
+        return raceFlow.distinctUntilChanged()
+    }
 }
 
