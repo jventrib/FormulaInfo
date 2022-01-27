@@ -28,45 +28,44 @@ fun DriverResult(
     ItemCard(
         image = result.driver.image,
         onItemSelected = { onResultSelected(result) },
-        content = {
-            Row(Modifier.fillMaxWidth()) {
-                Column {
-                    Text(
-                        text = "${result.resultInfo.position}:${result.driver.givenName} ${result.driver.familyName}",
-                        style = MaterialTheme.typography.h6
-                    )
-                    Text(
-                        text = result.constructor.name,
-                        style = MaterialTheme.typography.body1
-                    )
-                    Text(
-                        text = result.resultInfo.time?.time ?: "",
-                        style = MaterialTheme.typography.body2
-                    )
-                }
-                Column(horizontalAlignment = End, modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = "${result.resultInfo.points.toInt()} pts",
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.align(End)
-                    )
-                    Row() {
-
-                        Text(
-                            text = "Started ${result.resultInfo.grid}",
-                            style = MaterialTheme.typography.body1
-                        )
-                        DeltaTextP(
-                            delta = result.resultInfo.position - result.resultInfo.grid,
-                            Modifier.padding(start = 8.dp)
-                        )
-                    }
-                }
-            }
-        },
         shape = CircleShape,
         faceBox = Rect.unflattenFromString(result.driver.faceBox)
-    )
+    ) {
+        Row(Modifier.fillMaxWidth()) {
+            Column {
+                Text(
+                    text = "${result.resultInfo.position}:${result.driver.givenName} ${result.driver.familyName}",
+                    style = MaterialTheme.typography.h6
+                )
+                Text(
+                    text = result.constructor.name,
+                    style = MaterialTheme.typography.body1
+                )
+                Text(
+                    text = result.resultInfo.time?.time ?: "",
+                    style = MaterialTheme.typography.body2
+                )
+            }
+            Column(horizontalAlignment = End, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "${result.resultInfo.points.toInt()} pts",
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.align(End)
+                )
+                Row() {
+
+                    Text(
+                        text = "Started ${result.resultInfo.grid}",
+                        style = MaterialTheme.typography.body1
+                    )
+                    DeltaTextP(
+                        delta = result.resultInfo.position - result.resultInfo.grid,
+                        Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+        }
+    }
 }
 
 
@@ -106,10 +105,10 @@ fun getResultSample(driver: String, position: Int) = Result(
     Driver(
         driver,
         33,
-        "verst",
+        driver.uppercase().substring(0, 3),
         "url",
-        "Max",
-        "Verstappen",
+        "John",
+        driver,
         "1999",
         "NL",
         "img",
