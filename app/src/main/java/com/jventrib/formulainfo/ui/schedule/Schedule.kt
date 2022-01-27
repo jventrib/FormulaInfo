@@ -81,15 +81,10 @@ fun RaceList(
             items(raceList) {
                 Race(
                     race = it.race,
+                    results = it.results,
                     expanded = it.race.nextRace,
                     onRaceSelected = onRaceSelected
                 )
-                Row {
-                    it.result.take(3).map {
-                        Text(text = it.driver.code.toString(),
-                        modifier = Modifier.padding(8.dp))
-                    }
-                }
             }
         }
     }

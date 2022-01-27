@@ -292,7 +292,7 @@ class RaceRepository(
 
                         val toEmit = allResults.map {
                             val raceWithResult = map.getValue(it.race.raceInfo.round)
-                            if (raceWithResult.result.isEmpty()) {
+                            if (raceWithResult.results.isEmpty()) {
                                 map[it.race.raceInfo.round] = it
                             }
                             StoreResponse.Data(map.values.toList(), SourceOfTruth)
