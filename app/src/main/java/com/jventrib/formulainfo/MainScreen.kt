@@ -3,7 +3,6 @@ package com.jventrib.formulainfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -18,8 +17,10 @@ import com.jventrib.formulainfo.ui.laps.LapsViewModel
 import com.jventrib.formulainfo.ui.results.LapChart
 import com.jventrib.formulainfo.ui.results.ResultsScreen
 import com.jventrib.formulainfo.ui.results.ResultsViewModel
+import com.jventrib.formulainfo.ui.schedule.DriverStandingChart
 import com.jventrib.formulainfo.ui.schedule.ScheduleScreen
 import com.jventrib.formulainfo.ui.schedule.SeasonViewModel
+import com.jventrib.formulainfo.ui.standing.DriverStandingScreen
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlinx.coroutines.launch
 
@@ -40,7 +41,7 @@ fun MainScreen() {
                     ScheduleScreen(
                         raceList = rl,
                         onRaceClicked = { race ->
-            //                        navController.navigate("resultsGraph/${race.raceInfo.season}/${race.raceInfo.round}")
+                            //                        navController.navigate("resultsGraph/${race.raceInfo.season}/${race.raceInfo.round}")
                             navController.navigate("race/${race.raceInfo.season}/${race.raceInfo.round}")
                         },
                         seasonList = seasonList,
@@ -50,20 +51,28 @@ fun MainScreen() {
                             viewModel.round.value = null
                         },
                         onAboutClicked = { navController.navigate("about") },
-                        onRefreshClicked = { scope.launch { viewModel.refresh() } }
+                        onRefreshClicked = { scope.launch { viewModel.refresh() } },
+                        onStandingClicked = { navController.navigate("standing/${viewModel.season.value}/999") },
+                        onStandingChartClicked = { navController.navigate("standing/${viewModel.season.value}/chart") }
                     )
                 }
             }
-//            composable("races/chart") {
-//                val viewModel: SeasonViewModel =
-//                    hiltViewModel(navController.currentBackStackEntry!!)
-//                val raceList by viewModel.races.observeAsState(
-//                    StoreResponse.Loading(ResponseOrigin.SourceOfTruth)
-//                )
-//                val seasonList = viewModel.seasonList
-//                viewModel.getResults()
-//                SeasonChart(raceList)
-//            }
+            composable(
+                "standing/{season}/chart",
+                listOf(navArgument("season") { type = NavType.IntType })
+            ) { navBackStackEntry ->
+                val viewModel: ResultsViewModel =
+                    hiltViewModel(navController.currentBackStackEntry!!)
+                val standings by viewModel.seasonStandings.observeAsState()
+
+                val season = navBackStackEntry.arguments?.get("season") as Int
+                viewModel.season.value = season
+                viewModel.round.value = null
+
+//                standings?.let {
+                DriverStandingChart(season, standings ?: mapOf())
+//                }
+            }
             composable(
                 "race/{season}/{round}",
                 listOf(
@@ -85,8 +94,39 @@ fun MainScreen() {
                             navController.navigate("laps/${season}/${round}/${driver.driverId}")
                         },
                         onRaceImageSelected = {},
-                        onChartClicked = { race ->
-                            navController.navigate("resultsGraph/${race.raceInfo.season}/${race.raceInfo.round}")
+                        onChartClicked = {
+                            navController.navigate("resultsGraph/${it.raceInfo.season}/${it.raceInfo.round}")
+                        },
+                        onStandingClicked = {
+                            navController.navigate("standing/${it.raceInfo.season}/${it.raceInfo.round}")
+                        }
+                    )
+                }
+            }
+            composable(
+                "standing/{season}/{round}",
+                listOf(
+                    navArgument("season") { type = NavType.IntType },
+                    navArgument("round") { type = NavType.IntType })
+            ) { navBackStackEntry ->
+                val viewModel: ResultsViewModel = hiltViewModel(navBackStackEntry)
+                val race by viewModel.race.observeAsState()
+                val standings by viewModel.standings.observeAsState()
+                val season = navBackStackEntry.arguments?.get("season") as Int
+                val round = navBackStackEntry.arguments?.get("round") as Int
+                viewModel.season.value = season
+                viewModel.round.value = round
+                standings?.let { st ->
+                    DriverStandingScreen(
+                        season = season,
+                        race = race,
+                        standings = st,
+                        onDriverSelected = { driver ->
+                            navController.navigate("laps/${season}/${round}/${driver.driverId}")
+                        },
+                        onRaceImageSelected = {},
+                        onChartClicked = {
+                            navController.navigate("resultsGraph/${it.raceInfo.season}/${it.raceInfo.round}")
                         }
                     )
                 }
@@ -121,7 +161,7 @@ fun MainScreen() {
                 val race by viewModel.race.observeAsState()
 
                 val graph by viewModel.resultsWithLaps
-                    .observeAsState(initial = mutableStateMapOf())
+                    .observeAsState(null)
 
                 viewModel.season.value = season
                 viewModel.round.value = round

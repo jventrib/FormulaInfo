@@ -66,16 +66,16 @@ android {
 }
 
 dependencies {
-    def roomVersion = '2.3.0'
+    def roomVersion = '2.4.1'
     def archLifecycleVersion = '2.4.0'
     def coreTestingVersion = '2.1.0'
-    def materialVersion = '1.4.0'
-    def coroutines = '1.5.2'
+    def materialVersion = '1.5.0'
+    def coroutines = '1.6.0-native-mt'
     def retrofit_version = '2.9.0'
 
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.ui:ui-util:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
+    implementation 'androidx.compose.ui:ui:1.2.0-alpha01'
+    implementation "androidx.compose.ui:ui-util:1.2.0-alpha01"
+    implementation "androidx.compose.material:material:1.2.0-alpha01"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
 
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
@@ -87,9 +87,9 @@ dependencies {
     implementation 'androidx.navigation:navigation-compose:2.4.0-rc01'
 //    implementation 'com.github.madrapps:plot:0.1.2'
 
-    implementation 'com.google.dagger:hilt-android:2.40'
+    implementation 'com.google.dagger:hilt-android:2.40.5'
     implementation "androidx.hilt:hilt-navigation-compose:1.0.0-rc01"
-    kapt 'com.google.dagger:hilt-android-compiler:2.40'
+    kapt 'com.google.dagger:hilt-android-compiler:2.40.5'
 
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
@@ -101,16 +101,16 @@ dependencies {
     //Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.3'
 
     //Coil
     implementation 'io.coil-kt:coil:1.3.2'
     implementation 'io.coil-kt:coil-svg:1.1.0'
 //    implementation 'com.google.android.gms:play-services-mlkit-face-detection:16.2.0'
-    implementation 'com.google.mlkit:face-detection:16.1.2'
+    implementation 'com.google.mlkit:face-detection:16.1.4'
 
     //Store
-    implementation 'com.dropbox.mobile.store:store4:4.0.2-KT15'
+    implementation 'com.dropbox.mobile.store:store4:4.0.4-KT15'
 
     //Room components
     implementation "androidx.room:room-runtime:$roomVersion"
@@ -125,13 +125,15 @@ dependencies {
     // Material design
     implementation "com.google.android.material:material:$materialVersion"
 
+    //Accompanist
+    implementation 'com.google.accompanist:accompanist-swiperefresh:0.24.0-alpha'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines"
-    testImplementation 'io.mockk:mockk:1.12.0'
+    testImplementation 'io.mockk:mockk:1.12.2'
     testImplementation 'com.google.truth:truth:1.1.3'
-    testImplementation('com.squareup.okhttp3:mockwebserver:5.0.0-alpha.2')
+    testImplementation('com.squareup.okhttp3:mockwebserver:5.0.0-alpha.3')
     androidTestImplementation 'androidx.test:core-ktx:1.4.0'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

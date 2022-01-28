@@ -44,7 +44,7 @@ fun ItemCard(
 @Composable
 fun ItemCard(
     image: Any?,
-    onItemSelected: () -> Unit,
+    onItemSelected: () -> Unit = {},
     shape: Shape = RectangleShape,
     faceBox: Rect? = null,
     content: @Composable() (() -> Unit)

@@ -1,42 +1,44 @@
 package com.jventrib.formulainfo.ui.schedule
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.MultilineChart
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.dropbox.android.external.store4.StoreResponse
-import com.jventrib.formulainfo.model.aggregate.RaceWithResult
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.jventrib.formulainfo.model.aggregate.RaceWithResults
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.ui.schedule.item.Race
 import kotlinx.coroutines.launch
+import java.time.Year
 
 @Composable
 fun ScheduleScreen(
-    raceList: StoreResponse<List<RaceWithResult>>,
+    raceList: StoreResponse<List<RaceWithResults>>,
     onRaceClicked: (Race) -> Unit,
     seasonList: List<Int>,
     selectedSeason: Int?,
     onSeasonSelected: (Int) -> Unit,
     onAboutClicked: () -> Unit,
-    onRefreshClicked: () -> Unit
+    onRefreshClicked: () -> Unit,
+    onStandingClicked: () -> Unit,
+    onStandingChartClicked: () -> Unit
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
-
             TopAppBar(
                 title = {
                     Text(
@@ -45,18 +47,26 @@ fun ScheduleScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = onRefreshClicked) {
-                        Icon(imageVector = Icons.Filled.Refresh, contentDescription = null)
-                    }
-                    IconButton(onClick = {
-                        coroutineScope.launch {
-                            listState.animateScrollToItem(
-                                index = raceList.dataOrNull()?.indexOfFirst { it.race.nextRace }
-                                    ?: 0
+                    if (currentSeason(selectedSeason)) {
+                        IconButton(onClick = {
+                            coroutineScope.launch {
+                                listState.animateScrollToItem(
+                                    index = raceList.dataOrNull()?.indexOfFirst { it.race.nextRace }
+                                        ?: 0
+                                )
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Notifications,
+                                contentDescription = null
                             )
                         }
-                    }) {
-                        Icon(imageVector = Icons.Filled.Notifications, contentDescription = null)
+                    }
+                    IconButton(onClick = onStandingClicked) {
+                        Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
+                    }
+                    IconButton(onClick = onStandingChartClicked) {
+                        Icon(imageVector = Icons.Filled.MultilineChart, contentDescription = null)
                     }
                     SeasonMenu(
                         seasonList = seasonList,
@@ -66,29 +76,37 @@ fun ScheduleScreen(
                 }
             )
         }) {
-        RaceList(raceList, onRaceClicked, listState)
+        RaceList(raceList, onRaceClicked, listState, onRefreshClicked)
     }
 }
 
 @Composable
 fun RaceList(
-    raceList: StoreResponse<List<RaceWithResult>>,
+    raceList: StoreResponse<List<RaceWithResults>>,
     onRaceSelected: (Race) -> Unit,
-    listState: LazyListState
+    listState: LazyListState,
+    onRefresh: () -> Unit
 ) {
-    LazyColumn(state = listState) {
-        raceList.dataOrNull()?.let { raceList ->
-            items(raceList) {
-                Race(
-                    race = it.race,
-                    results = it.results,
-                    expanded = it.race.nextRace,
-                    onRaceSelected = onRaceSelected
-                )
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(raceList is StoreResponse.Loading),
+        onRefresh = onRefresh,
+    ) {
+        LazyColumn(state = listState) {
+            raceList.dataOrNull()?.let { raceList ->
+                items(raceList) {
+                    Race(
+                        race = it.race,
+                        results = it.results,
+                        expanded = it.race.nextRace,
+                        onRaceSelected = onRaceSelected
+                    )
+                }
             }
         }
     }
 }
+
+private fun currentSeason(selectedSeason: Int?) = Year.now().value == selectedSeason
 
 //TODO look for a better way to provide a "mock" MainViewModel
 //@Preview
