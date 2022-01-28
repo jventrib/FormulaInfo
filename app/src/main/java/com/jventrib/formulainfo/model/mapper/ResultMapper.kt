@@ -29,6 +29,28 @@ object ResultMapper {
         },
     )
 
-    fun toEntity(season: Int, round: Int, remotes: List<ResultRemote>) =
-        remotes.map { toEntity(season, round, it) }
+    fun toEntity(season: Int, round: Int, remotes: List<ResultRemote>): List<ResultInfo> =
+        if (remotes.isEmpty()) {
+            //Insert dummy line to store the no data from remote info
+            listOf(
+                ResultInfo(
+                    "${season}-${round}-nodata",
+                    season,
+                    round,
+                    -1,
+                    -1,
+                    "nodata",
+                    0f,
+                    "nodata",
+                    "nodata",
+                    -1,
+                    -1,
+                    "",
+                    null,
+                    null
+                )
+            )
+        } else {
+            remotes.map { toEntity(season, round, it) }
+        }
 }

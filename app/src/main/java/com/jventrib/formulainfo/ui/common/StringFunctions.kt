@@ -12,11 +12,11 @@ val twoDecimalDigitsFormat = DecimalFormat("#.##").apply {
     decimalFormatSymbols = formatSymbols
 }
 
-val twoTrailingZerosFormat = DecimalFormat("#.00").apply {
+val twoTrailingZerosFormat = DecimalFormat("#.0").apply {
     decimalFormatSymbols = formatSymbols
 }
 
-fun Float.formatDecimal(withDecimalZeros: Boolean) = if (withDecimalZeros) {
+fun Float.formatDecimal(withDecimalZeros: Boolean = false) = if (withDecimalZeros) {
     twoTrailingZerosFormat
 } else {
     // Is number still the same after discarding places?
@@ -25,4 +25,4 @@ fun Float.formatDecimal(withDecimalZeros: Boolean) = if (withDecimalZeros) {
     } else {
         twoTrailingZerosFormat
     }
-}.format(this)
+}.format(this)!!

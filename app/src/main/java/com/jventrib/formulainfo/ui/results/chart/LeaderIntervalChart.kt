@@ -51,7 +51,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
                 )
             },
             teamColor.getValue(entry.key.constructor.id),
-            entry.key.driver.code ?: entry.key.driver.driverId
+            entry.key.driver.code ?: entry.key.driver.driverId.take(3)
         )
     }
 

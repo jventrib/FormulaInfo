@@ -91,7 +91,7 @@ private fun Driver(
     w: Dp
 ) {
     Text(
-        result.driver.code.toString(),
+        result.driver.code ?: result.driver.familyName.take(3),
         modifier = Modifier
             .width(w)
             .clip(RoundedCornerShape(4.dp))

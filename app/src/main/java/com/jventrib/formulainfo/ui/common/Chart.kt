@@ -35,6 +35,7 @@ fun <E> Chart(
     gridStep: Offset? = null,
     customDraw: DrawScope.(List<Serie<E>>) -> Unit = {}
 ) {
+    if (series.isEmpty()) return
     val axisColor = colors.onBackground
     val backgroundColor = colors.background
     var scrollOffset by remember { mutableStateOf(Offset(1f, 1f)) }

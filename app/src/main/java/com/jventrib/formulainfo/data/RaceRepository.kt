@@ -11,7 +11,9 @@ import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.data.db.*
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.data.remote.WikipediaService
+import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.aggregate.RaceWithResult
+import com.jventrib.formulainfo.model.aggregate.RaceWithResults
 import com.jventrib.formulainfo.model.db.*
 import com.jventrib.formulainfo.model.mapper.*
 import com.jventrib.formulainfo.utils.detect
@@ -33,7 +35,7 @@ class RaceRepository(
     private val constructorDao: ConstructorDao = roomDb.constructorDao()
     private val lapDao: LapDao = roomDb.lapTimeDao()
 
-    inline fun <R : List<E>, reified E, reified S> repo(
+    private inline fun <R : List<E>, reified E, reified S> repo(
         dbRead: () -> Flow<R>,
         crossinline remoteFetch: suspend () -> List<S>,
         crossinline dbInsert: suspend (l: List<S>) -> Unit
@@ -48,10 +50,8 @@ class RaceRepository(
                     emit(StoreResponse.Loading(Fetcher))
                     remoteFetch.invoke().also {
                         logcat { "Fetched ${S::class.simpleName} from API: $it" }
-                        if (it.isNotEmpty()) {
-                            dbInsert(it)
-                            logcat { "Insert in DB done" }
-                        }
+                        dbInsert(it)
+                        logcat { "Insert in DB done" }
                     }
 
                 } else {
@@ -104,6 +104,9 @@ class RaceRepository(
                         .also { logcat { "Inserting Results $it" } })
                 }
             })
+            .filter {
+                it !is StoreResponse.Data || it.value.size != 1 || it.value.first().resultInfo.number != -1
+            }
             .completeMissing(
                 { it.driver.image })
             {
@@ -129,7 +132,7 @@ class RaceRepository(
                     driver.code ?: driver.driverId,
                     it
                 ).run {
-                    if (isEmpty())
+                    ifEmpty {
                         listOf(
                             Lap(
                                 season,
@@ -142,8 +145,7 @@ class RaceRepository(
                                 Duration.ZERO
                             )
                         )
-                    else
-                        this
+                    }
                 }
                 lapDao.insertAll(list.also { logcat { "Inserting LapTime $it" } })
             })
@@ -263,8 +265,8 @@ class RaceRepository(
 
     fun getRacesWithResults(
         season: Int,
-    ): Flow<StoreResponse<List<RaceWithResult>>> {
-        val map = mutableMapOf<Int, RaceWithResult>()
+    ): Flow<StoreResponse<List<RaceWithResults>>> {
+        val map = mutableMapOf<Int, RaceWithResults>()
 
         val raceFlow = getRaces(season)
             .transformLatest { response ->
@@ -275,7 +277,7 @@ class RaceRepository(
                         data.forEach {
                             val raceWithResult = map[it.raceInfo.round]
                             if (raceWithResult == null) {
-                                map[it.raceInfo.round] = RaceWithResult(it, listOf())
+                                map[it.raceInfo.round] = RaceWithResults(it, listOf())
                             } else {
                                 map[it.raceInfo.round] = raceWithResult.copy(race = it)
                             }
@@ -286,7 +288,7 @@ class RaceRepository(
                             .flatMapMerge(data.size) { race ->
                                 getResults(season, race.raceInfo.round)
                                     .filterIsInstance<StoreResponse.Data<List<Result>>>()
-                                    .map { RaceWithResult(race, it.value) }
+                                    .map { RaceWithResults(race, it.value) }
 //                            flowOf(RaceWithResult(race, listOf(getResultSample("VER", 1))))
                             }
 
@@ -307,5 +309,65 @@ class RaceRepository(
             }
         return raceFlow.distinctUntilChanged()
     }
+
+    fun getStandings(season: Int, round: Int?): Flow<List<DriverStanding>> {
+        val groups = getRacesWithResults(season)
+            .filterIsInstance<StoreResponse.Data<List<RaceWithResults>>>()
+            .map { data ->
+                data.value
+                    .filter { it.race.raceInfo.round <= round ?: Int.MAX_VALUE }
+                    .flatMap { rrs -> rrs.results.map { RaceWithResult(rrs.race, it) } }
+                    .groupingBy { it.result.driver }
+                    .aggregate { key, acc: DriverStanding?, element, first ->
+                        if (first) {
+                            DriverStanding(
+                                element.result.driver,
+                                element.result.constructor,
+                                element.result.resultInfo.points,
+                                1,
+                                round
+                            )
+                        } else {
+                            acc!!.copy(points = acc.points + element.result.resultInfo.points)
+                        }
+                    }
+            }
+            .map {
+                it.values.sortedByDescending(DriverStanding::points)
+                    .mapIndexed { index, driverStanding ->
+                        driverStanding.copy(position = index + 1)
+                    }
+            }
+        return groups
+    }
+
+
+    fun getSeasonStandings(season: Int): Flow<Map<Driver, List<DriverStanding>>> =
+        getRacesWithResults(season)
+            .filterIsInstance<StoreResponse.Data<List<RaceWithResults>>>()
+            .map { data ->
+                data.value.flatMap { rrs -> rrs.results.map { RaceWithResult(rrs.race, it) } }
+            }
+            .map { list ->
+                list.groupBy { it.result.driver }
+                    .mapValues { entry ->
+                        entry.value
+                            .sortedBy { it.race.raceInfo.round }
+                            .scan(
+                                DriverStanding(
+                                    entry.key,
+                                    entry.value.first().result.constructor,
+                                    0f,
+                                    0,
+                                    0
+                                )
+                            ) { acc, rr ->
+                                acc.copy(
+                                    points = acc.points + rr.result.resultInfo.points,
+                                    round = rr.race.raceInfo.round
+                                )
+                            }
+                    }
+            }
 }
 

@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeliveryDining
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.MultilineChart
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -38,7 +40,8 @@ fun ResultsScreen(
     results: List<Result>,
     onDriverSelected: (driver: Driver) -> Unit,
     onRaceImageSelected: (Race) -> Unit,
-    onChartClicked: (Race) -> Unit
+    onChartClicked: () -> Unit,
+    onStandingClicked: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -49,7 +52,10 @@ fun ResultsScreen(
                         modifier = Modifier.clickable {})
                 },
                 actions = {
-                    IconButton(onClick = { onChartClicked(race) }) {
+                    IconButton(onClick = onStandingClicked) {
+                        Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
+                    }
+                    IconButton(onClick = onChartClicked) {
                         Icon(imageVector = Icons.Filled.MultilineChart, contentDescription = null)
                     }
                 }
@@ -128,7 +134,8 @@ fun RaceDetailPreview() {
         results = listOf(),
         onDriverSelected = {},
         onRaceImageSelected = {},
-        onChartClicked = {}
+        onChartClicked = {},
+        onStandingClicked = {}
     )
 }
 
@@ -142,7 +149,8 @@ fun RaceDetailDarkPreview() {
             results = listOf(),
             onDriverSelected = {},
             onRaceImageSelected = {},
-            onChartClicked = {}
+            onChartClicked = {},
+            onStandingClicked = {}
         )
     }
 }
