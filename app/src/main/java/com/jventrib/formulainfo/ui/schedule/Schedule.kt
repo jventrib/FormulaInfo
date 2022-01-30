@@ -62,11 +62,16 @@ fun ScheduleScreen(
                             )
                         }
                     }
-                    IconButton(onClick = onStandingClicked) {
-                        Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
-                    }
-                    IconButton(onClick = onStandingChartClicked) {
-                        Icon(imageVector = Icons.Filled.MultilineChart, contentDescription = null)
+                    if (raceList is StoreResponse.Data && raceList.value.any { it.results.isNotEmpty() }) {
+                        IconButton(onClick = onStandingClicked) {
+                            Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
+                        }
+                        IconButton(onClick = onStandingChartClicked) {
+                            Icon(
+                                imageVector = Icons.Filled.MultilineChart,
+                                contentDescription = null
+                            )
+                        }
                     }
                     SeasonMenu(
                         seasonList = seasonList,

@@ -46,9 +46,9 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
         }
 
     val resultsWithLaps =
-        round.distinctUntilChanged().switchMap {
+        race.distinctUntilChanged().switchMap {
             it?.let {
-                repository.getResultsWithLaps(season.value!!, it)
+                repository.getResultsWithLaps(season.value!!, it.raceInfo.round)
 //                    .map { it.toMap() }
                     .onEach { logcat { "Map $it" } }
                     .asLiveData()

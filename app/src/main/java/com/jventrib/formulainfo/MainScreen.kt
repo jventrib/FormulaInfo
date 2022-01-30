@@ -5,11 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
+import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.laps.Laps
@@ -56,22 +55,6 @@ fun MainScreen() {
                         onStandingChartClicked = { navController.navigate("standing/${viewModel.season.value}/chart") }
                     )
                 }
-            }
-            composable(
-                "standing/{season}/chart",
-                listOf(navArgument("season") { type = NavType.IntType })
-            ) { navBackStackEntry ->
-                val viewModel: ResultsViewModel =
-                    hiltViewModel(navController.currentBackStackEntry!!)
-                val standings by viewModel.seasonStandings.observeAsState()
-
-                val season = navBackStackEntry.arguments?.get("season") as Int
-                viewModel.season.value = season
-                viewModel.round.value = null
-
-//                standings?.let {
-                DriverStandingChart(season, standings ?: mapOf())
-//                }
             }
             composable(
                 "race/{season}/{round}",
@@ -127,9 +110,35 @@ fun MainScreen() {
                         onRaceImageSelected = {},
                         onChartClicked = {
                             navController.navigate("resultsGraph/${it.raceInfo.season}/${it.raceInfo.round}")
+                        },
+                        onStandingChartClicked = {
+                            navController.popBackStack()
+                            navController.navigate("standing/${viewModel.season.value}/chart")
                         }
                     )
                 }
+            }
+            composable(
+                "standing/{season}/chart",
+                listOf(navArgument("season") { type = NavType.IntType })
+            ) { navBackStackEntry ->
+                val viewModel: ResultsViewModel =
+                    hiltViewModel(navController.currentBackStackEntry!!)
+                val standings by viewModel.seasonStandings.observeAsState()
+
+                val season = navBackStackEntry.arguments?.get("season") as Int
+                viewModel.season.value = season
+                viewModel.round.value = null
+
+//                standings?.let {
+                DriverStandingChart(
+                    season = season,
+                    standings = standings ?: mapOf(),
+                    onStandingClicked = {
+                        navController.popBackStack()
+                        navController.navigate("standing/${viewModel.season.value}/999")
+                    })
+//                }
             }
             composable(
                 "laps/{season}/{round}/{driver}",

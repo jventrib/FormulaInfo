@@ -23,7 +23,8 @@ fun DriverStandingScreen(
     standings: List<DriverStanding>,
     onDriverSelected: (driver: Driver) -> Unit,
     onRaceImageSelected: (Race) -> Unit,
-    onChartClicked: (Race) -> Unit
+    onChartClicked: (Race) -> Unit,
+    onStandingChartClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -33,11 +34,11 @@ fun DriverStandingScreen(
                         "${race?.raceInfo?.raceName?.let { "$it " } ?: ""}$season standing",
                         modifier = Modifier.clickable {})
                 },
-//                actions = {
-//                    IconButton(onClick = { onChartClicked(race) }) {
-//                        Icon(imageVector = Icons.Filled.MultilineChart, contentDescription = null)
-//                    }
-//                }
+                actions = {
+                    IconButton(onClick = onStandingChartClicked) {
+                        Icon(imageVector = Icons.Filled.MultilineChart, contentDescription = null)
+                    }
+                }
             )
         }) {
         LazyColumn {
@@ -58,7 +59,8 @@ fun DriverStandingScreenPreview() {
         standings = listOf(),
         onDriverSelected = {},
         onRaceImageSelected = {},
-        onChartClicked = {}
+        onChartClicked = {},
+        onStandingChartClicked = {},
     )
 }
 

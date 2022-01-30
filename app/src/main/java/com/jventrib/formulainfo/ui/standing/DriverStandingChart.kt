@@ -1,10 +1,10 @@
 package com.jventrib.formulainfo.ui.schedule
 
 import androidx.compose.foundation.clickable
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.MultilineChart
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -31,7 +31,8 @@ import java.time.Duration
 @Composable
 fun DriverStandingChart(
     season: Int,
-    standings: Map<Driver, List<DriverStanding>>
+    standings: Map<Driver, List<DriverStanding>>,
+    onStandingClicked: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
 
@@ -44,6 +45,11 @@ fun DriverStandingChart(
                         "$season standing",
                         modifier = Modifier.clickable {})
                 },
+                actions = {
+                    IconButton(onClick = onStandingClicked) {
+                        Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
+                    }
+                }
             )
         }) {
 
