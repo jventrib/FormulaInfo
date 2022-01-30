@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
+import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.getRaceSample
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
@@ -52,11 +53,16 @@ fun ResultsScreen(
                         modifier = Modifier.clickable {})
                 },
                 actions = {
-                    IconButton(onClick = onStandingClicked) {
-                        Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
-                    }
-                    IconButton(onClick = onChartClicked) {
-                        Icon(imageVector = Icons.Filled.MultilineChart, contentDescription = null)
+                    if (results.isNotEmpty()) {
+                        IconButton(onClick = onStandingClicked) {
+                            Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
+                        }
+                        IconButton(onClick = onChartClicked) {
+                            Icon(
+                                imageVector = Icons.Filled.MultilineChart,
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
             )
