@@ -4,11 +4,14 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -22,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
+import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -137,10 +141,12 @@ private fun <E> YAxis(seriesPoints: List<Serie<E>>) {
             if (yOrigin != null && !yOrigin.y.isNaN()) {
                 Text(
                     text = serie.label,
+                    color = Color.White,
                     modifier = Modifier
                         .offset(offset = {
                             IntOffset(0, yOrigin.y.roundToInt() - 12.dp.roundToPx())
                         })
+                        .clip(MaterialTheme.shapes.medium)
                         .background(serie.color)
                 )
             } else null
@@ -209,6 +215,13 @@ private fun <E> DrawScope.drawAxisLabels(
             val decimal = x.formatDecimal(false)
             val onScreenPoint = getOnScreenPoint(Offset(x, 0f), state).copy(y = 0f)
             if (size.toRect().contains(onScreenPoint)) {
+                drawRoundRect(
+                    backgroundColor,
+                    onScreenPoint.copy(x = onScreenPoint.x - 8.dp.toPx(), y = this.size.height),
+                    Size(decimal.length * 24f, 40f),
+                    CornerRadius(12f, 12f),
+                    alpha = 0.7f
+                )
                 drawIntoCanvas {
                     it.nativeCanvas.drawText(
                         decimal,
