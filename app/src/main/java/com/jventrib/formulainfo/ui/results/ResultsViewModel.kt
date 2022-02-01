@@ -41,7 +41,7 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
     val results: LiveData<StoreResponse<List<Result>>> =
         race.distinctUntilChanged().switchMap {
             it?.let {
-                repository.getResults(season.value!!, it.raceInfo.round).asLiveData()
+                repository.getResults(season.value!!, it.raceInfo.round,true).asLiveData()
             } ?: MutableLiveData(StoreResponse.Loading(ResponseOrigin.Fetcher))
         }
 

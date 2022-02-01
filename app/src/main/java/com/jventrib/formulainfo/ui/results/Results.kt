@@ -76,7 +76,6 @@ fun ResultsScreen(
             object : NestedScrollConnection {
                 override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                     val delta = available.y
-                    logcat(LogPriority.VERBOSE) { "delta $delta" }
                     circuitScrollHeightPx =
                         (circuitScrollHeightPx + delta).coerceIn(-headerHeightPx, 0f)
                     return Offset.Zero
