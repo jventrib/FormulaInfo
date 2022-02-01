@@ -3,6 +3,7 @@ package com.jventrib.formulainfo.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import androidx.annotation.BoolRes
 import androidx.room.withTransaction
 import coil.imageLoader
 import coil.request.ImageRequest
@@ -73,7 +74,7 @@ class RaceRepository(
                         .also { logcat { "Inserting Races $it" } })
                 }
             })
-            .completeMissing({ it.circuit.location.flag }) {
+            .completeMissing(true, { it.circuit.location.flag }) {
                 logcat { "Completing circuit ${it.circuit.location.country} with image" }
                 circuitDao.insert(getCircuitWithFlag(it))
             }
@@ -89,7 +90,8 @@ class RaceRepository(
 
     fun getResults(
         season: Int,
-        round: Int
+        round: Int,
+        completeDriverImage: Boolean
     ): Flow<StoreResponse<List<Result>>> =
         repo(
             dbRead = { resultDao.getResults(season, round) },
@@ -107,8 +109,7 @@ class RaceRepository(
             .filter {
                 it !is StoreResponse.Data || it.value.size != 1 || it.value.first().resultInfo.number != -1
             }
-            .completeMissing(
-                { it.driver.image })
+            .completeMissing(completeDriverImage, { it.driver.image })
             {
                 logcat { "Completing driver ${it.driver.code} with image" }
                 driverDao.insert(getDriverWithImage(it))
@@ -160,7 +161,7 @@ class RaceRepository(
     fun getResultsWithLaps(
         season: Int,
         round: Int,
-    ) = getResults(season, round)
+    ) = getResults(season, round, false)
         .filterIsInstance<StoreResponse.Data<List<Result>>>()
         .take(1)
         .map { it.value }
@@ -213,12 +214,13 @@ class RaceRepository(
     }
 
     private fun <T : StoreResponse<List<U>>, U> Flow<T>.completeMissing(
+        complete: Boolean,
         attr: (U) -> Any?,
         action: suspend (U) -> Unit
     ): Flow<T> =
         this.transform { response ->
             emit(response)
-            if (response is StoreResponse.Data<*>) {
+            if (complete && response is StoreResponse.Data<*>) {
                 response.dataOrNull()?.firstOrNull { attr(it) == null }?.let {
                     action(it)
                 }
@@ -286,15 +288,14 @@ class RaceRepository(
 
                         val allResults = data.asFlow()
                             .flatMapMerge(data.size) { race ->
-                                getResults(season, race.raceInfo.round)
+                                getResults(season, race.raceInfo.round, true)
                                     .filterIsInstance<StoreResponse.Data<List<Result>>>()
                                     .map { RaceWithResults(race, it.value) }
-//                            flowOf(RaceWithResult(race, listOf(getResultSample("VER", 1))))
                             }
 
                         val toEmit = allResults.map {
                             val raceWithResult = map.getValue(it.race.raceInfo.round)
-                            if (raceWithResult.results.isEmpty()) {
+                            if (raceWithResult.results.size <= it.results.size ) {
                                 map[it.race.raceInfo.round] = it
                             }
                             StoreResponse.Data(map.values.toList(), SourceOfTruth)
