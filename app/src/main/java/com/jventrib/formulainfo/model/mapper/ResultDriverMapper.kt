@@ -24,10 +24,21 @@ object ResultDriverMapper {
     fun toEntity(remotes: List<ResultRemote>): List<Driver> {
         return if (remotes.isEmpty()) {
             listOf(
-                Driver("nodata", -1, "nodata", "", "", "", "", "", "nodata", null, -1)
+                Driver(
+                    "nodata",
+                    -1,
+                    "nodata",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "nodata",
+                    null,
+                    -1
+                )
             )
-        }
-        else {
+        } else {
             val list = remotes.groupBy { it.constructor }.flatMap {
                 it.value.mapIndexed { index, result -> Pair(result, index) }
             }

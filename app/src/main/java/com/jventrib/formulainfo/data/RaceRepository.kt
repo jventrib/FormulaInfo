@@ -3,11 +3,11 @@ package com.jventrib.formulainfo.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import androidx.annotation.BoolRes
 import androidx.room.withTransaction
 import coil.imageLoader
 import coil.request.ImageRequest
-import com.dropbox.android.external.store4.ResponseOrigin.*
+import com.dropbox.android.external.store4.ResponseOrigin.Fetcher
+import com.dropbox.android.external.store4.ResponseOrigin.SourceOfTruth
 import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.data.db.*
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
@@ -15,9 +15,12 @@ import com.jventrib.formulainfo.data.remote.WikipediaService
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.aggregate.RaceWithResult
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
-import com.jventrib.formulainfo.model.db.*
+import com.jventrib.formulainfo.model.db.Driver
+import com.jventrib.formulainfo.model.db.Lap
+import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.mapper.*
-import com.jventrib.formulainfo.utils.detect
+import com.jventrib.formulainfo.utils.FaceDetection
 import kotlinx.coroutines.flow.*
 import logcat.LogPriority
 import logcat.logcat
@@ -113,6 +116,11 @@ class RaceRepository(
             {
                 logcat { "Completing driver ${it.driver.code} with image" }
                 driverDao.insert(getDriverWithImage(it))
+            }
+            .onEach { response ->
+                if (response.dataOrNull()?.all { it.driver.image != null  } == true) {
+                    FaceDetection.close()
+                }
             }
             .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
 
@@ -249,7 +257,7 @@ class RaceRepository(
 
         val bitmap =
             (drawable as? BitmapDrawable)?.bitmap?.copy(Bitmap.Config.ARGB_8888, true)
-        val centerRect = bitmap?.let { detect(it) }
+        val centerRect = bitmap?.let { FaceDetection.detect(it) }
 
         return result.driver.copy(
             image = imageUrl,
@@ -295,7 +303,7 @@ class RaceRepository(
 
                         val toEmit = allResults.map {
                             val raceWithResult = map.getValue(it.race.raceInfo.round)
-                            if (raceWithResult.results.size <= it.results.size ) {
+                            if (raceWithResult.results.size <= it.results.size) {
                                 map[it.race.raceInfo.round] = it
                             }
                             StoreResponse.Data(map.values.toList(), SourceOfTruth)
@@ -314,7 +322,7 @@ class RaceRepository(
     fun getStandings(season: Int, round: Int?): Flow<List<DriverStanding>> {
         val groups = getRacesWithResults(season)
             .filterIsInstance<StoreResponse.Data<List<RaceWithResults>>>()
-            .map { data ->
+            .mapLatest { data ->
                 data.value
                     .filter { it.race.raceInfo.round <= round ?: Int.MAX_VALUE }
                     .flatMap { rrs -> rrs.results.map { RaceWithResult(rrs.race, it) } }
@@ -370,5 +378,35 @@ class RaceRepository(
                             }
                     }
             }
+
+    fun getRaceWithResultFlow(
+        season: Int,
+    ): Flow<RaceWithResult> = getRaces(season)
+        .getData()
+        .flatMapLatest { it.asFlow() }
+        .flatMapConcat { race ->
+            getResults(season, race.raceInfo.round, true)
+                .filterIsInstance<StoreResponse.Data<List<Result>>>()
+                .filter { it.value.all { it.driver.image != null } }
+                .take(1)
+                .map { it.value }
+                .flatMapLatest { it.asFlow() }
+                .map { RaceWithResult(race, it) }
+        }
+
+
+
+//    fun getStandings(season: Int) {
+//        getRaceWithResultFlow(season)
+//            .toList()
+//            .groupBy { it. }
+//
+//    }
+
+    private fun <E> Flow<StoreResponse<E>>.getData() =
+        this.filterIsInstance<StoreResponse.Data<E>>()
+            .take(1).map { it.value }
+
+
 }
 
