@@ -118,7 +118,7 @@ class RaceRepository(
                 driverDao.insert(getDriverWithImage(it))
             }
             .onEach { response ->
-                if (response.dataOrNull()?.all { it.driver.image != null  } == true) {
+                if (response.dataOrNull()?.all { it.driver.image != null } == true) {
                     FaceDetection.close()
                 }
             }
@@ -320,34 +320,20 @@ class RaceRepository(
     }
 
     fun getStandings(season: Int, round: Int?): Flow<List<DriverStanding>> {
-        val groups = getRacesWithResults(season)
-            .filterIsInstance<StoreResponse.Data<List<RaceWithResults>>>()
-            .mapLatest { data ->
-                data.value
-                    .filter { it.race.raceInfo.round <= round ?: Int.MAX_VALUE }
-                    .flatMap { rrs -> rrs.results.map { RaceWithResult(rrs.race, it) } }
-                    .groupingBy { it.result.driver }
-                    .aggregate { key, acc: DriverStanding?, element, first ->
-                        if (first) {
-                            DriverStanding(
-                                element.result.driver,
-                                element.result.constructor,
-                                element.result.resultInfo.points,
-                                1,
-                                round
-                            )
-                        } else {
-                            acc!!.copy(points = acc.points + element.result.resultInfo.points)
-                        }
-                    }
+        val groups = getRaceWithResultFlow(season)
+            .filter { round == null || it.race.raceInfo.round <= round }
+            .scan(mapOf<String, DriverStanding>()) { acc, value ->
+                acc + (value.result.driver.driverId
+                        to DriverStanding(
+                    value.result.driver,
+                    value.result.constructor,
+                    (acc[value.result.driver.driverId]?.points
+                        ?: 0f) + value.result.resultInfo.points,
+                    1,
+                    value.race.raceInfo.round
+                ))
             }
-            .map {
-                it.values.sortedByDescending(DriverStanding::points)
-                    .mapIndexed { index, driverStanding ->
-                        driverStanding.copy(position = index + 1)
-                    }
-            }
-        return groups
+        return groups.map { it.values.toList().sortedByDescending { it.points } }
     }
 
 
@@ -381,19 +367,25 @@ class RaceRepository(
 
     fun getRaceWithResultFlow(
         season: Int,
-    ): Flow<RaceWithResult> = getRaces(season)
-        .getData()
-        .flatMapLatest { it.asFlow() }
-        .flatMapConcat { race ->
-            getResults(season, race.raceInfo.round, true)
-                .filterIsInstance<StoreResponse.Data<List<Result>>>()
-                .filter { it.value.all { it.driver.image != null } }
-                .take(1)
-                .map { it.value }
-                .flatMapLatest { it.asFlow() }
-                .map { RaceWithResult(race, it) }
-        }
-
+    ): Flow<RaceWithResult> {
+        return getRaces(season)
+            .getData()
+            .flatMapLatest { it.asFlow() }
+            .flatMapConcat { race ->
+                getResults(season, race.raceInfo.round, true)
+                    .filterIsInstance<StoreResponse.Data<List<Result>>>()
+//                    .filter { data -> data.value.all { it.driver.image != null } }
+//                    .take(1)
+                    .transformWhile { data ->
+                        emit(data)
+                        logcat { "data: $data" }
+                        data.value.any { it.driver.image == null }
+                    }
+                    .map { it.value }
+                    .flatMapLatest { it.asFlow() }
+                    .map { RaceWithResult(race, it) }
+            }
+    }
 
 
 //    fun getStandings(season: Int) {
