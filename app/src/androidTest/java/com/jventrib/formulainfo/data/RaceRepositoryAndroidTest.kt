@@ -1,13 +1,13 @@
 package com.jventrib.formulainfo.data
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import logcat.AndroidLogcatLogger
 import logcat.LogPriority
 import org.junit.Before
@@ -22,6 +22,9 @@ class RaceRepositoryAndroidTest {
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
+
+//    @get:Rule
+//    var instantTaskExecutor = InstantTaskExecutorRule()
 
     @Before
     fun setup() {
@@ -47,6 +50,7 @@ class RaceRepositoryAndroidTest {
     @Test
     fun testRepo() {
         runBlocking {
+            raceRepository.refresh()
             val races = raceRepository.getRaceWithResultFlow(2021).collect {
                 println("${it.result.resultInfo.key}-${it.result.driver.driverId}")
             }
