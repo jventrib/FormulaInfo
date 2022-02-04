@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.dropbox.android.external.store4.StoreResponse
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
@@ -24,7 +23,7 @@ import java.time.Year
 
 @Composable
 fun ScheduleScreen(
-    raceList: StoreResponse<List<RaceWithResults>>,
+    raceList: List<RaceWithResults>,
     onRaceClicked: (Race) -> Unit,
     seasonList: List<Int>,
     selectedSeason: Int?,
@@ -51,8 +50,7 @@ fun ScheduleScreen(
                         IconButton(onClick = {
                             coroutineScope.launch {
                                 listState.animateScrollToItem(
-                                    index = raceList.dataOrNull()?.indexOfFirst { it.race.nextRace }
-                                        ?: 0
+                                    index = raceList.indexOfFirst { it.race.nextRace }
                                 )
                             }
                         }) {
@@ -62,7 +60,7 @@ fun ScheduleScreen(
                             )
                         }
                     }
-                    if (raceList is StoreResponse.Data && raceList.value.any { it.results.isNotEmpty() }) {
+                    if (raceList.any { it.results.isNotEmpty() }) {
                         IconButton(onClick = onStandingClicked) {
                             Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
                         }
@@ -87,25 +85,23 @@ fun ScheduleScreen(
 
 @Composable
 fun RaceList(
-    raceList: StoreResponse<List<RaceWithResults>>,
+    raceList: List<RaceWithResults>,
     onRaceSelected: (Race) -> Unit,
     listState: LazyListState,
     onRefresh: () -> Unit
 ) {
     SwipeRefresh(
-        state = rememberSwipeRefreshState(raceList is StoreResponse.Loading),
+        state = rememberSwipeRefreshState(raceList.isEmpty()),
         onRefresh = onRefresh,
     ) {
         LazyColumn(state = listState) {
-            raceList.dataOrNull()?.let { raceList ->
-                items(raceList) {
-                    Race(
-                        race = it.race,
-                        results = it.results,
-                        expanded = it.race.nextRace,
-                        onRaceSelected = onRaceSelected
-                    )
-                }
+            items(raceList) {
+                Race(
+                    race = it.race,
+                    results = it.results,
+                    expanded = it.race.nextRace,
+                    onRaceSelected = onRaceSelected
+                )
             }
         }
     }

@@ -51,7 +51,7 @@ fun MainScreen() {
                         },
                         onAboutClicked = { navController.navigate("about") },
                         onRefreshClicked = { scope.launch { viewModel.refresh() } },
-                        onStandingClicked = { navController.navigate("standing/${viewModel.season.value}/999") },
+                        onStandingClicked = { navController.navigate("standing/${viewModel.season.value}/0") },
                         onStandingChartClicked = { navController.navigate("standing/${viewModel.season.value}/chart") }
                     )
                 }
@@ -72,7 +72,7 @@ fun MainScreen() {
                 race?.let {
                     ResultsScreen(
                         race = it,
-                        results = results?.dataOrNull() ?: listOf(),
+                        results = results ?: listOf(),
                         onDriverSelected = { driver ->
                             navController.navigate("laps/${season}/${round}/${driver.driverId}")
                         },
@@ -96,7 +96,8 @@ fun MainScreen() {
                 val race by viewModel.race.observeAsState()
                 val standings by viewModel.standings.observeAsState()
                 val season = navBackStackEntry.arguments?.get("season") as Int
-                val round = navBackStackEntry.arguments?.get("round") as Int
+                val round = (navBackStackEntry.arguments?.get("round") as Int)
+                    .let { if (it == 0) null else it }
                 viewModel.season.value = season
                 viewModel.round.value = round
                 standings?.let { st ->
@@ -124,7 +125,7 @@ fun MainScreen() {
             ) { navBackStackEntry ->
                 val viewModel: ResultsViewModel =
                     hiltViewModel(navController.currentBackStackEntry!!)
-                val standings by viewModel.seasonStandings.observeAsState()
+                val standings by viewModel.seasonStandingsChart.observeAsState()
 
                 val season = navBackStackEntry.arguments?.get("season") as Int
                 viewModel.season.value = season
@@ -136,7 +137,7 @@ fun MainScreen() {
                     standings = standings ?: mapOf(),
                     onStandingClicked = {
                         navController.popBackStack()
-                        navController.navigate("standing/${viewModel.season.value}/999")
+                        navController.navigate("standing/${viewModel.season.value}/0")
                     })
 //                }
             }
@@ -156,7 +157,7 @@ fun MainScreen() {
                 viewModel.driverId.value = navBackStackEntry.arguments?.get("driver") as String
                 val race by viewModel.race.observeAsState()
 
-                result?.let { Laps(race, it, lapTimes?.dataOrNull() ?: listOf()) }
+                result?.let { Laps(race, it, lapTimes ?: listOf()) }
             }
             composable(
                 "resultsGraph/{season}/{round}",

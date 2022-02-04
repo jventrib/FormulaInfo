@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.MultilineChart
 import androidx.compose.runtime.*
@@ -22,7 +21,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.getRaceSample
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
@@ -30,8 +28,6 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.components.Image
 import com.jventrib.formulainfo.ui.schedule.item.Race
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
-import logcat.LogPriority
-import logcat.logcat
 import kotlin.math.roundToInt
 
 @ExperimentalCoilApi
