@@ -18,7 +18,7 @@ class Application: Application() {
         super.onCreate()
 //        LeakCanary.config = LeakCanary.config.copy(retainedVisibleThreshold = 1)
 
-        AndroidLogcatLogger.installOnDebuggableApp(this, minPriority = LogPriority.VERBOSE)
+        AndroidLogcatLogger.installOnDebuggableApp(this, minPriority = LogPriority.DEBUG)
     }
 
 }

@@ -6,9 +6,6 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.room.withTransaction
 import coil.imageLoader
 import coil.request.ImageRequest
-import com.dropbox.android.external.store4.ResponseOrigin.Fetcher
-import com.dropbox.android.external.store4.ResponseOrigin.SourceOfTruth
-import com.dropbox.android.external.store4.StoreResponse
 import com.jventrib.formulainfo.data.db.*
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.data.remote.WikipediaService
@@ -43,7 +40,7 @@ class RaceRepository(
         dbRead: () -> Flow<R>,
         crossinline remoteFetch: suspend () -> List<S>,
         crossinline dbInsert: suspend (l: List<S>) -> Unit
-    ): Flow<StoreResponse<R>> =
+    ): Flow<R> =
         dbRead.invoke()
             .distinctUntilChanged()
             .transformLatest { data ->
@@ -51,85 +48,96 @@ class RaceRepository(
                 logcat { "Getting ${E::class.simpleName} from DB" }
                 if (data.isEmpty()) {
                     logcat { "No ${E::class.simpleName} in DB, fetching from remote" }
-                    emit(StoreResponse.Loading(Fetcher))
                     remoteFetch.invoke().also {
-                        logcat { "Fetched ${S::class.simpleName} from API: $it" }
+                        logcat { "Fetched ${S::class.simpleName} from remote" }
+                        logcat(priority = LogPriority.VERBOSE) { "data: $it" }
                         dbInsert(it)
                         logcat { "Insert in DB done" }
                     }
 
                 } else {
                     logcat { "Got ${data.size} ${E::class.simpleName} from DB" }
-                    this.emit(StoreResponse.Data(data, SourceOfTruth))
+                    logcat(priority = LogPriority.VERBOSE) { "data: $data" }
+                    this.emit(data)
                 }
             }
 
 
-    fun getRaces(season: Int): Flow<StoreResponse<List<Race>>> =
+    fun getRaces(season: Int, completeFlags: Boolean): Flow<List<Race>> =
         repo(
             dbRead = { raceDao.getRaces(season) },
             remoteFetch = { raceRemoteDataSource.getRaces(season) },
             dbInsert = {
                 roomDb.withTransaction {
                     circuitDao.insertAll(RaceCircuitMapper.toEntity(it)
-                        .also { logcat { "Inserting Circuits $it" } })
+                        .also { logcat { "Inserting Circuits" } })
                     raceDao.insertAll(RaceMapper.toEntity(it)
-                        .also { logcat { "Inserting Races $it" } })
+                        .also { logcat { "Inserting Races" } })
                 }
             })
-            .completeMissing(true, { it.circuit.location.flag }) {
-                logcat { "Completing circuit ${it.circuit.location.country} with image" }
+            .completeMissing(completeFlags, { it.circuit.location.flag }) {
+                logcat { "Completing circuit ${it.raceInfo.raceName} with image" }
                 circuitDao.insert(getCircuitWithFlag(it))
             }
             .onEach { response ->
-                response.dataOrNull()?.forEach { it.nextRace = false }
-                response.dataOrNull()
-                    ?.firstOrNull { it.raceInfo.sessions.race.isAfter(Instant.now()) }
+                response.forEach { it.nextRace = false }
+                response
+                    .firstOrNull { it.raceInfo.sessions.race.isAfter(Instant.now()) }
                     ?.let { it.nextRace = true }
 
             }
-            .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
+            .transformWhile {
+                emit(it)
+                it.isNotEmpty() && it.any { it.circuit.location.flag == null }
+            }
 
 
     fun getResults(
         season: Int,
         round: Int,
         completeDriverImage: Boolean
-    ): Flow<StoreResponse<List<Result>>> =
+    ): Flow<List<Result>> =
         repo(
             dbRead = { resultDao.getResults(season, round) },
             remoteFetch = { raceRemoteDataSource.getResults(season, round) },
             dbInsert = {
                 roomDb.withTransaction {
                     driverDao.insertAll(ResultDriverMapper.toEntity(it)
-                        .also { logcat { "Inserting Drivers $it" } })
+                        .also { logcat { "Inserting Drivers" } })
                     constructorDao.insertAll(ResultConstructorMapper.toEntity(it)
-                        .also { logcat { "Inserting Constructors $it" } })
+                        .also { logcat { "Inserting Constructors" } })
                     resultDao.insertAll(ResultMapper.toEntity(season, round, it)
-                        .also { logcat { "Inserting Results $it" } })
+                        .also { logcat { "Inserting Results" } })
                 }
             })
-            .filter {
-                it !is StoreResponse.Data || it.value.size != 1 || it.value.first().resultInfo.number != -1
-            }
+//            .filter {
+//                it.size != 1 || it.first().resultInfo.number != -1
+//            }
             .completeMissing(completeDriverImage, { it.driver.image })
             {
                 logcat { "Completing driver ${it.driver.code} with image" }
                 driverDao.insert(getDriverWithImage(it))
             }
             .onEach { response ->
-                if (response.dataOrNull()?.all { it.driver.image != null } == true) {
+                if (response.all { it.driver.image != null }) {
                     FaceDetection.close()
                 }
             }
-            .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
+            .transformWhile {
+                val realData = it.size != 1 || it.first().resultInfo.number != -1
+                if (realData) {
+                    emit(it)
+                }
+                realData && it.any { it.driver.image == null }
+            }
+            .let { if (completeDriverImage) it else it.take(1) }
 
 
     fun getLaps(
         season: Int,
         round: Int,
         driver: Driver
-    ): Flow<StoreResponse<List<Lap>>> =
+    ): Flow<List<Lap>> =
         repo(
             dbRead = { lapDao.getAll(season, round, driver.driverId) },
             remoteFetch = { raceRemoteDataSource.getLapTime(season, round, driver.driverId) },
@@ -156,29 +164,20 @@ class RaceRepository(
                         )
                     }
                 }
-                lapDao.insertAll(list.also { logcat { "Inserting LapTime $it" } })
+                lapDao.insertAll(list.also { logcat { "Inserting LapTime" } })
             })
-            .map { response ->
-                if (response is StoreResponse.Data)
-                    response.copy(value = response.value.filter { it.number >= 0 })
-                else response
-            }
-            .onEach { logcat(LogPriority.VERBOSE) { "Response: $it" } }
+            .map { list -> list.filter { it.number >= 0 } }
 
 
     fun getResultsWithLaps(
         season: Int,
         round: Int,
     ) = getResults(season, round, false)
-        .filterIsInstance<StoreResponse.Data<List<Result>>>()
         .take(1)
-        .map { it.value }
         .flatMapLatest { it.asFlow() }
         .flatMapMerge(20) { result ->
             getLaps(season, round, result.driver)
-                .filterIsInstance<StoreResponse.Data<List<Lap>>>()
                 .take(1)
-                .map { it.value }
                 .map { result to it }
         }
         .onEach { println("Pair: ${it.first} -> ${it.second.size}") }
@@ -199,6 +198,7 @@ class RaceRepository(
         resultDao.getResult(season, round, driverId)
 
     suspend fun refresh() {
+        logcat { "Refreshing" }
         roomDb.withTransaction {
             raceDao.deleteAll()
             circuitDao.deleteAll()
@@ -207,6 +207,7 @@ class RaceRepository(
             constructorDao.deleteAll()
             lapDao.deleteAll()
         }
+        logcat { "Refresh done" }
     }
 
     private fun completeRace(r: Race) = flow {
@@ -221,15 +222,15 @@ class RaceRepository(
         }
     }
 
-    private fun <T : StoreResponse<List<U>>, U> Flow<T>.completeMissing(
+    private fun <T : List<U>, U> Flow<T>.completeMissing(
         complete: Boolean,
         attr: (U) -> Any?,
         action: suspend (U) -> Unit
     ): Flow<T> =
         this.transform { response ->
             emit(response)
-            if (complete && response is StoreResponse.Data<*>) {
-                response.dataOrNull()?.firstOrNull { attr(it) == null }?.let {
+            if (complete) {
+                response.firstOrNull { attr(it) == null }?.let {
                     action(it)
                 }
             }
@@ -272,76 +273,86 @@ class RaceRepository(
             ) ?: "NONE"
         )
 
-
     fun getRacesWithResults(
         season: Int,
-    ): Flow<StoreResponse<List<RaceWithResults>>> {
-        val map = mutableMapOf<Int, RaceWithResults>()
-
-        val raceFlow = getRaces(season)
-            .transformLatest { response ->
-                when (response) {
-                    is StoreResponse.Loading -> emit(response)
-                    is StoreResponse.Data -> {
-                        val data = response.value
-                        data.forEach {
-                            val raceWithResult = map[it.raceInfo.round]
-                            if (raceWithResult == null) {
-                                map[it.raceInfo.round] = RaceWithResults(it, listOf())
-                            } else {
-                                map[it.raceInfo.round] = raceWithResult.copy(race = it)
-                            }
-                        }
-                        emit(StoreResponse.Data(map.values.toList(), SourceOfTruth))
-
-                        val allResults = data.asFlow()
-                            .flatMapMerge(data.size) { race ->
-                                getResults(season, race.raceInfo.round, true)
-                                    .filterIsInstance<StoreResponse.Data<List<Result>>>()
-                                    .map { RaceWithResults(race, it.value) }
-                            }
-
-                        val toEmit = allResults.map {
-                            val raceWithResult = map.getValue(it.race.raceInfo.round)
-                            if (raceWithResult.results.size <= it.results.size) {
-                                map[it.race.raceInfo.round] = it
-                            }
-                            StoreResponse.Data(map.values.toList(), SourceOfTruth)
-                        }
-                        emitAll(toEmit)
-
-                    }
-                    is StoreResponse.NoNewData -> TODO()
-                    is StoreResponse.Error.Exception -> TODO()
-                    is StoreResponse.Error.Message -> TODO()
+        completeDriverImages: Boolean,
+        completeFlags: Boolean,
+    ): Flow<List<RaceWithResults>> {
+        val r = getRaces(season, completeFlags)
+            .transformLatest { races ->
+                races.forEach { race ->
+                    emit(RaceWithResults(race, listOf()))
                 }
+                races.map { race ->
+                    val rrFlow = getResults(season, race.raceInfo.round, completeDriverImages)
+                        .map { RaceWithResults(race, it) }
+                    emitAll(rrFlow)
+                }
+//                if (completeDriverImages) {
+//                    races.forEach { race ->
+//                        val rrFlow = getResults(season, race.raceInfo.round, true)
+//                            .map { RaceWithResults(race, it) }
+//                        emitAll(rrFlow)
+//                    }
+//                }
             }
-        return raceFlow.distinctUntilChanged()
+            .scan(mapOf<Int, RaceWithResults>()) { acc, value ->
+                val existing = acc[value.race.raceInfo.round]
+                val results =
+                    if (existing != null && existing.results.size > 1)
+                        existing.results
+//                        if (value.results.isEmpty()) {
+//                            existing.results
+//
+//                        } else {
+//                            existing.results.zip(value.results) { a, b ->
+//                                a.copy(driver = a.driver.copy(image = b.driver.image, faceBox = b.driver.faceBox))
+//                            }
+//                        }
+                    else
+                        value.results
+                acc + (value.race.raceInfo.round to value.copy(results = results))
+            }
+
+        return r.map { it.values.toList() }
     }
 
-    fun getStandings(season: Int, round: Int?): Flow<List<DriverStanding>> {
-        val groups = getRaceWithResultFlow(season)
-            .filter { round == null || it.race.raceInfo.round <= round }
-            .scan(mapOf<String, DriverStanding>()) { acc, value ->
-                acc + (value.result.driver.driverId
-                        to DriverStanding(
-                    value.result.driver,
-                    value.result.constructor,
-                    (acc[value.result.driver.driverId]?.points
-                        ?: 0f) + value.result.resultInfo.points,
-                    1,
-                    value.race.raceInfo.round
-                ))
+    fun getRoundStandings(season: Int, round: Int?): Flow<List<DriverStanding>> {
+        val t = getSeasonStandings(season, true)
+            .map { map ->
+                map.values.map { list -> round?.let { list.getOrNull(it) } ?: list.last() }
             }
-        return groups.map { it.values.toList().sortedByDescending { it.points } }
+        return t.map {
+            it.sortedByDescending { it.points }.mapIndexed { index, driverStanding ->
+                driverStanding.copy(position = index + 1)
+            }
+        }
+
+
+//        val groups = getRaceWithResultFlow(season)
+//            .filter { round == null || it.race.raceInfo.round <= round }
+//            .scan(mapOf<String, DriverStanding>()) { acc, value ->
+//                acc + (value.result.driver.driverId
+//                        to DriverStanding(
+//                    value.result.driver,
+//                    value.result.constructor,
+//                    (acc[value.result.driver.driverId]?.points
+//                        ?: 0f) + value.result.resultInfo.points,
+//                    1,
+//                    value.race.raceInfo.round
+//                ))
+//            }
+//        return groups.map { it.values.toList().sortedByDescending { it.points } }
     }
 
 
-    fun getSeasonStandings(season: Int): Flow<Map<Driver, List<DriverStanding>>> =
-        getRacesWithResults(season)
-            .filterIsInstance<StoreResponse.Data<List<RaceWithResults>>>()
+    fun getSeasonStandings(
+        season: Int,
+        completeDriverImages: Boolean
+    ): Flow<Map<Driver, List<DriverStanding>>> =
+        getRacesWithResults(season, completeDriverImages, false)
             .map { data ->
-                data.value.flatMap { rrs -> rrs.results.map { RaceWithResult(rrs.race, it) } }
+                data.flatMap { rrs -> rrs.results.map { RaceWithResult(rrs.race, it) } }
             }
             .map { list ->
                 list.groupBy { it.result.driver }
@@ -365,40 +376,24 @@ class RaceRepository(
                     }
             }
 
-    fun getRaceWithResultFlow(
-        season: Int,
-    ): Flow<RaceWithResult> {
-        return getRaces(season)
-            .getData()
-            .flatMapLatest { it.asFlow() }
-            .flatMapConcat { race ->
-                getResults(season, race.raceInfo.round, true)
-                    .filterIsInstance<StoreResponse.Data<List<Result>>>()
-//                    .filter { data -> data.value.all { it.driver.image != null } }
-//                    .take(1)
-                    .transformWhile { data ->
-                        emit(data)
-                        logcat { "data: $data" }
-                        data.value.any { it.driver.image == null }
-                    }
-                    .map { it.value }
-                    .flatMapLatest { it.asFlow() }
-                    .map { RaceWithResult(race, it) }
-            }
-    }
-
-
-//    fun getStandings(season: Int) {
-//        getRaceWithResultFlow(season)
-//            .toList()
-//            .groupBy { it. }
-//
+//    private fun getRaceWithResultFlow(
+//        season: Int,
+//    ): Flow<RaceWithResult> {
+//        return getRaces(season)
+//            .take(1)
+//            .flatMapLatest { it.asFlow() }
+//            .flatMapConcat { race ->
+//                getResults(season, race.raceInfo.round, true)
+////                    .filter { data -> data.value.all { it.driver.image != null } }
+////                    .take(1)
+//                    .transformWhile { data ->
+//                        emit(data)
+//                        logcat { "data: $data" }
+//                        data.any { it.driver.image == null }
+//                    }
+//                    .flatMapLatest { it.asFlow() }
+//                    .map { RaceWithResult(race, it) }
+//            }
 //    }
-
-    private fun <E> Flow<StoreResponse<E>>.getData() =
-        this.filterIsInstance<StoreResponse.Data<E>>()
-            .take(1).map { it.value }
-
-
 }
 

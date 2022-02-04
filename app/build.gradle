@@ -39,7 +39,7 @@ android {
         // Disabling coroutine's ExperimentalCoroutinesApi warning
         freeCompilerArgs += [
                 "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-Xuse-experimental=com.dropbox.android.external.store4.ExperimentalStoreApi",
+//                "-Xuse-experimental=com.dropbox.android.external.store4.ExperimentalStoreApi",
                 "-Xuse-experimental=kotlin.time.ExperimentalTime",
                 "-Xuse-experimental=coil.annotation.ExperimentalCoilApi",
                 "-Xuse-experimental=androidx.compose.foundation.ExperimentalFoundationApi",
@@ -110,7 +110,7 @@ dependencies {
     implementation 'com.google.mlkit:face-detection:16.1.4'
 
     //Store
-    implementation 'com.dropbox.mobile.store:store4:4.0.4-KT15'
+//    implementation 'com.dropbox.mobile.store:store4:4.0.4-KT15'
 
     //Room components
     implementation "androidx.room:room-runtime:$roomVersion"

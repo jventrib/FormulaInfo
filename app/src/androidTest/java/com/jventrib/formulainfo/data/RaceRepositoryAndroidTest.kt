@@ -1,13 +1,11 @@
 package com.jventrib.formulainfo.data
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import logcat.AndroidLogcatLogger
 import logcat.LogPriority
 import org.junit.Before
@@ -51,9 +49,18 @@ class RaceRepositoryAndroidTest {
     fun testRepo() {
         runBlocking {
             raceRepository.refresh()
-            val races = raceRepository.getRaceWithResultFlow(2021).collect {
+            val races = raceRepository.getRaceWithResultsFlow(2021).collect {
                 println("${it.result.resultInfo.key}-${it.result.driver.driverId}")
             }
+        }
+    }
+
+    @Test
+    fun testDistinctRaceResuls() {
+        runBlocking {
+            raceRepository.refresh()
+            val races = raceRepository.getDistinctRaceWithResults(2021, null).toList()
+            println(races.size)
         }
     }
 }
