@@ -278,73 +278,51 @@ class RaceRepository(
         completeDriverImages: Boolean,
         completeFlags: Boolean,
     ): Flow<List<RaceWithResults>> {
-        val r = getRaces(season, completeFlags)
-            .transformLatest { races ->
-                races.forEach { race ->
-                    emit(RaceWithResults(race, listOf()))
-                }
-                races.map { race ->
-                    val rrFlow = getResults(season, race.raceInfo.round, completeDriverImages)
-                        .map { RaceWithResults(race, it) }
-                    emitAll(rrFlow)
-                }
-//                if (completeDriverImages) {
-//                    races.forEach { race ->
-//                        val rrFlow = getResults(season, race.raceInfo.round, true)
-//                            .map { RaceWithResults(race, it) }
-//                        emitAll(rrFlow)
-//                    }
-//                }
-            }
-            .scan(mapOf<Int, RaceWithResults>()) { acc, value ->
-                val existing = acc[value.race.raceInfo.round]
-                val results =
-                    if (existing != null && existing.results.size > 1)
-                        existing.results
-//                        if (value.results.isEmpty()) {
-//                            existing.results
-//
-//                        } else {
-//                            existing.results.zip(value.results) { a, b ->
-//                                a.copy(driver = a.driver.copy(image = b.driver.image, faceBox = b.driver.faceBox))
-//                            }
-//                        }
-                    else
-                        value.results
-                acc + (value.race.raceInfo.round to value.copy(results = results))
+        val racesWithFlags = getRaces(season, completeFlags).map {
+            it.map { RaceWithResults(it, listOf()) }
+        }
+
+        val f1b = getRaces(season, completeFlags)
+            .take(1)
+            .map {
+                it.map { RaceWithResults(it, listOf()) }
             }
 
-        return r.map { it.values.toList() }
+        val withResults = getRaces(season, completeFlags)
+            .take(1)
+            .flatMapLatest { it.asFlow() }
+            .flatMapMerge(100) { race ->
+                getResults(season, race.raceInfo.round, completeDriverImages).map {
+                    RaceWithResults(race, it)
+                }
+            }
+            .scan(mapOf<Int, RaceWithResults>()) { acc, value ->
+                acc + (value.race.raceInfo.round to value)
+            }.map { it.values.toList() }
+
+        val racesWithResults = f1b.onCompletion {
+            emitAll(withResults)
+        }
+        return racesWithFlags.combine(racesWithResults) { withFlags, withResults ->
+            (withFlags.associateBy { it.race.raceInfo.round }
+                    + withResults.associateBy { it.race.raceInfo.round }).values.toList()
+                .zip(withFlags) { a, b ->
+                    a.copy(race = b.race)
+                }
+        }
     }
 
     fun getRoundStandings(season: Int, round: Int?): Flow<List<DriverStanding>> {
-        val t = getSeasonStandings(season, true)
+        return getSeasonStandings(season, true)
             .map { map ->
                 map.values.map { list -> round?.let { list.getOrNull(it) } ?: list.last() }
             }
-        return t.map {
-            it.sortedByDescending { it.points }.mapIndexed { index, driverStanding ->
-                driverStanding.copy(position = index + 1)
+            .map {
+                it.sortedByDescending { it.points }.mapIndexed { index, driverStanding ->
+                    driverStanding.copy(position = index + 1)
+                }
             }
-        }
-
-
-//        val groups = getRaceWithResultFlow(season)
-//            .filter { round == null || it.race.raceInfo.round <= round }
-//            .scan(mapOf<String, DriverStanding>()) { acc, value ->
-//                acc + (value.result.driver.driverId
-//                        to DriverStanding(
-//                    value.result.driver,
-//                    value.result.constructor,
-//                    (acc[value.result.driver.driverId]?.points
-//                        ?: 0f) + value.result.resultInfo.points,
-//                    1,
-//                    value.race.raceInfo.round
-//                ))
-//            }
-//        return groups.map { it.values.toList().sortedByDescending { it.points } }
     }
-
 
     fun getSeasonStandings(
         season: Int,
@@ -375,25 +353,5 @@ class RaceRepository(
                             }
                     }
             }
-
-//    private fun getRaceWithResultFlow(
-//        season: Int,
-//    ): Flow<RaceWithResult> {
-//        return getRaces(season)
-//            .take(1)
-//            .flatMapLatest { it.asFlow() }
-//            .flatMapConcat { race ->
-//                getResults(season, race.raceInfo.round, true)
-////                    .filter { data -> data.value.all { it.driver.image != null } }
-////                    .take(1)
-//                    .transformWhile { data ->
-//                        emit(data)
-//                        logcat { "data: $data" }
-//                        data.any { it.driver.image == null }
-//                    }
-//                    .flatMapLatest { it.asFlow() }
-//                    .map { RaceWithResult(race, it) }
-//            }
-//    }
 }
 
