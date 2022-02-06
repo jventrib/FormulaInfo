@@ -18,6 +18,7 @@ import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.mapper.*
 import com.jventrib.formulainfo.utils.FaceDetection
+import com.jventrib.formulainfo.utils.concat
 import kotlinx.coroutines.flow.*
 import logcat.LogPriority
 import logcat.logcat
@@ -282,17 +283,11 @@ class RaceRepository(
             it.map { RaceWithResults(it, listOf()) }
         }
 
-        val f1b = getRaces(season, completeFlags)
-            .take(1)
-            .map {
-                it.map { RaceWithResults(it, listOf()) }
-            }
-
         val withResults = getRaces(season, completeFlags)
             .take(1)
             .flatMapLatest { it.asFlow() }
             .flatMapMerge(100) { race ->
-                getResults(season, race.raceInfo.round, completeDriverImages).map {
+                getResults(season, race.raceInfo.round, false).map {
                     RaceWithResults(race, it)
                 }
             }
@@ -300,15 +295,34 @@ class RaceRepository(
                 acc + (value.race.raceInfo.round to value)
             }.map { it.values.toList() }
 
-        val racesWithResults = f1b.onCompletion {
-            emitAll(withResults)
-        }
-        return racesWithFlags.combine(racesWithResults) { withFlags, withResults ->
-            (withFlags.associateBy { it.race.raceInfo.round }
-                    + withResults.associateBy { it.race.raceInfo.round }).values.toList()
-                .zip(withFlags) { a, b ->
-                    a.copy(race = b.race)
+        val racesWithResults = flowOf(listOf<RaceWithResults>()).concat(withResults)
+
+        val driverImages = flowOf(listOf<Result>()).concat(getResults(season, 1, true))
+
+        val raceWithResultsAndDriverImages = racesWithResults.combine(driverImages) { a, b ->
+            if (b.isEmpty()) a
+            else
+                a.map { raceWithResults ->
+                    raceWithResults.copy(results = raceWithResults.results.map { result ->
+                        val map = b.associateBy { it.driver.driverId }
+                        val driver = map[result.driver.driverId]?.driver
+                        driver?.let {
+                            result.copy(
+                                driver = result.driver.copy(image = it.image, faceBox = it.faceBox)
+                            )
+                        } ?: result
+                    })
                 }
+        }
+
+        return racesWithFlags.combine(raceWithResultsAndDriverImages) { withFlags, withResults ->
+            if (withResults.isEmpty()) {
+                withFlags
+            } else {
+                (withFlags.associateBy { it.race.raceInfo.round }
+                        + withResults.associateBy { it.race.raceInfo.round }).values.toList()
+                    .zip(withFlags) { a, b -> a.copy(race = b.race) }
+            }
         }
     }
 
