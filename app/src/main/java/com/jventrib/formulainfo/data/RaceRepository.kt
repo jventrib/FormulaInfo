@@ -12,10 +12,7 @@ import com.jventrib.formulainfo.data.remote.WikipediaService
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.aggregate.RaceWithResult
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
-import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.model.db.Lap
-import com.jventrib.formulainfo.model.db.Race
-import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.model.db.*
 import com.jventrib.formulainfo.model.mapper.*
 import com.jventrib.formulainfo.utils.FaceDetection
 import com.jventrib.formulainfo.utils.concat
@@ -87,11 +84,10 @@ class RaceRepository(
                     ?.let { it.nextRace = true }
 
             }
-            .transformWhile {
-                emit(it)
-                it.isNotEmpty() && it.any { it.circuit.location.flag == null }
+            .transformWhile { list ->
+                emit(list)
+                list.isNotEmpty() && list.any { it.circuit.location.flag == null }
             }
-
 
     fun getResults(
         season: Int,
@@ -117,22 +113,32 @@ class RaceRepository(
             .completeMissing(completeDriverImage, { it.driver.image })
             {
                 logcat { "Completing driver ${it.driver.code} with image" }
-                driverDao.insert(getDriverWithImage(it))
+                driverDao.insert(getDriverWithImage(it.driver))
             }
             .onEach { response ->
                 if (response.all { it.driver.image != null }) {
                     FaceDetection.close()
                 }
             }
-            .transformWhile {
-                val realData = it.size != 1 || it.first().resultInfo.number != -1
+            .transformWhile { list ->
+                val realData = list.size != 1 || list.first().resultInfo.number != -1
                 if (realData) {
-                    emit(it)
+                    emit(list)
                 }
-                realData && it.any { it.driver.image == null }
+                realData && list.any { it.driver.image == null }
             }
             .let { if (completeDriverImage) it else it.take(1) }
 
+
+    private fun getSeasonDrivers(season: Int): Flow<List<Driver>> =
+        driverDao.getSeasonDrivers(season).completeMissing(true, { it.image }) {
+            logcat { "Completing driver ${it.code} with image" }
+            driverDao.insert(getDriverWithImage(it))
+        }.onEach { response ->
+            if (response.all { it.image != null }) {
+                FaceDetection.close()
+            }
+        }
 
     fun getLaps(
         season: Int,
@@ -247,10 +253,10 @@ class RaceRepository(
     )
 
     private suspend fun getDriverWithImage(
-        result: Result,
+        driver: Driver,
     ): Driver {
         val imageUrl = raceRemoteDataSource.getWikipediaImageFromUrl(
-            result.driver.url, 200, WikipediaService.Licence.FREE
+            driver.url, 200, WikipediaService.Licence.FREE
         ) ?: "NONE"
 
         val drawable = context.imageLoader.execute(
@@ -261,29 +267,29 @@ class RaceRepository(
             (drawable as? BitmapDrawable)?.bitmap?.copy(Bitmap.Config.ARGB_8888, true)
         val centerRect = bitmap?.let { FaceDetection.detect(it) }
 
-        return result.driver.copy(
+        return driver.copy(
             image = imageUrl,
             faceBox = centerRect?.flattenToString()
         )
     }
 
-    private suspend fun getConstructorWithImage(result: Result) =
-        result.constructor.copy(
-            image = raceRemoteDataSource.getWikipediaImageFromUrl(
-                result.constructor.url, 200,
-            ) ?: "NONE"
-        )
+//    private suspend fun getConstructorWithImage(result: Result) =
+//        result.constructor.copy(
+//            image = raceRemoteDataSource.getWikipediaImageFromUrl(
+//                result.constructor.url, 200,
+//            ) ?: "NONE"
+//        )
 
     fun getRacesWithResults(
         season: Int,
-        completeDriverImages: Boolean,
-        completeFlags: Boolean,
+        withDriverImages: Boolean,
+        withFlags: Boolean,
     ): Flow<List<RaceWithResults>> {
-        val racesWithFlags = getRaces(season, completeFlags).map {
-            it.map { RaceWithResults(it, listOf()) }
+        val racesWithFlags = getRaces(season, withFlags).map { list ->
+            list.map { RaceWithResults(it, listOf()) }
         }
 
-        val withResults = getRaces(season, completeFlags)
+        val withResults = getRaces(season, withFlags)
             .take(1)
             .flatMapLatest { it.asFlow() }
             .flatMapMerge(100) { race ->
@@ -293,35 +299,34 @@ class RaceRepository(
             }
             .scan(mapOf<Int, RaceWithResults>()) { acc, value ->
                 acc + (value.race.raceInfo.round to value)
-            }.map { it.values.toList() }
+            }
+            .map { it.values.toList() }
 
         val racesWithResults = flowOf(listOf<RaceWithResults>()).concat(withResults)
 
-        val driverImages = flowOf(listOf<Result>()).concat(getResults(season, 1, true))
+        val racesWithResultsAndDriverImages =
+            racesWithResults.combine(getSeasonDrivers(season)) { a, b ->
+                if (b.isEmpty()) a
+                else
+                    a.map { raceWithResults ->
+                        raceWithResults.copy(results = raceWithResults.results.map { result ->
+                            val map = b.associateBy { it.driverId }
+                            val driver = map[result.driver.driverId]
+                            driver?.let { result.copy(driver = it) } ?: result
+                        })
+                    }
+            }
 
-        val raceWithResultsAndDriverImages = racesWithResults.combine(driverImages) { a, b ->
-            if (b.isEmpty()) a
-            else
-                a.map { raceWithResults ->
-                    raceWithResults.copy(results = raceWithResults.results.map { result ->
-                        val map = b.associateBy { it.driver.driverId }
-                        val driver = map[result.driver.driverId]?.driver
-                        driver?.let {
-                            result.copy(
-                                driver = result.driver.copy(image = it.image, faceBox = it.faceBox)
-                            )
-                        } ?: result
-                    })
-                }
-        }
+        val results = if (withDriverImages)
+            racesWithResultsAndDriverImages else racesWithResults
 
-        return racesWithFlags.combine(raceWithResultsAndDriverImages) { withFlags, withResults ->
-            if (withResults.isEmpty()) {
-                withFlags
+        return racesWithFlags.combine(results) { left, right ->
+            if (right.isEmpty()) {
+                left
             } else {
-                (withFlags.associateBy { it.race.raceInfo.round }
-                        + withResults.associateBy { it.race.raceInfo.round }).values.toList()
-                    .zip(withFlags) { a, b -> a.copy(race = b.race) }
+                (left.associateBy { it.race.raceInfo.round }
+                        + right.associateBy { it.race.raceInfo.round }).values.toList()
+                    .zip(left) { a, b -> a.copy(race = b.race) }
             }
         }
     }
@@ -331,11 +336,12 @@ class RaceRepository(
             .map { map ->
                 map.values.map { list -> round?.let { list.getOrNull(it) } ?: list.last() }
             }
-            .map {
-                it.sortedByDescending { it.points }.mapIndexed { index, driverStanding ->
+            .map { list ->
+                list.sortedByDescending { it.points }.mapIndexed { index, driverStanding ->
                     driverStanding.copy(position = index + 1)
                 }
             }
+            .debounce(20)
     }
 
     fun getSeasonStandings(
