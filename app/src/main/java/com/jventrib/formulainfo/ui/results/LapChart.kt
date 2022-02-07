@@ -20,9 +20,9 @@ import java.time.Duration
 @Composable
 fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
     val scaffoldState = rememberScaffoldState()
-    val scope = rememberCoroutineScope()
+    rememberCoroutineScope()
     var selectedChart by rememberSaveable { mutableStateOf(Charts.values().first()) }
-    val selectState = remember(lapsByResult) {
+    remember(lapsByResult) {
         mutableStateMapOf<String, Boolean>().apply {
             putAll(lapsByResult.keys.map { it.driver.driverId to true })
         }

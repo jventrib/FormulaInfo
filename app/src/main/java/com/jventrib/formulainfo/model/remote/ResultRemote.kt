@@ -56,8 +56,4 @@ data class ResultRemote(
             val speed: Float
         )
     }
-
-    enum class RaceStatus {
-        Finished, Retired
-    }
 }

@@ -22,8 +22,6 @@ fun DriverStandingScreen(
     race: Race?,
     standings: List<DriverStanding>,
     onDriverSelected: (driver: Driver) -> Unit,
-    onRaceImageSelected: (Race) -> Unit,
-    onChartClicked: (Race) -> Unit,
     onStandingChartClicked: () -> Unit
 ) {
     Scaffold(
@@ -58,9 +56,6 @@ fun DriverStandingScreenPreview() {
         race = getRaceSample(3),
         standings = listOf(),
         onDriverSelected = {},
-        onRaceImageSelected = {},
-        onChartClicked = {},
-        onStandingChartClicked = {},
-    )
+    ) {}
 }
 

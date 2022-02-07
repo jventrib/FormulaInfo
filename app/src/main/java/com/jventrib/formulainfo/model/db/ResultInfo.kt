@@ -47,8 +47,4 @@ data class ResultInfo(
             val speed: Float
         )
     }
-
-    enum class RaceStatus {
-        Finished, Retired
-    }
 }

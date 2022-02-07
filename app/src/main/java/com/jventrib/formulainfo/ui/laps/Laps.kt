@@ -99,19 +99,19 @@ fun Laps(race: Race?, result: Result, laps: List<Lap>) {
 @Preview
 @Composable
 fun LapsPreview() {
-    getLaps()
+    SampleLaps()
 }
 
 @Preview
 @Composable
 fun LapsDarkPreview() {
     FormulaInfoTheme(darkTheme = true) {
-        getLaps()
+        SampleLaps()
     }
 }
 
 @Composable
-private fun getLaps() {
+private fun SampleLaps() {
     var i = 0
     Laps(
         null,

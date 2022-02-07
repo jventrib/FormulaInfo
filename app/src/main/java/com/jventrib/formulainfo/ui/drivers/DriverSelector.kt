@@ -22,7 +22,7 @@ import com.jventrib.formulainfo.ui.theme.teamColor
 
 @Composable
 fun DriverSelector(drivers: List<Result>, selectState: MutableMap<String, Boolean>) {
-    val drawerState = rememberDrawerState(DrawerValue.Open)
+    rememberDrawerState(DrawerValue.Open)
 
     drivers.forEach { result ->
         Row(modifier = Modifier.width(90.dp)) {
@@ -61,7 +61,7 @@ fun DriverSelectorPreview() {
                 .fillMaxSize()
                 .background(Color.LightGray)
         ) {
-            Text("Blabla")
+            Text("Test")
         }
     }
 }

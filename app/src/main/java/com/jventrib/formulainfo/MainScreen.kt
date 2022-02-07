@@ -107,16 +107,11 @@ fun MainScreen() {
                         standings = st,
                         onDriverSelected = { driver ->
                             navController.navigate("laps/${season}/${round}/${driver.driverId}")
-                        },
-                        onRaceImageSelected = {},
-                        onChartClicked = {
-                            navController.navigate("resultsGraph/${it.raceInfo.season}/${it.raceInfo.round}")
-                        },
-                        onStandingChartClicked = {
-                            navController.popBackStack()
-                            navController.navigate("standing/${viewModel.season.value}/chart")
                         }
-                    )
+                    ) {
+                        navController.popBackStack()
+                        navController.navigate("standing/${viewModel.season.value}/chart")
+                    }
                 }
             }
             composable(
