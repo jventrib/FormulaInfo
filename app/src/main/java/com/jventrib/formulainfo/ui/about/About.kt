@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.jventrib.formulainfo.BuildConfig
 import com.jventrib.formulainfo.R
-import com.jventrib.formulainfo.ui.common.Link
-import com.jventrib.formulainfo.ui.common.LinkText
+import com.jventrib.formulainfo.ui.common.composable.Link
+import com.jventrib.formulainfo.ui.common.composable.LinkText
 
 @Composable
 fun About() {

@@ -1,6 +1,5 @@
 package com.jventrib.formulainfo.model.mapper
 
-import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.remote.LapTimeRemote
 import java.time.Duration

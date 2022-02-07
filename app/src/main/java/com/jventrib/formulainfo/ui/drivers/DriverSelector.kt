@@ -54,7 +54,7 @@ fun DriverSelectorPreview() {
             rememberDrawerState(initialValue = DrawerValue.Open)
         ),
         drawerShape = customShape(),
-        drawerContent = { DriverSelector(drivers = ResultSample.`get202101Results`(), mutableMapOf()) },
+        drawerContent = { DriverSelector(drivers = ResultSample.get202101Results(), mutableMapOf()) },
     ) {
         Box(
             Modifier

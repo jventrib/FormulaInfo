@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.common.ui
+package com.jventrib.formulainfo.ui.common
 
 import java.time.Instant
 import java.time.ZoneId

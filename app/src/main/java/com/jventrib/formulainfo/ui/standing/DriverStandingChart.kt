@@ -4,28 +4,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.MultilineChart
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.model.db.Lap
-import com.jventrib.formulainfo.model.db.Race
-import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.Chart
 import com.jventrib.formulainfo.ui.common.DataPoint
 import com.jventrib.formulainfo.ui.common.Serie
 import com.jventrib.formulainfo.ui.common.YOrientation
-import com.jventrib.formulainfo.ui.results.chart.LapPositionChart
-import com.jventrib.formulainfo.ui.results.chart.LapTimeChart
-import com.jventrib.formulainfo.ui.results.chart.LeaderIntervalChart
 import com.jventrib.formulainfo.ui.theme.teamColor
-import java.time.Duration
 
 
 @Composable

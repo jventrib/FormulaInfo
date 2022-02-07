@@ -40,8 +40,8 @@ class FakeRepoTest {
             println(list.size)
             val last = list.last()
             println(last)
-            Assert.assertTrue(last.all {
-                it.fakeRace.flag != null && it.fakeResults.all { it.driver != null }
+            Assert.assertTrue(last.all { race ->
+                race.fakeRace.flag != null && race.fakeResults.all { it.driver != null }
             })
 
 //            getRacesWithResults().collect {
@@ -51,7 +51,7 @@ class FakeRepoTest {
     }
 
 
-    fun getRacesWithResults(): Flow<List<FakeRaceWithResults>> {
+    private fun getRacesWithResults(): Flow<List<FakeRaceWithResults>> {
 
         val f1 = getRaces().map {
             it.map { FakeRaceWithResults(it, listOf()) }
@@ -119,7 +119,7 @@ class FakeRepoTest {
 //    { it.values.toList() }
 
 
-    fun getRaces() = flow {
+    private fun getRaces() = flow {
         emit(races)
         delay(100)
 
@@ -131,7 +131,7 @@ class FakeRepoTest {
         }
     }
 
-    fun getResults(round: Int) = flow {
+    private fun getResults(round: Int) = flow {
         emit(results.map { it.copy(key = "$round-${it.key}") })
         delay(100)
 
@@ -147,9 +147,9 @@ class FakeRepoTest {
         }
     }
 
-    val races = (1..22).map { FakeRace(it, null) }
+    private val races = (1..22).map { FakeRace(it, null) }
 
-    val results = (1..20).map { FakeResult(it.toString(), null) }
+    private val results = (1..20).map { FakeResult(it.toString(), null) }
 
 
     data class FakeRace(

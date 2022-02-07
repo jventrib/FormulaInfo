@@ -18,12 +18,10 @@ class ResultSampleTest : TestCase() {
         val lapsWithStart = getLapsWithStart(ResultSample.getLapsPerResults())
         val results = lapsWithStart
             .map { entry -> entry.value.firstOrNull { it.number == lap } }
-            .map { it?.position to it }
-            .toMap()
+            .associateBy { it?.position }
 
         val indices = lapsWithStart.entries.indices
-        val laps = indices.map { results[it + 1] }
-        return laps
+        return indices.map { results[it + 1] }
     }
 
 

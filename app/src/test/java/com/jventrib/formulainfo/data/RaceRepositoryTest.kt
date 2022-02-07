@@ -24,8 +24,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.time.Duration
 import java.time.Instant
@@ -33,7 +33,7 @@ import java.time.Instant
 @FlowPreview
 @ExperimentalCoroutinesApi
 class RaceRepositoryTest : TestCase() {
-    private val testScope = TestCoroutineScope()
+    private val testScope = TestScope()
 
     @Test
     fun testGetAllRaces_whenDBIsEmpty() {
@@ -115,13 +115,8 @@ class RaceRepositoryTest : TestCase() {
     }
 
     @Test
-    fun testgetRaceGraph() {
-
-        val roomDb = mockk<RaceRemoteDataSource>()
+    fun testGetRaceGraph() {
         val raceRemoteDataSource = mockk<RaceRemoteDataSource>()
-
-        val result = getResultSample("verstappen", 1)
-        val result2 = result.copy(driver = result.driver.copy(driverId = "will"))
         val resultDao = mockk<ResultDao>()
         every { resultDao.getResults(any(), any()) } returns flowOf(
             listOf(
@@ -139,13 +134,6 @@ class RaceRepositoryTest : TestCase() {
         )
 
         val lapTimeDao = mockk<LapDao>()
-        val laps = listOf(
-            Lap(2021, 1, "doe", "doe", 1, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
-            Lap(2021, 1, "doe", "doe", 2, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
-            Lap(2021, 1, "doe", "doe", 3, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
-            Lap(2021, 1, "doe", "doe", 4, 1, Duration.ofSeconds(10), Duration.ofSeconds(10)),
-        )
-
         val season = slot<Int>()
         val round = slot<Int>()
         val driverId = slot<String>()
@@ -188,12 +176,12 @@ class RaceRepositoryTest : TestCase() {
     fun testFlowListToMap() {
         val driversFlow = flowOf(listOf("a", "b", "c"))
 
-        testScope.runBlockingTest {
+        testScope.runTest {
             val map = mutableMapOf<String, List<Int>>()
             val transform = driversFlow
                 .transform { drivers ->
                     drivers.forEach { driver ->
-                        getLaps(driver)
+                        getLaps()
                             .collect {
                                 println(it)
                                 map[driver] = it
@@ -210,6 +198,6 @@ class RaceRepositoryTest : TestCase() {
     }
 
 
-    private fun getLaps(s: String) =
+    private fun getLaps() =
         flowOf((1..10).toList())
 }
