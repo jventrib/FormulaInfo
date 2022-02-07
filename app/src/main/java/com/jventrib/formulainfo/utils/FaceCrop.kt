@@ -9,10 +9,10 @@ import coil.transform.Transformation
 import kotlin.math.max
 import kotlin.math.min
 
-class FaceCrop(private val faceBox: Rect, val factor: Float = 1.3f) : Transformation {
+class FaceCrop(private val faceBox: Rect, private val factor: Float = 1.3f) : Transformation {
     override fun key() = FaceCrop::class.java.toString()
 
-    override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size) =
+    override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap =
         faceBox.scale(factor, PixelSize(input.width, input.height)).run {
             Bitmap.createBitmap(input, left, top, width(), height())
         }

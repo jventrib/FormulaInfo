@@ -1,14 +1,6 @@
 package com.jventrib.formulainfo.data.sample
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializer
-import com.google.gson.reflect.TypeToken
 import com.jventrib.formulainfo.model.mapper.LapTimeMapper
-import com.jventrib.formulainfo.model.remote.LapTimeRemote
-import com.jventrib.formulainfo.model.remote.MRResponse
-import com.jventrib.formulainfo.model.remote.RaceTable
-import java.time.Instant
-import java.time.ZonedDateTime
 
 object LapSample {
 
@@ -36,7 +28,7 @@ object LapSample {
     )
 
 
-    val driverCodeMap = mapOf(
+    private val driverCodeMap = mapOf(
         "alonso" to "ALO",
         "bottas" to "BOT",
         "gasly" to "GAS",
@@ -57,15 +49,20 @@ object LapSample {
         "tsunoda" to "TSU",
         "max_verstappen" to "VER",
         "vettel" to "VET",
-        )
+    )
 
     data class DriverJson(val driverId: String, val driverCode: String, val json: String)
 
     val driverLaps = driverLapsAsJson
         .map {
             it.key to (getContent(it.value).mrData.table.races.firstOrNull()?.laps ?: listOf())
+        }.associate { pair ->
+            pair.first to LapTimeMapper.toEntity(
+                2021,
+                1,
+                pair.first,
+                driverCodeMap[pair.first]!!,
+                pair.second
+            )
         }
-        .map { pair ->
-            pair.first to LapTimeMapper.toEntity(2021, 1, pair.first, driverCodeMap[pair.first]!!, pair.second)
-        }.toMap()
 }

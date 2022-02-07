@@ -4,8 +4,7 @@ import com.jventrib.formulainfo.model.db.Driver
 
 object DriverSample {
 
-
-    val drivers = mapOf(
+    private val drivers = mapOf(
         "alonso" to Driver(
             "alonso",
             14,

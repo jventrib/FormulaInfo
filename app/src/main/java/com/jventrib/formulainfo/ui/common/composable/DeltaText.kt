@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.common.components
+package com.jventrib.formulainfo.ui.common.composable
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 fun DeltaText(
     delta: Int,
     modifier: Modifier = Modifier,
-    content: (String) -> String = {"$it"}
+    content: (String) -> String = { it }
 ) {
     val annotatedLinkString: AnnotatedString = buildAnnotatedString {
         val text =

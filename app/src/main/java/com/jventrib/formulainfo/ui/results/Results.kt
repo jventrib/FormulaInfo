@@ -25,7 +25,7 @@ import com.jventrib.formulainfo.getRaceSample
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.ui.common.components.Image
+import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.schedule.item.Race
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlin.math.roundToInt

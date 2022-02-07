@@ -3,37 +3,14 @@ package com.jventrib.formulainfo.ui.common
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.input.pointer.PointerEvent
-import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.PointerInputScope
-import androidx.compose.ui.input.pointer.positionChangeConsumed
-import androidx.compose.ui.input.pointer.consumeAllChanges
-import androidx.compose.ui.input.pointer.positionChanged
+import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastSumBy
-import kotlin.contracts.ExperimentalContracts
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
 
-/**
- * A gesture detector for rotation, panning, and zoom. Once touch slop has been reached, the
- * user can use rotation, panning and zoom gestures. [onGesture] will be called when any of the
- * rotation, zoom or pan occurs, passing the rotation angle in degrees, zoom in scale factor and
- * pan as an offset in pixels. Each of these changes is a difference between the previous call
- * and the current gesture. This will consume all position changes after touch slop has
- * been reached. [onGesture] will also provide centroid of all the pointers that are down.
- *
- * If [panZoomLock] is `true`, rotation is allowed only if touch slop is detected for rotation
- * before pan or zoom motions. If not, pan and zoom gestures will be detected, but rotation
- * gestures will not be. If [panZoomLock] is `false`, once touch slop is reached, all three
- * gestures are detected.
- *
- * Example Usage:
- * @sample androidx.compose.foundation.samples.DetectTransformGestures
- */
 suspend fun PointerInputScope.detectTransformGesturesXY(
     panZoomLock: Boolean = false,
     onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit
@@ -98,15 +75,6 @@ suspend fun PointerInputScope.detectTransformGesturesXY(
     }
 }
 
-
-/**
- * Returns the rotation, in degrees, of the pointers between the
- * [PointerInputChange.previousPosition] and [PointerInputChange.position] states. Only
- * the pointers that are down in both previous and current states are considered.
- *
- * Example Usage:
- * @sample androidx.compose.foundation.samples.CalculateRotation
- */
 fun PointerEvent.calculateRotation(): Float {
     val pointerCount = changes.fastSumBy { if (it.previousPressed && it.pressed) 1 else 0 }
     if (pointerCount < 2) {
@@ -157,13 +125,6 @@ fun PointerEvent.calculateRotation(): Float {
 private fun Offset.angle(): Float =
     if (x == 0f && y == 0f) 0f else -atan2(x, y) * 180f / PI.toFloat()
 
-/**
- * Uses the change of the centroid size between the [PointerInputChange.previousPosition] and
- * [PointerInputChange.position] to determine how much zoom was intended.
- *
- * Example Usage:
- * @sample androidx.compose.foundation.samples.CalculateZoom
- */
 fun PointerEvent.calculateZoom(): Offset {
     val currentCentroidSize = calculateCentroidSize(useCurrent = true)
     val previousCentroidSize = calculateCentroidSize(useCurrent = false)
@@ -175,15 +136,6 @@ fun PointerEvent.calculateZoom(): Offset {
     return currentCentroidSize / previousCentroidSize
 }
 
-
-/**
- * Returns the change in the centroid location between the previous and the current pointers that
- * are down. Pointers that are newly down or raised are not considered in the centroid
- * movement.
- *
- * Example Usage:
- * @sample androidx.compose.foundation.samples.CalculatePan
- */
 fun PointerEvent.calculatePan(): Offset {
     val currentCentroid = calculateCentroid(useCurrent = true)
     if (currentCentroid == Offset.Unspecified) {
@@ -193,16 +145,6 @@ fun PointerEvent.calculatePan(): Offset {
     return currentCentroid - previousCentroid
 }
 
-/**
- * Returns the average distance from the centroid for all pointers that are currently
- * and were previously down. If no pointers are down, `0` is returned.
- * If [useCurrent] is `true`, the size of the [PointerInputChange.position] is returned and
- * if `false`, the size of [PointerInputChange.previousPosition] is returned. Only pointers that
- * are down in both the previous and current state are used to calculate the centroid size.
- *
- * Example Usage:
- * @sample androidx.compose.foundation.samples.CalculateCentroidSize
- */
 fun PointerEvent.calculateCentroidSize(useCurrent: Boolean = true): Offset {
     val centroid = calculateCentroid(useCurrent)
     if (centroid == Offset.Unspecified) {
@@ -221,17 +163,6 @@ fun PointerEvent.calculateCentroidSize(useCurrent: Boolean = true): Offset {
     return distanceToCentroid / distanceWeight.toFloat()
 }
 
-/**
- * Returns the centroid of all pointers that are down and were previously down. If no pointers
- * are down, [Offset.Unspecified] is returned. If [useCurrent] is `true`, the centroid of the
- * [PointerInputChange.position] is returned and if `false`, the centroid of the
- * [PointerInputChange.previousPosition] is returned. Only pointers that are down in both the
- * previous and current state are used to calculate the centroid.
- *
- * Example Usage:
- * @sample androidx.compose.foundation.samples.CalculateCentroidSize
- */
-@OptIn(ExperimentalContracts::class)
 fun PointerEvent.calculateCentroid(
     useCurrent: Boolean = true
 ): Offset {

@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.common
+package com.jventrib.formulainfo.ui.common.composable
 
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.runtime.Composable

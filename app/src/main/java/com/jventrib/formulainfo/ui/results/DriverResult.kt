@@ -17,7 +17,7 @@ import com.jventrib.formulainfo.model.db.Constructor
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.ResultInfo
-import com.jventrib.formulainfo.ui.common.components.DeltaTextP
+import com.jventrib.formulainfo.ui.common.composable.DeltaTextP
 import com.jventrib.formulainfo.ui.components.ItemCard
 
 @Composable
@@ -52,7 +52,7 @@ fun DriverResult(
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier.align(End)
                 )
-                Row() {
+                Row {
 
                     Text(
                         text = "Started ${result.resultInfo.grid}",

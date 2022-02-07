@@ -1,10 +1,9 @@
 package com.jventrib.formulainfo.data.sample
 
 import com.jventrib.formulainfo.model.db.Constructor
-import com.jventrib.formulainfo.model.db.Driver
 
 object ConstructorSample {
-    val constructors = mapOf(
+    private val constructors = mapOf(
         "alfa" to Constructor(
             "alfa",
             "http://en.wikipedia.org/wiki/Alfa_Romeo_in_Formula_One",

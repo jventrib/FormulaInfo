@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.common.components
+package com.jventrib.formulainfo.ui.common.composable
 
 import android.graphics.Rect
 import androidx.compose.foundation.Image

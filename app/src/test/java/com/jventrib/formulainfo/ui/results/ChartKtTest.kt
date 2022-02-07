@@ -1,7 +1,5 @@
 package com.jventrib.formulainfo.ui.results
 
-import com.google.android.material.math.MathUtils
-import junit.framework.TestCase
 import org.junit.Test
 
 class ChartKtTest {

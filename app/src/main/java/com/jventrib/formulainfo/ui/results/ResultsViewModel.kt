@@ -18,7 +18,7 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
     val season = MutableLiveData(Year.now().value)
     val round: MutableLiveData<Int?> = MutableLiveData(null)
 
-    val seasonAndRound = MediatorLiveData<SeasonRound>().apply {
+    private val seasonAndRound = MediatorLiveData<SeasonRound>().apply {
         addSource(season) { value = SeasonRound(season.value!!, round.value) }
         addSource(round) { value = SeasonRound(season.value!!, round.value) }
     }

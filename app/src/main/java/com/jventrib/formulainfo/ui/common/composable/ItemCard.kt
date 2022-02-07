@@ -17,7 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.jventrib.formulainfo.ui.common.components.Image
+import com.jventrib.formulainfo.ui.common.composable.Image
 
 @Composable
 fun ItemCard(
@@ -47,7 +47,7 @@ fun ItemCard(
     onItemSelected: () -> Unit = {},
     shape: Shape = RectangleShape,
     faceBox: Rect? = null,
-    content: @Composable() (() -> Unit)
+    content: @Composable (() -> Unit)
 ) {
     Card(
         modifier = Modifier

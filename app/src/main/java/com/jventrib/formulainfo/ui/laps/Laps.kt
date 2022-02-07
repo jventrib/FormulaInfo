@@ -2,8 +2,10 @@ package com.jventrib.formulainfo.ui.laps
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
@@ -14,13 +16,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.results.DriverResult
 import com.jventrib.formulainfo.ui.results.getResultSample
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
-import com.jventrib.formulainfo.ui.theme.LightLightGrey
 import java.time.Duration
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
