@@ -88,6 +88,8 @@ class RaceRepository(
                 emit(list)
                 list.isNotEmpty() && list.any { it.circuit.location.flag == null }
             }
+            .let { if (completeFlags) it else it.take(1) }
+
 
     fun getResults(
         season: Int,

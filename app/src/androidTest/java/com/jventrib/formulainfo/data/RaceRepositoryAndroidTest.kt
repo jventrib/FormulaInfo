@@ -2,6 +2,7 @@ package com.jventrib.formulainfo.data
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.*
@@ -46,21 +47,62 @@ class RaceRepositoryAndroidTest {
     }
 
     @Test
-    fun testRepo() {
+    fun testRaceResultsWithoutFlagsAndDriverImages() {
         runBlocking {
             raceRepository.refresh()
-            val races = raceRepository.getRaceWithResultsFlow(2021).collect {
-                println("${it.result.resultInfo.key}-${it.result.driver.driverId}")
+            val races =
+                raceRepository.getRacesWithResults(2021, false, false)
+                    .onEach { println(it) }
+                    .toList()
+            println(races.size)
+            assertThat(races).hasSize(23)
+            val lastEmit = races.last()
+            lastEmit.forEach {
+                assertThat(it.race.circuit.location.flag).isNull()
+            }
+        }
+        runBlocking {
+            // From Cache
+            val races =
+                raceRepository.getRacesWithResults(2021, false, false)
+                    .onEach { println(it) }
+                    .toList()
+            println(races.size)
+            assertThat(races).hasSize(23)
+            val lastEmit = races.last()
+            lastEmit.forEach {
+                assertThat(it.race.circuit.location.flag).isNull()
             }
         }
     }
 
     @Test
-    fun testDistinctRaceResuls() {
+    fun testRaceResultsWithFlagsAndWithoutDriverImages() {
         runBlocking {
             raceRepository.refresh()
-            val races = raceRepository.getDistinctRaceWithResults(2021, null).toList()
+            val races =
+                raceRepository.getRacesWithResults(2021, false, true)
+                    .onEach { println(it) }
+                    .toList()
             println(races.size)
+            assertThat(races).hasSize(42)
+            val lastEmit = races.last()
+            lastEmit.forEach {
+                assertThat(it.race.circuit.location.flag).isNotNull()
+            }
+        }
+        runBlocking {
+            // From Cache
+            val races =
+                raceRepository.getRacesWithResults(2021, false, true)
+                    .onEach { println(it) }
+                    .toList()
+            println(races.size)
+            assertThat(races).hasSize(23)
+            val lastEmit = races.last()
+            lastEmit.forEach {
+                assertThat(it.race.circuit.location.flag).isNotNull()
+            }
         }
     }
 }
