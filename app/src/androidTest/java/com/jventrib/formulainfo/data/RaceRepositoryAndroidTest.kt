@@ -118,18 +118,5 @@ class RaceRepositoryAndroidTest {
             }
         }
     }
-
-    @Test
-    fun `1963_10`() {
-        runBlocking {
-            raceRepository.getResults(1963, 10, false)
-                .collect {
-                    println(it)
-                    assertThat(it).isNotEmpty()
-                }
-        }
-
-
-    }
 }
 
