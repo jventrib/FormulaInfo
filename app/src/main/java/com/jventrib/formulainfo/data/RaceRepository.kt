@@ -3,6 +3,7 @@ package com.jventrib.formulainfo.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.util.LruCache
 import androidx.room.withTransaction
 import coil.imageLoader
 import coil.request.ImageRequest
@@ -12,7 +13,10 @@ import com.jventrib.formulainfo.data.remote.WikipediaService
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.aggregate.RaceWithResult
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
-import com.jventrib.formulainfo.model.db.*
+import com.jventrib.formulainfo.model.db.Driver
+import com.jventrib.formulainfo.model.db.Lap
+import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.mapper.*
 import com.jventrib.formulainfo.utils.FaceDetection
 import com.jventrib.formulainfo.utils.concat
@@ -34,35 +38,63 @@ class RaceRepository(
     private val constructorDao: ConstructorDao = roomDb.constructorDao()
     private val lapDao: LapDao = roomDb.lapTimeDao()
 
-    private inline fun <R : List<E>, reified E, reified S> repo(
+    private val cache = LruCache<List<Any>, Any>(200)
+
+    private inline fun <reified R : List<E>, reified E, reified S> repo(
+        cacheKey: List<Any>,
         dbRead: () -> Flow<R>,
         crossinline remoteFetch: suspend () -> List<S>,
-        crossinline dbInsert: suspend (l: List<S>) -> Unit
-    ): Flow<R> =
-        dbRead.invoke()
-            .distinctUntilChanged()
-            .transformLatest { data ->
-//                emit(StoreResponse.Loading(SourceOfTruth))
-                logcat { "Getting ${E::class.simpleName} from DB" }
-                if (data.isEmpty()) {
-                    logcat { "No ${E::class.simpleName} in DB, fetching from remote" }
-                    remoteFetch.invoke().also {
-                        logcat { "Fetched ${S::class.simpleName} from remote" }
-                        logcat(priority = LogPriority.VERBOSE) { "data: $it" }
-                        dbInsert(it)
-                        logcat { "Insert in DB done" }
+        crossinline dbInsert: suspend (l: List<S>) -> Unit,
+    ): Flow<R> {
+        val fromDb =
+            withCache(cacheKey) {
+                dbRead.invoke()
+                    .distinctUntilChanged()
+                    .transformLatest { data ->
+                        //                emit(StoreResponse.Loading(SourceOfTruth))
+                        logcat { "Getting ${E::class.simpleName} from DB" }
+                        if (data.isEmpty()) {
+                            logcat { "No ${E::class.simpleName} in DB, fetching from remote" }
+                            remoteFetch.invoke().also {
+                                logcat { "Fetched ${S::class.simpleName} from remote" }
+                                logcat(priority = LogPriority.VERBOSE) { "data: $it" }
+                                dbInsert(it)
+                                logcat { "Insert in DB done" }
+                            }
+                        } else {
+                            logcat { "Got ${data.size} ${E::class.simpleName} from DB" }
+                            logcat(priority = LogPriority.VERBOSE) { "data: $data" }
+                            this.emit(data)
+                        }
                     }
-
-                } else {
-                    logcat { "Got ${data.size} ${E::class.simpleName} from DB" }
-                    logcat(priority = LogPriority.VERBOSE) { "data: $data" }
-                    this.emit(data)
-                }
             }
 
+        return fromDb
+    }
+
+    private inline fun <reified T : List<E>, reified E> withCache(cacheKey: List<Any>, block: () -> Flow<T>): Flow<T> {
+        logcat { "Cache: $cache" }
+        return cache[cacheKey]?.let {
+            check(it is T) { it }
+            logcat { "Got ${it.size} ${E::class.simpleName} from Cache" }
+            flowOf(it)
+        } ?: run {
+            var last: T? = null
+            val flow = block()
+            val lastEmit = flow.onEach { last = it }
+                .onCompletion {
+                    if (last != null) {
+                        logcat { "Putting in Cache" }
+                        cache.put(cacheKey, last)
+                    }
+                }
+            return lastEmit
+        }
+    }
 
     fun getRaces(season: Int, completeFlags: Boolean): Flow<List<Race>> =
         repo(
+            cacheKey = listOf("races", season, completeFlags),
             dbRead = { raceDao.getRaces(season) },
             remoteFetch = { raceRemoteDataSource.getRaces(season) },
             dbInsert = {
@@ -97,6 +129,7 @@ class RaceRepository(
         completeDriverImage: Boolean
     ): Flow<List<Result>> =
         repo(
+            cacheKey = listOf("results", season, round, completeDriverImage),
             dbRead = { resultDao.getResults(season, round) },
             remoteFetch = { raceRemoteDataSource.getResults(season, round) },
             dbInsert = {
@@ -148,6 +181,7 @@ class RaceRepository(
         driver: Driver
     ): Flow<List<Lap>> =
         repo(
+            cacheKey = listOf("laps", season, round, driver),
             dbRead = { lapDao.getAll(season, round, driver.driverId) },
             remoteFetch = { raceRemoteDataSource.getLapTime(season, round, driver.driverId) },
             dbInsert = {
@@ -375,5 +409,6 @@ class RaceRepository(
                             }
                     }
             }
+
 }
 

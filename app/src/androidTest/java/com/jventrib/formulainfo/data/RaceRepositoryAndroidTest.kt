@@ -50,26 +50,26 @@ class RaceRepositoryAndroidTest {
     fun testRaceResultsWithoutFlagsAndDriverImages() {
         runBlocking {
             raceRepository.refresh()
-            val races =
+            val racesEmits =
                 raceRepository.getRacesWithResults(2021, false, false)
                     .onEach { println(it) }
                     .toList()
-            println(races.size)
-            assertThat(races).hasSize(23)
-            val lastEmit = races.last()
+            println(racesEmits.size)
+            assertThat(racesEmits).hasSize(23)
+            val lastEmit = racesEmits.last()
             lastEmit.forEach {
                 assertThat(it.race.circuit.location.flag).isNull()
             }
         }
         runBlocking {
             // From Cache
-            val races =
+            val racesEmits =
                 raceRepository.getRacesWithResults(2021, false, false)
                     .onEach { println(it) }
                     .toList()
-            println(races.size)
-            assertThat(races).hasSize(23)
-            val lastEmit = races.last()
+            println(racesEmits.size)
+            assertThat(racesEmits).hasSize(24)
+            val lastEmit = racesEmits.last()
             lastEmit.forEach {
                 assertThat(it.race.circuit.location.flag).isNull()
             }
@@ -104,6 +104,32 @@ class RaceRepositoryAndroidTest {
                 assertThat(it.race.circuit.location.flag).isNotNull()
             }
         }
+    }
+
+
+    @Test
+    fun allSeasonsRacesWithResults() {
+        runBlocking {
+            val t = (2022 downTo 1950).asFlow().map {
+                raceRepository.getRacesWithResults(it, false, false)
+            }.flattenConcat().collect {
+                println(it)
+                assertThat(it).isNotEmpty()
+            }
+        }
+    }
+
+    @Test
+    fun `1963_10`() {
+        runBlocking {
+            raceRepository.getResults(1963, 10, false)
+                .collect {
+                    println(it)
+                    assertThat(it).isNotEmpty()
+                }
+        }
+
+
     }
 }
 

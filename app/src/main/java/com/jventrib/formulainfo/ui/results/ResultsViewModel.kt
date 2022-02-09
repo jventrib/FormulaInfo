@@ -48,7 +48,6 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
             it?.let {
                 repository.getResultsWithLaps(season.value!!, it.raceInfo.round)
 //                    .map { it.toMap() }
-                    .onEach { logcat { "Map $it" } }
                     .asLiveData()
             } ?: MutableLiveData(null)
         }
