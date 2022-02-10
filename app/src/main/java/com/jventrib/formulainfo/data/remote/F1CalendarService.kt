@@ -6,6 +6,5 @@ import retrofit2.http.Path
 
 interface F1CalendarService {
     @GET("{season}.json")
-    suspend fun getRaces(@Path("season") season: Int) : F1CResult
-
+    suspend fun getRaces(@Path("season") season: Int): F1CResult
 }

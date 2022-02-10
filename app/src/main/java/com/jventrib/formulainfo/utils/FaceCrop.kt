@@ -38,4 +38,3 @@ class FaceCrop(private val faceBox: Rect, private val factor: Float = 1.3f) : Tr
         this.bottom = min(this.bottom, size.height - 1)
     }
 }
-

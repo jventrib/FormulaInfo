@@ -5,7 +5,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.flow.*
+import javax.inject.Inject
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flattenConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import logcat.AndroidLogcatLogger
 import logcat.LogPriority
@@ -13,7 +18,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
@@ -32,12 +36,10 @@ class RaceRepositoryAndroidTest {
             ApplicationProvider.getApplicationContext(),
             minPriority = LogPriority.VERBOSE
         )
-
     }
 
     @Inject
     lateinit var raceRepository: RaceRepository
-
 
     @Test
     fun refresh() {
@@ -106,7 +108,6 @@ class RaceRepositoryAndroidTest {
         }
     }
 
-
     @Test
     fun allSeasonsRacesWithResults() {
         runBlocking {
@@ -119,4 +120,3 @@ class RaceRepositoryAndroidTest {
         }
     }
 }
-

@@ -15,14 +15,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -102,11 +102,12 @@ object RemoteModule {
 
     fun provideGsonConverterFactory(): GsonConverterFactory = GsonConverterFactory.create(
         GsonBuilder()
-            .registerTypeAdapter(Instant::class.java,
+            .registerTypeAdapter(
+                Instant::class.java,
                 JsonDeserializer { json, _, _ ->
                     ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
-                })
+                }
+            )
             .create()
     )
-
 }

@@ -3,7 +3,12 @@ package com.jventrib.formulainfo.data.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.jventrib.formulainfo.model.db.*
+import com.jventrib.formulainfo.model.db.Circuit
+import com.jventrib.formulainfo.model.db.Constructor
+import com.jventrib.formulainfo.model.db.Driver
+import com.jventrib.formulainfo.model.db.Lap
+import com.jventrib.formulainfo.model.db.RaceInfo
+import com.jventrib.formulainfo.model.db.ResultInfo
 import com.jventrib.formulainfo.utils.Converters
 
 @Database(

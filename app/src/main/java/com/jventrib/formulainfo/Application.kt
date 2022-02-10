@@ -7,12 +7,12 @@ import kotlinx.coroutines.FlowPreview
 import logcat.AndroidLogcatLogger
 import logcat.LogPriority
 
-//import leakcanary.LeakCanary
+// import leakcanary.LeakCanary
 
 @ExperimentalCoroutinesApi
 @FlowPreview
 @HiltAndroidApp
-class Application: Application() {
+class Application : Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -20,5 +20,4 @@ class Application: Application() {
 
         AndroidLogcatLogger.installOnDebuggableApp(this, minPriority = LogPriority.DEBUG)
     }
-
 }

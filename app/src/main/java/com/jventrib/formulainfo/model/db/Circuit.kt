@@ -17,7 +17,7 @@ data class Circuit(
     @Embedded
     val location: Location,
     var imageUrl: String?
-): Serializable {
+) : Serializable {
     data class Location(
         @SerializedName("lat")
         val latitude: Float,
@@ -26,5 +26,5 @@ data class Circuit(
         val locality: String,
         val country: String,
         var flag: String?
-    ): Serializable
+    ) : Serializable
 }

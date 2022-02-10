@@ -16,8 +16,10 @@ interface DriverDao {
     @Query("SELECT * from driver")
     fun getAllDrivers(): Flow<List<Driver>>
 
-    @Query("SELECT distinct driver.* from driver, race_result " +
-            "where race_result.driverId = driver.driverId and race_result.season = :season")
+    @Query(
+        "SELECT distinct driver.* from driver, race_result " +
+            "where race_result.driverId = driver.driverId and race_result.season = :season"
+    )
     fun getSeasonDrivers(season: Int): Flow<List<Driver>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

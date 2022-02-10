@@ -24,5 +24,4 @@ data class LapTimeRemote(
         return Duration.ofMinutes(min).plus(Duration.ofSeconds(sec))
             .plus(Duration.ofMillis(millis))
     }
-
 }

@@ -1,7 +1,11 @@
 package com.jventrib.formulainfo.ui.schedule
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -58,7 +62,6 @@ fun Podium(results: List<Result>, modifier: Modifier = Modifier) {
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Center)
                 )
-
             }
             Box(
                 modifier = Modifier

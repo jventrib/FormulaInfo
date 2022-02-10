@@ -33,15 +33,14 @@ fun DeltaText(
     )
 }
 
-
 @Composable
 fun DeltaTextP(delta: Int, modifier: Modifier = Modifier) {
-    DeltaText(delta = delta, modifier = modifier) {"($it)"}
+    DeltaText(delta = delta, modifier = modifier) { "($it)" }
 }
 @Preview
 @Composable
 fun DeltaTextPreview() {
-    DeltaText(2) {"($it)"}
+    DeltaText(2) { "($it)" }
 }
 
 @Preview
