@@ -1,6 +1,7 @@
 package com.jventrib.formulainfo.data
 
 import com.google.common.truth.Truth
+import com.jventrib.formulainfo.data.remote.RoboTest
 import com.jventrib.formulainfo.util.JULLogger
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -21,17 +22,7 @@ import javax.inject.Inject
 @RunWith(RobolectricTestRunner::class)
 @HiltAndroidTest
 @Config(application = HiltTestApplication::class, sdk = [30])
-class RERepositoryTest {
-
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    @Before
-    fun setup() {
-        JULLogger.level = Level.FINEST
-        hiltRule.inject()
-        if (!LogcatLogger.isInstalled) LogcatLogger.install(JULLogger)
-    }
+class RepositoryRoboTest: RoboTest() {
 
     @Inject
     lateinit var raceRepository: RaceRepository

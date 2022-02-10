@@ -31,7 +31,7 @@ fun LapTimeChart(lapsByResult: Map<Result, List<Lap>>) {
 
     val series = lapsWithStart.map { entry ->
         Serie(
-            entry.value.mapIndexed { index, lap ->
+            entry.value.map { lap ->
                 DataPoint(
                     lap,
                     Offset(
