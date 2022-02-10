@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.ui.common.format
 import com.jventrib.formulainfo.ui.common.composable.ItemCard
+import com.jventrib.formulainfo.ui.common.format
 import com.jventrib.formulainfo.ui.results.getResultSample
 import java.time.Instant
 
