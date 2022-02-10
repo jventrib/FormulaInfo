@@ -7,7 +7,13 @@ import android.util.LruCache
 import androidx.room.withTransaction
 import coil.imageLoader
 import coil.request.ImageRequest
-import com.jventrib.formulainfo.data.db.*
+import com.jventrib.formulainfo.data.db.AppRoomDatabase
+import com.jventrib.formulainfo.data.db.CircuitDao
+import com.jventrib.formulainfo.data.db.ConstructorDao
+import com.jventrib.formulainfo.data.db.DriverDao
+import com.jventrib.formulainfo.data.db.LapDao
+import com.jventrib.formulainfo.data.db.RaceDao
+import com.jventrib.formulainfo.data.db.ResultDao
 import com.jventrib.formulainfo.data.remote.RaceRemoteDataSource
 import com.jventrib.formulainfo.data.remote.WikipediaService
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
@@ -17,14 +23,37 @@ import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.model.mapper.*
+import com.jventrib.formulainfo.model.mapper.LapTimeMapper
+import com.jventrib.formulainfo.model.mapper.RaceCircuitMapper
+import com.jventrib.formulainfo.model.mapper.RaceMapper
+import com.jventrib.formulainfo.model.mapper.ResultConstructorMapper
+import com.jventrib.formulainfo.model.mapper.ResultDriverMapper
+import com.jventrib.formulainfo.model.mapper.ResultMapper
 import com.jventrib.formulainfo.utils.FaceDetection
 import com.jventrib.formulainfo.utils.concat
-import kotlinx.coroutines.flow.*
-import logcat.LogPriority
-import logcat.logcat
 import java.time.Duration
 import java.time.Instant
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.runningFold
+import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.flow.transformWhile
+import logcat.LogPriority
+import logcat.logcat
 
 class RaceRepository(
     private val roomDb: AppRoomDatabase,
@@ -98,12 +127,17 @@ class RaceRepository(
             remoteFetch = { raceRemoteDataSource.getRaces(season) },
             dbInsert = {
                 roomDb.withTransaction {
-                    circuitDao.insertAll(RaceCircuitMapper.toEntity(it)
-                        .also { logcat { "Inserting Circuits" } })
-                    raceDao.insertAll(RaceMapper.toEntity(it)
-                        .also { logcat { "Inserting Races" } })
+                    circuitDao.insertAll(
+                        RaceCircuitMapper.toEntity(it)
+                            .also { logcat { "Inserting Circuits" } }
+                    )
+                    raceDao.insertAll(
+                        RaceMapper.toEntity(it)
+                            .also { logcat { "Inserting Races" } }
+                    )
                 }
-            })
+            }
+        )
             .completeMissing(completeFlags, { it.circuit.location.flag }) {
                 logcat { "Completing circuit ${it.raceInfo.raceName} with image" }
                 circuitDao.insert(getCircuitWithFlag(it))
@@ -113,14 +147,12 @@ class RaceRepository(
                 response
                     .firstOrNull { it.raceInfo.sessions.race.isAfter(Instant.now()) }
                     ?.let { it.nextRace = true }
-
             }
             .transformWhile { list ->
                 emit(list)
                 list.isNotEmpty() && list.any { it.circuit.location.flag == null }
             }
             .let { if (completeFlags) it else it.take(1) }
-
 
     fun getResults(
         season: Int,
@@ -133,19 +165,25 @@ class RaceRepository(
             remoteFetch = { raceRemoteDataSource.getResults(season, round) },
             dbInsert = {
                 roomDb.withTransaction {
-                    driverDao.insertAll(ResultDriverMapper.toEntity(it)
-                        .also { logcat { "Inserting Drivers" } })
-                    constructorDao.insertAll(ResultConstructorMapper.toEntity(it)
-                        .also { logcat { "Inserting Constructors" } })
-                    resultDao.insertAll(ResultMapper.toEntity(season, round, it)
-                        .also { logcat { "Inserting Results" } })
+                    driverDao.insertAll(
+                        ResultDriverMapper.toEntity(it)
+                            .also { logcat { "Inserting Drivers" } }
+                    )
+                    constructorDao.insertAll(
+                        ResultConstructorMapper.toEntity(it)
+                            .also { logcat { "Inserting Constructors" } }
+                    )
+                    resultDao.insertAll(
+                        ResultMapper.toEntity(season, round, it)
+                            .also { logcat { "Inserting Results" } }
+                    )
                 }
-            })
+            }
+        )
 //            .filter {
 //                it.size != 1 || it.first().resultInfo.number != -1
 //            }
-            .completeMissing(completeDriverImage, { it.driver.image })
-            {
+            .completeMissing(completeDriverImage, { it.driver.image }) {
                 logcat { "Completing driver ${it.driver.code} with image" }
                 driverDao.insert(getDriverWithImage(it.driver))
             }
@@ -162,7 +200,6 @@ class RaceRepository(
                 realData && list.any { it.driver.image == null }
             }
             .let { if (completeDriverImage) it else it.take(1) }
-
 
     private fun getSeasonDrivers(season: Int): Flow<List<Driver>> =
         driverDao.getSeasonDrivers(season).completeMissing(true, { it.image }) {
@@ -207,9 +244,9 @@ class RaceRepository(
                     }
                 }
                 lapDao.insertAll(list.also { logcat { "Inserting LapTime" } })
-            })
+            }
+        )
             .map { list -> list.filter { it.number >= 0 } }
-
 
     fun getResultsWithLaps(
         season: Int,
@@ -224,7 +261,6 @@ class RaceRepository(
         }
         .onEach { println("Pair: ${it.first} -> ${it.second.size}") }
         .runningFold(mapOf<Result, List<Lap>>()) { acc, value -> acc + value }
-
 
     fun getRace(season: Int, round: Int): Flow<Race> {
         return raceDao.getRace(season, round)
@@ -277,7 +313,6 @@ class RaceRepository(
                 }
             }
         }
-
 
     private suspend fun getCircuitWithFlag(race: Race) = race.circuit.copy(
         location = race.circuit.location.copy(
@@ -344,11 +379,13 @@ class RaceRepository(
                 if (b.isEmpty()) a
                 else
                     a.map { raceWithResults ->
-                        raceWithResults.copy(results = raceWithResults.results.map { result ->
-                            val map = b.associateBy { it.driverId }
-                            val driver = map[result.driver.driverId]
-                            driver?.let { result.copy(driver = it) } ?: result
-                        })
+                        raceWithResults.copy(
+                            results = raceWithResults.results.map { result ->
+                                val map = b.associateBy { it.driverId }
+                                val driver = map[result.driver.driverId]
+                                driver?.let { result.copy(driver = it) } ?: result
+                            }
+                        )
                     }
             }
 
@@ -359,8 +396,10 @@ class RaceRepository(
             if (right.isEmpty()) {
                 left
             } else {
-                (left.associateBy { it.race.raceInfo.round }
-                        + right.associateBy { it.race.raceInfo.round }).values.toList()
+                (
+                    left.associateBy { it.race.raceInfo.round } +
+                        right.associateBy { it.race.raceInfo.round }
+                    ).values.toList()
                     .zip(left) { a, b -> a.copy(race = b.race) }
             }
         }
@@ -408,6 +447,4 @@ class RaceRepository(
                             }
                     }
             }
-
 }
-

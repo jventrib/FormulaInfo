@@ -1,8 +1,12 @@
-package com.jventrib.formulainfo.ui.components
+package com.jventrib.formulainfo.ui.common.composable
 
 import android.graphics.Rect
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -17,7 +21,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.jventrib.formulainfo.ui.common.composable.Image
 
 @Composable
 fun ItemCard(
@@ -86,5 +89,4 @@ fun ItemCardPreview() {
         topText = "Top text Top text Top text",
         bottomText = "Bottom text"
     ) {}
-
 }

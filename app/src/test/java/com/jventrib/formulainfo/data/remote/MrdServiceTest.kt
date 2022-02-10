@@ -2,6 +2,7 @@ package com.jventrib.formulainfo.data.remote
 
 import com.google.common.truth.Truth.assertThat
 import com.jventrib.formulainfo.di.RemoteModule
+import java.net.HttpURLConnection
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -9,7 +10,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
-import java.net.HttpURLConnection
 
 class MrdServiceTest {
     private var mockWebServer = MockWebServer()
@@ -23,7 +23,6 @@ class MrdServiceTest {
             .addConverterFactory(RemoteModule.provideGsonConverterFactory())
             .build()
             .create(MrdService::class.java)
-
     }
 
     @After
@@ -96,7 +95,6 @@ class MrdServiceTest {
         }
     }
 
-
     @Test
     fun testLapTimes() {
         // Assign
@@ -115,12 +113,10 @@ class MrdServiceTest {
     }
 
     private fun String.mockResponse(): MockResponse {
-        val response = MockResponse()
+        return MockResponse()
             .setResponseCode(HttpURLConnection.HTTP_OK)
             .setBody(readFileContent(this)!!)
-        return response
     }
-
 
     private fun readFileContent(file: String) =
         this::class.java.classLoader?.getResource(file)?.readText()

@@ -1,20 +1,41 @@
-package com.jventrib.formulainfo.ui.common
+package com.jventrib.formulainfo.ui.common.composable
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.*
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.lerp
+import androidx.compose.ui.geometry.toRect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PointMode
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -24,6 +45,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
+import com.jventrib.formulainfo.ui.common.abs
+import com.jventrib.formulainfo.ui.common.coerceAtMost
+import com.jventrib.formulainfo.ui.common.coerceIn
+import com.jventrib.formulainfo.ui.common.detectTransformGesturesXY
+import com.jventrib.formulainfo.ui.common.div
+import com.jventrib.formulainfo.ui.common.formatDecimal
+import com.jventrib.formulainfo.ui.common.times
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -63,13 +91,14 @@ fun <E> Chart(
         val screenCenterY = size.height / 2f
         val onGloballyPositioned: (LayoutCoordinates) -> Unit = { size = it.size.toSize() }
 
-        //Coerce scrollOffset at each recomposition, so zoom out always keep inside boundaries
+        // Coerce scrollOffset at each recomposition, so zoom out always keep inside boundaries
         scrollOffset = scrollOffset.let {
             Offset(
                 it.x.coerceIn(
                     -screenCenterX + screenCenterX / scale.x,
                     screenCenterX - screenCenterX / scale.x
-                ), it.y.coerceIn(
+                ),
+                it.y.coerceIn(
                     -screenCenterY + screenCenterY / scale.y,
                     screenCenterY - screenCenterY / scale.y
                 )
@@ -95,7 +124,6 @@ fun <E> Chart(
             getSeriePoints(serie, state)
         }
 
-
         Row {
             YAxis(onScreenSeries)
             Canvas(
@@ -106,17 +134,17 @@ fun <E> Chart(
                     .pointerInput(Unit) { detectTransformGesturesXY(onGesture = onGesture) }
                     .onGloballyPositioned(onGloballyPositioned)
             ) {
-                //Draw Grid
+                // Draw Grid
                 drawGrid(state)
 
-                //Series
+                // Series
                 onScreenSeries.forEach { serieScreen ->
                     drawSerie(serieScreen.seriePoints, serieScreen.color, pointAlpha)
                 }
 
                 drawAxisLabels(axisColor, backgroundColor, state)
 
-                //custom
+                // custom
                 customDraw(onScreenSeries)
             }
         }
@@ -153,7 +181,7 @@ private fun <E> YAxis(seriesPoints: List<Serie<E>>) {
 }
 
 private fun <E> DrawScope.drawGrid(state: ChartState<E>) {
-    //Compute grid coord
+    // Compute grid coord
     if (state.series.isNotEmpty() && state.gridStep != null) {
 
         val verticalPadding = 16.dp.toPx() * 2
@@ -223,7 +251,7 @@ private fun <E> DrawScope.drawAxisLabels(
                 drawIntoCanvas {
                     it.nativeCanvas.drawText(
                         decimal,
-                        onScreenPoint.x - 8 * decimal.length, //Center Axis Label on grid line
+                        onScreenPoint.x - 8 * decimal.length, // Center Axis Label on grid line
                         this.size.height + 12.dp.toPx(),
                         axisLabelPaint
                     )
@@ -249,7 +277,7 @@ private fun <E> DrawScope.drawAxisLabels(
                     it.nativeCanvas.drawText(
                         decimal,
                         0f,
-                        onScreenPoint.y + 10, //Center Axis Label on grid line
+                        onScreenPoint.y + 10, // Center Axis Label on grid line
                         axisLabelPaint
                     )
                 }
@@ -358,7 +386,6 @@ data class Serie<E>(
     val yOrigin: Offset? = null
 )
 
-
 data class DataPoint<E>(val element: E?, val offset: Offset = Offset.Unspecified)
 
 data class Boundaries(
@@ -393,7 +420,8 @@ fun ChartPreview() {
         Serie(
             (0..10).map {
                 DataPoint("TEST", Offset(it.toFloat(), Random.nextInt(20).toFloat()))
-            }, Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()),
+            },
+            Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()),
             "TEST"
         )
     }

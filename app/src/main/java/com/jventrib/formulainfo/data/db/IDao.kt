@@ -9,5 +9,4 @@ interface IDao<T> {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(entities: List<T>)
-
 }

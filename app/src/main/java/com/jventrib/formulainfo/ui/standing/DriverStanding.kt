@@ -16,18 +16,19 @@ import com.jventrib.formulainfo.model.db.Constructor
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.ResultInfo
+import com.jventrib.formulainfo.ui.common.composable.ItemCard
 import com.jventrib.formulainfo.ui.common.formatDecimal
-import com.jventrib.formulainfo.ui.components.ItemCard
 
 @Composable
 fun DriverStanding(
     driverStanding: DriverStanding,
-    onDriverSelected: (result: Result) -> Any
+    onDriverSelected: (driver: Driver) -> Any
 ) {
     ItemCard(
         image = driverStanding.driver.image,
         shape = CircleShape,
-        faceBox = Rect.unflattenFromString(driverStanding.driver.faceBox)
+        faceBox = Rect.unflattenFromString(driverStanding.driver.faceBox),
+        onItemSelected = { onDriverSelected(driverStanding.driver) }
     ) {
         Row(Modifier.fillMaxWidth()) {
             Column {
@@ -51,7 +52,6 @@ fun DriverStanding(
     }
 }
 
-
 @Preview
 @Composable
 fun DriverResultPreview() {
@@ -65,9 +65,7 @@ fun DriverResultPreview() {
             1
         )
     ) {
-
     }
-
 }
 
 fun getResultSample(driver: String, position: Int) = Result(

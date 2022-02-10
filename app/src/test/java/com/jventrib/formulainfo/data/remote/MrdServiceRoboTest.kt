@@ -1,22 +1,15 @@
 package com.jventrib.formulainfo.data.remote
 
 import com.google.common.truth.Truth
-import com.jventrib.formulainfo.data.RaceRepository
-import com.jventrib.formulainfo.util.JULLogger
-import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
+import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
-import logcat.LogcatLogger
 import logcat.logcat
-import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.util.logging.Level
-import javax.inject.Inject
 
 @RunWith(RobolectricTestRunner::class)
 @HiltAndroidTest

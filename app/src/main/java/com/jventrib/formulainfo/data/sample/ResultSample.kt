@@ -15,7 +15,6 @@ object ResultSample {
             LapSample.driverLaps[it.resultInfo.driverId]!!
         }
 
-
     fun get202101Results(): List<Result> {
         val remote = getContent(resultContent)
         val remotes = remote.mrData.table.races.firstOrNull()?.results!!
@@ -28,9 +27,4 @@ object ResultSample {
         }
         return results
     }
-
-
-
 }
-
-

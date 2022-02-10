@@ -29,13 +29,4 @@
         <item name="android:paddingRight">0dp</item>
     </style>
 
-    <style name="Theme.FormulaInfo.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.FormulaInfo.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.FormulaInfo.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
 </resources>

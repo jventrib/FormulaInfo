@@ -33,7 +33,7 @@ class RaceRemote(
         @SerializedName("Location")
         val location: Location,
         var circuitImageUrl: String?
-    ): Serializable {
+    ) : Serializable {
         data class Location(
             @SerializedName("lat")
             val latitude: Float,
@@ -42,7 +42,7 @@ class RaceRemote(
             val locality: String,
             val country: String,
             var flag: String?
-        ): Serializable
+        ) : Serializable
     }
 
     data class Sessions(
@@ -51,7 +51,7 @@ class RaceRemote(
         val fp3: Instant? = null,
         val qualifying: Instant? = null,
         val gp: Instant
-    ): Serializable
+    ) : Serializable
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -74,5 +74,4 @@ class RaceRemote(
     override fun toString(): String {
         return "Race(season=$season, round=$round, url='$url', raceName='$raceName', circuit=$circuit, sessions=$sessions)"
     }
-
 }

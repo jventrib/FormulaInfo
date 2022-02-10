@@ -14,9 +14,9 @@ fun getContent(fileContent: String): MRResponse<RaceTable> {
             Instant::class.java,
             JsonDeserializer { json, _, _ ->
                 ZonedDateTime.parse(json.asJsonPrimitive.asString).toInstant()
-            })
+            }
+        )
         .create()
 
     return gson.fromJson(fileContent, object : TypeToken<MRResponse<RaceTable>>() {}.type)
 }
-

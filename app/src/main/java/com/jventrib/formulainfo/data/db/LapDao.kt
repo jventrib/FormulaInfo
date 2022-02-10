@@ -1,6 +1,9 @@
 package com.jventrib.formulainfo.data.db
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.jventrib.formulainfo.model.db.Lap
 import kotlinx.coroutines.flow.Flow
 

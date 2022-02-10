@@ -2,27 +2,24 @@ package com.jventrib.formulainfo.data
 
 import com.google.common.truth.Truth
 import com.jventrib.formulainfo.data.remote.RoboTest
-import com.jventrib.formulainfo.util.JULLogger
-import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
-import kotlinx.coroutines.flow.*
+import javax.inject.Inject
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.flattenConcat
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
-import logcat.LogcatLogger
-import org.junit.Before
 import org.junit.Ignore
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.util.logging.Level
-import javax.inject.Inject
 
 @RunWith(RobolectricTestRunner::class)
 @HiltAndroidTest
 @Config(application = HiltTestApplication::class, sdk = [30])
-class RepositoryRoboTest: RoboTest() {
+class RepositoryRoboTest : RoboTest() {
 
     @Inject
     lateinit var raceRepository: RaceRepository
@@ -55,7 +52,7 @@ class RepositoryRoboTest: RoboTest() {
     }
 
     @Test
-    @Ignore
+    @Ignore(value = "Flow wont complete, so this test")
     fun allSeasonsRacesWithResults() {
         runBlocking {
             (2022 downTo 1950).asFlow().map {
@@ -65,5 +62,4 @@ class RepositoryRoboTest: RoboTest() {
             }
         }
     }
-
 }

@@ -2,9 +2,9 @@ package com.jventrib.formulainfo.data.sample
 
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
+import java.time.Duration
 import junit.framework.TestCase
 import org.junit.Test
-import java.time.Duration
 
 class ResultSampleTest : TestCase() {
 
@@ -24,7 +24,6 @@ class ResultSampleTest : TestCase() {
         return indices.map { results[it + 1] }
     }
 
-
     private fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>) =
         lapsByResult
             .mapValues { entry ->
@@ -32,7 +31,8 @@ class ResultSampleTest : TestCase() {
                     .toMutableList().apply {
                         if (entry.key.resultInfo.grid != 0) {
                             add(
-                                0, Lap(
+                                0,
+                                Lap(
                                     entry.key.resultInfo.season,
                                     entry.key.resultInfo.round,
                                     entry.key.driver.driverId,
@@ -46,5 +46,4 @@ class ResultSampleTest : TestCase() {
                         }
                     }
             }
-
 }
