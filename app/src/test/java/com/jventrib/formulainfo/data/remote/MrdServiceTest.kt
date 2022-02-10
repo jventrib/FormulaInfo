@@ -113,10 +113,9 @@ class MrdServiceTest {
     }
 
     private fun String.mockResponse(): MockResponse {
-        val response = MockResponse()
+        return MockResponse()
             .setResponseCode(HttpURLConnection.HTTP_OK)
             .setBody(readFileContent(this)!!)
-        return response
     }
 
     private fun readFileContent(file: String) =

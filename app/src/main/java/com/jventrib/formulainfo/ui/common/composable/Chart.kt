@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.common
+package com.jventrib.formulainfo.ui.common.composable
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -45,6 +45,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
+import com.jventrib.formulainfo.ui.common.abs
+import com.jventrib.formulainfo.ui.common.coerceAtMost
+import com.jventrib.formulainfo.ui.common.coerceIn
+import com.jventrib.formulainfo.ui.common.detectTransformGesturesXY
+import com.jventrib.formulainfo.ui.common.div
+import com.jventrib.formulainfo.ui.common.formatDecimal
+import com.jventrib.formulainfo.ui.common.times
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
