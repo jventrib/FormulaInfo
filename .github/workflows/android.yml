@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: Checkout
-    - uses: actions/checkout@v2
+      uses: actions/checkout@v2
     - name: Run Kotlin Linter
       run: ./gradlew ktlintStagingDebugCheck
     - name: Run Android Linter
