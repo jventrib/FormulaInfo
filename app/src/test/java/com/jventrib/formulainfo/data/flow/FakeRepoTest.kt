@@ -53,8 +53,8 @@ class FakeRepoTest {
 
     private fun getRacesWithResults(): Flow<List<FakeRaceWithResults>> {
 
-        val f1 = getRaces().map {
-            it.map { FakeRaceWithResults(it, listOf()) }
+        val f1 = getRaces().map { list ->
+            list.map { FakeRaceWithResults(it, listOf()) }
         }
 
 
@@ -72,8 +72,8 @@ class FakeRepoTest {
 
 
         return f1.combine(f2){ a, b ->
-            a.zip(b) {a, b ->
-                a.copy(fakeResults = b.fakeResults)
+            a.zip(b) {za, zb ->
+                za.copy(fakeResults = zb.fakeResults)
             }
         }
     }
