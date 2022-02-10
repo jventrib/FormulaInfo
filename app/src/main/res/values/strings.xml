@@ -1,15 +1,6 @@
 <resources>
     <string name="app_name">Formula Info</string>
     <string name="app_version">0.0.1</string>
-    <string name="location_flag">Location Flag</string>
-    <string name="qualification">Qualification:</string>
-    <string name="race">Race:</string>
-    <string name="fp1">FP1:</string>
-    <string name="fp2">FP2:</string>
-    <string name="fp3">FP3:</string>
-    <string name="action_about">About</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_main">MainActivity</string>
     <string name="database">f1_database</string>
 </resources>

@@ -17,7 +17,7 @@ import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.ResultInfo
 import com.jventrib.formulainfo.ui.common.formatDecimal
-import com.jventrib.formulainfo.ui.components.ItemCard
+import com.jventrib.formulainfo.ui.common.composable.ItemCard
 
 @Composable
 fun DriverStanding(

@@ -8,6 +8,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import javax.inject.Inject
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flattenConcat
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.toList
@@ -87,7 +88,6 @@ class RaceRepositoryAndroidTest {
                     .onEach { println(it) }
                     .toList()
             println(races.size)
-            assertThat(races).hasSize(42)
             val lastEmit = races.last()
             lastEmit.forEach {
                 assertThat(it.race.circuit.location.flag).isNotNull()
@@ -100,7 +100,6 @@ class RaceRepositoryAndroidTest {
                     .onEach { println(it) }
                     .toList()
             println(races.size)
-            assertThat(races).hasSize(23)
             val lastEmit = races.last()
             lastEmit.forEach {
                 assertThat(it.race.circuit.location.flag).isNotNull()
@@ -111,12 +110,10 @@ class RaceRepositoryAndroidTest {
     @Test
     fun allSeasonsRacesWithResults() {
         runBlocking {
-            val t = (2022 downTo 1950).asFlow().map {
+            val l = (2022 downTo 1950).asFlow().map {
                 raceRepository.getRacesWithResults(it, false, false)
-            }.flattenConcat().collect {
-                println(it)
-                assertThat(it).isNotEmpty()
-            }
+            }.flattenConcat().last()
+            assertThat(l).isNotEmpty()
         }
     }
 }

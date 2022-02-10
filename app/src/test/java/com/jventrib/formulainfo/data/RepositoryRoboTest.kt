@@ -52,7 +52,7 @@ class RepositoryRoboTest : RoboTest() {
     }
 
     @Test
-    @Ignore
+    @Ignore(value = "Flow wont complete, so this test")
     fun allSeasonsRacesWithResults() {
         runBlocking {
             (2022 downTo 1950).asFlow().map {

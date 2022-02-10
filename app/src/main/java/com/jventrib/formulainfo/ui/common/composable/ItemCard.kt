@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.components
+package com.jventrib.formulainfo.ui.common.composable
 
 import android.graphics.Rect
 import androidx.compose.foundation.clickable
@@ -21,7 +21,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.jventrib.formulainfo.ui.common.composable.Image
 
 @Composable
 fun ItemCard(
