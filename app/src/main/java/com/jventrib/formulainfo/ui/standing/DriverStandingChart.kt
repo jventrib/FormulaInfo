@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.schedule
+package com.jventrib.formulainfo.ui.standing
 
 import androidx.compose.foundation.clickable
 import androidx.compose.material.*
@@ -44,7 +44,7 @@ fun DriverStandingChart(
 //) {
         val series = standings.map { entry ->
             Serie(
-                entry.value.mapIndexed { index, round ->
+                entry.value.map { round ->
                     DataPoint(
                         round,
                         Offset(
