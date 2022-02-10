@@ -5,10 +5,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.*
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.laps.Laps
@@ -16,9 +17,9 @@ import com.jventrib.formulainfo.ui.laps.LapsViewModel
 import com.jventrib.formulainfo.ui.results.LapChart
 import com.jventrib.formulainfo.ui.results.ResultsScreen
 import com.jventrib.formulainfo.ui.results.ResultsViewModel
-import com.jventrib.formulainfo.ui.standing.DriverStandingChart
 import com.jventrib.formulainfo.ui.schedule.ScheduleScreen
 import com.jventrib.formulainfo.ui.schedule.SeasonViewModel
+import com.jventrib.formulainfo.ui.standing.DriverStandingChart
 import com.jventrib.formulainfo.ui.standing.DriverStandingScreen
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlinx.coroutines.launch
@@ -60,7 +61,8 @@ fun MainScreen() {
                 "race/{season}/{round}",
                 listOf(
                     navArgument("season") { type = NavType.IntType },
-                    navArgument("round") { type = NavType.IntType })
+                    navArgument("round") { type = NavType.IntType }
+                )
             ) { navBackStackEntry ->
                 val viewModel: ResultsViewModel = hiltViewModel(navBackStackEntry)
                 val race by viewModel.race.observeAsState()
@@ -74,7 +76,7 @@ fun MainScreen() {
                         race = it,
                         results = results ?: listOf(),
                         onDriverSelected = { driver ->
-                            navController.navigate("laps/${season}/${round}/${driver.driverId}")
+                            navController.navigate("laps/$season/$round/${driver.driverId}")
                         },
                         onRaceImageSelected = {},
                         onChartClicked = {
@@ -90,7 +92,8 @@ fun MainScreen() {
                 "standing/{season}/{round}",
                 listOf(
                     navArgument("season") { type = NavType.IntType },
-                    navArgument("round") { type = NavType.IntType })
+                    navArgument("round") { type = NavType.IntType }
+                )
             ) { navBackStackEntry ->
                 val viewModel: ResultsViewModel = hiltViewModel(navBackStackEntry)
                 val race by viewModel.race.observeAsState()
@@ -106,7 +109,7 @@ fun MainScreen() {
                         race = race,
                         standings = st,
                         onDriverSelected = { driver ->
-                            navController.navigate("laps/${season}/${round}/${driver.driverId}")
+                            navController.navigate("laps/$season/$round/${driver.driverId}")
                         }
                     ) {
                         navController.popBackStack()
@@ -133,7 +136,8 @@ fun MainScreen() {
                     onStandingClicked = {
                         navController.popBackStack()
                         navController.navigate("standing/${viewModel.season.value}/0")
-                    })
+                    }
+                )
 //                }
             }
             composable(
@@ -141,7 +145,8 @@ fun MainScreen() {
                 listOf(
                     navArgument("season") { type = NavType.IntType },
                     navArgument("round") { type = NavType.IntType },
-                    navArgument("driver") { type = NavType.StringType })
+                    navArgument("driver") { type = NavType.StringType }
+                )
             ) { navBackStackEntry ->
                 val viewModel: LapsViewModel = hiltViewModel(navBackStackEntry)
                 val result by viewModel.result.observeAsState()
@@ -158,7 +163,8 @@ fun MainScreen() {
                 "resultsGraph/{season}/{round}",
                 listOf(
                     navArgument("season") { type = NavType.IntType },
-                    navArgument("round") { type = NavType.IntType })
+                    navArgument("round") { type = NavType.IntType }
+                )
             ) { navBackStackEntry ->
                 val viewModel: ResultsViewModel = hiltViewModel(navBackStackEntry)
                 val season = navBackStackEntry.arguments?.get("season") as Int
@@ -180,4 +186,3 @@ fun MainScreen() {
         }
     }
 }
-

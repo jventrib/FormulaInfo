@@ -7,11 +7,11 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import kotlinx.coroutines.suspendCancellableCoroutine
-import logcat.logcat
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.math.hypot
+import kotlinx.coroutines.suspendCancellableCoroutine
+import logcat.logcat
 
 object FaceDetection {
 
@@ -29,12 +29,10 @@ object FaceDetection {
         detector = FaceDetection.getClient(highAccuracyOpts)
     }
 
-
     fun close() {
         detector?.close()
         detector = null
     }
-
 
     suspend fun detect(input: Bitmap): Rect? {
         // Put the input image into MLKIt's InputImage format.
@@ -56,7 +54,6 @@ object FaceDetection {
                 }
 
                 continuation.resume(mainFace?.boundingBox)
-
             }.addOnFailureListener { e ->
                 // Log the exception so we can figure out what's going wrong.
                 logcat("FaceDetection") { "detection: ERROR: $e" }
@@ -64,8 +61,4 @@ object FaceDetection {
             }
         }
     }
-
-
 }
-
-

@@ -28,5 +28,5 @@ data class RaceInfo(
         val fp3: Instant? = null,
         val qualifying: Instant? = null,
         val race: Instant
-    ): Serializable
+    ) : Serializable
 }

@@ -88,5 +88,4 @@ open class RaceRemoteDataSource(
     suspend fun getLapTime(season: Int, round: Int, driver: String) =
         mrdService.getLapTimes(season, round, driver).mrData.table.races.firstOrNull()?.laps
             ?: listOf()
-
 }

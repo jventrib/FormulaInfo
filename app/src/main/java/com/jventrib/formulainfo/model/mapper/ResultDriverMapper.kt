@@ -44,7 +44,5 @@ object ResultDriverMapper {
             }
             list.map { toEntity(it.first, it.second) }
         }
-
     }
-
 }

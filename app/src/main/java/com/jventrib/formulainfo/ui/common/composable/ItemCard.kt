@@ -2,7 +2,11 @@ package com.jventrib.formulainfo.ui.components
 
 import android.graphics.Rect
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -86,5 +90,4 @@ fun ItemCardPreview() {
         topText = "Top text Top text Top text",
         bottomText = "Bottom text"
     ) {}
-
 }
