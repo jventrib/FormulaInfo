@@ -35,12 +35,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.jventrib.formulainfo.ui.schedule.getRaceSample
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.schedule.Race
+import com.jventrib.formulainfo.ui.schedule.getRaceSample
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlin.math.roundToInt
 
