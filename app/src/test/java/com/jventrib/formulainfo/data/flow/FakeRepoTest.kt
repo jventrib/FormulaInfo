@@ -1,13 +1,22 @@
 package com.jventrib.formulainfo.data.flow
 
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 
 class FakeRepoTest {
-
 
     @Test
     fun testRepoRaces() {
@@ -40,9 +49,11 @@ class FakeRepoTest {
             println(list.size)
             val last = list.last()
             println(last)
-            Assert.assertTrue(last.all { race ->
-                race.fakeRace.flag != null && race.fakeResults.all { it.driver != null }
-            })
+            Assert.assertTrue(
+                last.all { race ->
+                    race.fakeRace.flag != null && race.fakeResults.all { it.driver != null }
+                }
+            )
 
 //            getRacesWithResults().collect {
 //                println(it)
@@ -50,13 +61,11 @@ class FakeRepoTest {
         }
     }
 
-
     private fun getRacesWithResults(): Flow<List<FakeRaceWithResults>> {
 
         val f1 = getRaces().map { list ->
             list.map { FakeRaceWithResults(it, listOf()) }
         }
-
 
         val f2 = getRaces()
             .take(1)
@@ -70,9 +79,8 @@ class FakeRepoTest {
                 acc + (value.fakeRace.round to value)
             }.map { it.values.toList() }
 
-
-        return f1.combine(f2){ a, b ->
-            a.zip(b) {za, zb ->
+        return f1.combine(f2) { a, b ->
+            a.zip(b) { za, zb ->
                 za.copy(fakeResults = zb.fakeResults)
             }
         }
@@ -87,7 +95,6 @@ class FakeRepoTest {
 //            }
 //        }
 //        .debounce(30)
-
 
 //            .onEach { println("flow: $it") }
 
@@ -118,16 +125,17 @@ class FakeRepoTest {
 //    return r.map
 //    { it.values.toList() }
 
-
     private fun getRaces() = flow {
         emit(races)
         delay(100)
 
         (1..22).forEach { loadIndex ->
             delay(100)
-            emit(races.mapIndexed { index, fakeRace ->
-                if (index < loadIndex) fakeRace.copy(flag = "Loaded") else fakeRace
-            })
+            emit(
+                races.mapIndexed { index, fakeRace ->
+                    if (index < loadIndex) fakeRace.copy(flag = "Loaded") else fakeRace
+                }
+            )
         }
     }
 
@@ -150,7 +158,6 @@ class FakeRepoTest {
     private val races = (1..22).map { FakeRace(it, null) }
 
     private val results = (1..20).map { FakeResult(it.toString(), null) }
-
 
     data class FakeRace(
         val round: Int,
@@ -183,7 +190,4 @@ class FakeRepoTest {
 //        val name: String,
 //        val image: String?
 //    )
-
-
 }
-

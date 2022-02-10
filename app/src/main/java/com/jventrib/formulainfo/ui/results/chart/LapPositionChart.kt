@@ -13,7 +13,6 @@ import com.jventrib.formulainfo.ui.common.YOrientation
 import com.jventrib.formulainfo.ui.results.getLapsWithStart
 import com.jventrib.formulainfo.ui.theme.teamColor
 
-
 @Composable
 fun LapPositionChart(lapsByResult: Map<Result, List<Lap>>) {
 //    val scaffoldState = rememberScaffoldState()
@@ -46,7 +45,6 @@ fun LapPositionChart(lapsByResult: Map<Result, List<Lap>>) {
         series = series, yOrientation = YOrientation.Down, gridStep = Offset(5f, 1f),
     )
 }
-
 
 @Preview(showSystemUi = false)
 @Composable

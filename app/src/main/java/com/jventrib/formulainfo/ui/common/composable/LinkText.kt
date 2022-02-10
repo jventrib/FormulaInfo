@@ -46,7 +46,8 @@ fun LinksScope.Link(linkText: String, linkUrl: String) {
             color = Color(0xff64B5F6),
 //                fontSize = 18.sp,
             textDecoration = TextDecoration.Underline
-        ), start = startIndex, end = endIndex
+        ),
+        start = startIndex, end = endIndex
     )
     builder.addStringAnnotation(
         tag = "URL",

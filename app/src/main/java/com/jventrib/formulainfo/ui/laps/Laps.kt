@@ -8,7 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +42,8 @@ fun Laps(race: Race?, result: Result, laps: List<Lap>) {
                 actions = {
                 }
             )
-        }) {
+        }
+    ) {
         Column {
             DriverResult(result = result, onResultSelected = {})
             LazyColumn {
@@ -159,7 +164,6 @@ private fun lap(
     Duration.ofMillis(time),
     Duration.ofMillis(time)
 )
-
 
 private fun Duration.toLapTimeString(): String {
     val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("mm:ss.SSS")

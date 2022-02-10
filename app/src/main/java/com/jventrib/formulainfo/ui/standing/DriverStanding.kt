@@ -51,7 +51,6 @@ fun DriverStanding(
     }
 }
 
-
 @Preview
 @Composable
 fun DriverResultPreview() {
@@ -65,9 +64,7 @@ fun DriverResultPreview() {
             1
         )
     ) {
-
     }
-
 }
 
 fun getResultSample(driver: String, position: Int) = Result(

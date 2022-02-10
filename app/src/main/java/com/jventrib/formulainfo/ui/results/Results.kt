@@ -2,14 +2,28 @@ package com.jventrib.formulainfo.ui.results
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.MultilineChart
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -46,7 +60,8 @@ fun ResultsScreen(
                 title = {
                     Text(
                         "${race.raceInfo.season} season",
-                        modifier = Modifier.clickable {})
+                        modifier = Modifier.clickable {}
+                    )
                 },
                 actions = {
                     if (results.isNotEmpty()) {
@@ -62,7 +77,8 @@ fun ResultsScreen(
                     }
                 }
             )
-        }) {
+        }
+    ) {
         val raceDetailHeight = 140.dp
         val circuitHeight = 150.dp
         val headerHeight = raceDetailHeight + circuitHeight
@@ -86,11 +102,14 @@ fun ResultsScreen(
             )
             Box(
                 modifier = Modifier
-                    .offset(0.dp, with(LocalDensity.current) {
-                        (circuitScrollHeightPx)
-                            .roundToInt()
-                            .toDp()
-                    })
+                    .offset(
+                        0.dp,
+                        with(LocalDensity.current) {
+                            (circuitScrollHeightPx)
+                                .roundToInt()
+                                .toDp()
+                        }
+                    )
                     .background(MaterialTheme.colors.background)
             ) {
                 Column {
@@ -123,7 +142,6 @@ fun ResultsList(
             DriverResult(result, onResultSelected = { onDriverSelected(it.driver) })
         }
     }
-
 }
 
 @ExperimentalCoilApi
@@ -155,4 +173,3 @@ fun RaceDetailDarkPreview() {
         )
     }
 }
-

@@ -4,8 +4,14 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
@@ -15,7 +21,6 @@ import com.jventrib.formulainfo.ui.results.chart.LapPositionChart
 import com.jventrib.formulainfo.ui.results.chart.LapTimeChart
 import com.jventrib.formulainfo.ui.results.chart.LeaderIntervalChart
 import java.time.Duration
-
 
 @Composable
 fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
@@ -58,7 +63,8 @@ internal fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result,
                 .toMutableList().apply {
                     if (entry.key.resultInfo.grid != 0) {
                         add(
-                            0, Lap(
+                            0,
+                            Lap(
                                 season = entry.key.resultInfo.season,
                                 round = entry.key.resultInfo.round,
                                 driverId = entry.key.driver.driverId,

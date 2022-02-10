@@ -5,7 +5,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.MultilineChart
@@ -18,8 +22,8 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.ui.schedule.item.Race
-import kotlinx.coroutines.launch
 import java.time.Year
+import kotlinx.coroutines.launch
 
 @Composable
 fun ScheduleScreen(
@@ -78,7 +82,8 @@ fun ScheduleScreen(
                     )
                 }
             )
-        }) {
+        }
+    ) {
         RaceList(raceList, onRaceClicked, listState, onRefreshClicked)
     }
 }
@@ -109,12 +114,11 @@ fun RaceList(
 
 private fun currentSeason(selectedSeason: Int?) = Year.now().value == selectedSeason
 
-//TODO look for a better way to provide a "mock" MainViewModel
-//@Preview
-//@Composable
-//fun RaceScreenPreview() {
+// TODO look for a better way to provide a "mock" MainViewModel
+// @Preview
+// @Composable
+// fun RaceScreenPreview() {
 //    FormulaInfoTheme {
 //        RaceScreen(viewModel = MockMainViewModel(), navController = NavController())
 //    }
-//}
-
+// }

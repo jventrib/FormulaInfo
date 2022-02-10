@@ -1,7 +1,11 @@
 package com.jventrib.formulainfo.ui.about
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -26,7 +30,8 @@ fun About() {
             TopAppBar(
                 title = { Text(stringResource(R.string.about_title)) },
             )
-        }) {
+        }
+    ) {
         Column(
             Modifier
                 .fillMaxWidth()
@@ -37,7 +42,8 @@ fun About() {
                 Image(
                     painter = rememberImagePainter(
                         R.mipmap.ic_launcher_round,
-                        builder = { this.placeholder(R.mipmap.ic_launcher_round) }),
+                        builder = { this.placeholder(R.mipmap.ic_launcher_round) }
+                    ),
                     null
                 )
                 Column {
@@ -50,7 +56,6 @@ fun About() {
                         style = MaterialTheme.typography.subtitle2,
                         modifier = Modifier.align(End)
                     )
-
                 }
             }
             B2(R.string.about_developed)
@@ -79,7 +84,6 @@ fun About() {
         }
     }
 }
-
 
 @Composable
 private fun H6(resId: Int, modifier: Modifier = Modifier) {
@@ -126,7 +130,3 @@ private fun RowScope.B2(resId: Int, modifier: Modifier = Modifier) {
 fun AboutPreview() {
     About()
 }
-
-
-
-

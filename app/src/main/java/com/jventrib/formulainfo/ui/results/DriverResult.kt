@@ -68,15 +68,12 @@ fun DriverResult(
     }
 }
 
-
 @Preview
 @Composable
 fun DriverResultPreview() {
     val rr = getResultSample("verstappen", 1)
     DriverResult(result = rr) {
-
     }
-
 }
 
 fun getResultSample(driver: String, position: Int) = Result(

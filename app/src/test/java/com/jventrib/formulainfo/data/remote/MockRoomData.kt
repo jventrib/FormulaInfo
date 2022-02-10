@@ -3,7 +3,13 @@ package com.jventrib.formulainfo.data.remote
 import androidx.room.DatabaseConfiguration
 import androidx.room.InvalidationTracker
 import androidx.sqlite.db.SupportSQLiteOpenHelper
-import com.jventrib.formulainfo.data.db.*
+import com.jventrib.formulainfo.data.db.AppRoomDatabase
+import com.jventrib.formulainfo.data.db.CircuitDao
+import com.jventrib.formulainfo.data.db.ConstructorDao
+import com.jventrib.formulainfo.data.db.DriverDao
+import com.jventrib.formulainfo.data.db.LapDao
+import com.jventrib.formulainfo.data.db.RaceDao
+import com.jventrib.formulainfo.data.db.ResultDao
 import io.mockk.mockk
 
 class MockRoomData(

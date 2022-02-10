@@ -60,7 +60,6 @@ fun LapTimeChart(lapsByResult: Map<Result, List<Lap>>) {
                     1.dp.toPx(),
                     StrokeCap.Round,
                 )
-
             }
     }
 }
