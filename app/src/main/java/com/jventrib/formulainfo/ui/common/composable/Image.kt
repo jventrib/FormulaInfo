@@ -44,7 +44,6 @@ fun ImagePreview() {
         modifier = Modifier.size(64.dp),
         contentScale = ContentScale.FillWidth
     )
-
 }
 @ExperimentalCoilApi
 @Preview
@@ -56,5 +55,4 @@ fun ImagePreview_cropped() {
         faceBox = Rect.unflattenFromString("72 19 120 67"),
         contentScale = ContentScale.FillWidth
     )
-
 }

@@ -3,7 +3,6 @@ package com.jventrib.formulainfo.ui.common
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 
-
 private val formatSymbols = DecimalFormatSymbols.getInstance().apply {
     decimalSeparator = ','
 }

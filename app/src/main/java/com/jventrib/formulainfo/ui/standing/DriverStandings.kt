@@ -3,17 +3,21 @@ package com.jventrib.formulainfo.ui.standing
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MultilineChart
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import coil.annotation.ExperimentalCoilApi
-import com.jventrib.formulainfo.getRaceSample
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.ui.schedule.getRaceSample
 
 @ExperimentalCoilApi
 @Composable
@@ -30,7 +34,8 @@ fun DriverStandingScreen(
                 title = {
                     Text(
                         "${race?.raceInfo?.raceName?.let { "$it " } ?: ""}$season standing",
-                        modifier = Modifier.clickable {})
+                        modifier = Modifier.clickable {}
+                    )
                 },
                 actions = {
                     IconButton(onClick = onStandingChartClicked) {
@@ -38,10 +43,11 @@ fun DriverStandingScreen(
                     }
                 }
             )
-        }) {
+        }
+    ) {
         LazyColumn {
-            items(items = standings) { result ->
-                DriverStanding(result, onDriverSelected = { onDriverSelected(it.driver) })
+            items(items = standings) { driverStanding ->
+                DriverStanding(driverStanding, onDriverSelected = { onDriverSelected(driverStanding.driver) })
             }
         }
     }
@@ -58,4 +64,3 @@ fun DriverStandingScreenPreview() {
         onDriverSelected = {},
     ) {}
 }
-

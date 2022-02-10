@@ -1,20 +1,24 @@
 package com.jventrib.formulainfo.ui.standing
 
 import androidx.compose.foundation.clickable
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.ui.common.Chart
-import com.jventrib.formulainfo.ui.common.DataPoint
-import com.jventrib.formulainfo.ui.common.Serie
-import com.jventrib.formulainfo.ui.common.YOrientation
+import com.jventrib.formulainfo.ui.common.composable.Chart
+import com.jventrib.formulainfo.ui.common.composable.DataPoint
+import com.jventrib.formulainfo.ui.common.composable.Serie
+import com.jventrib.formulainfo.ui.common.composable.YOrientation
 import com.jventrib.formulainfo.ui.theme.teamColor
-
 
 @Composable
 fun DriverStandingChart(
@@ -31,7 +35,8 @@ fun DriverStandingChart(
                 title = {
                     Text(
                         "$season standing",
-                        modifier = Modifier.clickable {})
+                        modifier = Modifier.clickable {}
+                    )
                 },
                 actions = {
                     IconButton(onClick = onStandingClicked) {
@@ -39,9 +44,10 @@ fun DriverStandingChart(
                     }
                 }
             )
-        }) {
+        }
+    ) {
 
-//) {
+// ) {
         val series = standings.map { entry ->
             Serie(
                 entry.value.map { round ->
@@ -61,13 +67,11 @@ fun DriverStandingChart(
         Chart(
             series = series, yOrientation = YOrientation.Up, gridStep = Offset(5f, 10f)
         )
-
     }
 }
 
-
-//@Preview(showSystemUi = false)
-//@Composable
-//fun SeasonChartPreview() {
+// @Preview(showSystemUi = false)
+// @Composable
+// fun SeasonChartPreview() {
 //    SeasonChart(race = null, lapsByResult = lapsWithStart)
-//}
+// }

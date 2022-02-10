@@ -1,11 +1,11 @@
 package com.jventrib.formulainfo.util
 
-import logcat.LogPriority
-import logcat.LogcatLogger
 import java.util.logging.ConsoleHandler
 import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.logging.SimpleFormatter
+import logcat.LogPriority
+import logcat.LogcatLogger
 
 object JULLogger : LogcatLogger {
     private var handler = ConsoleHandler().also {
@@ -26,7 +26,6 @@ object JULLogger : LogcatLogger {
         )
     }
 
-
     private val levelMapping = mapOf(
         LogPriority.VERBOSE to Level.FINEST,
         LogPriority.DEBUG to Level.FINE,
@@ -35,7 +34,7 @@ object JULLogger : LogcatLogger {
         LogPriority.ERROR to Level.SEVERE,
         LogPriority.ASSERT to Level.SEVERE,
 
-        )
+    )
 
     override fun log(priority: LogPriority, tag: String, message: String) {
         Logger.getLogger(tag)
@@ -44,6 +43,5 @@ object JULLogger : LogcatLogger {
                 it.addHandler(handler)
             }
             .log(levelMapping.getValue(priority), message)
-
     }
 }

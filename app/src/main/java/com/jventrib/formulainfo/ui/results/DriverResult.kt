@@ -18,7 +18,7 @@ import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.ResultInfo
 import com.jventrib.formulainfo.ui.common.composable.DeltaTextP
-import com.jventrib.formulainfo.ui.components.ItemCard
+import com.jventrib.formulainfo.ui.common.composable.ItemCard
 
 @Composable
 fun DriverResult(
@@ -68,15 +68,12 @@ fun DriverResult(
     }
 }
 
-
 @Preview
 @Composable
 fun DriverResultPreview() {
     val rr = getResultSample("verstappen", 1)
     DriverResult(result = rr) {
-
     }
-
 }
 
 fun getResultSample(driver: String, position: Int) = Result(

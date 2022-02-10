@@ -1,6 +1,10 @@
 package com.jventrib.formulainfo.ui.schedule
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.switchMap
 import com.jventrib.formulainfo.data.RaceRepository
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
 import dagger.hilt.android.lifecycle.HiltViewModel

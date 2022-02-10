@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.schedule.item
+package com.jventrib.formulainfo.ui.schedule
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,13 +14,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.jventrib.formulainfo.ui.common.format
-import com.jventrib.formulainfo.getRaceSample
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.ui.components.ItemCard
+import com.jventrib.formulainfo.ui.common.composable.ItemCard
+import com.jventrib.formulainfo.ui.common.format
 import com.jventrib.formulainfo.ui.results.getResultSample
-import com.jventrib.formulainfo.ui.schedule.Podium
 import java.time.Instant
 
 @ExperimentalCoilApi

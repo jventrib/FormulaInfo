@@ -6,13 +6,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.ui.common.Chart
-import com.jventrib.formulainfo.ui.common.DataPoint
-import com.jventrib.formulainfo.ui.common.Serie
-import com.jventrib.formulainfo.ui.common.YOrientation
+import com.jventrib.formulainfo.ui.common.composable.Chart
+import com.jventrib.formulainfo.ui.common.composable.DataPoint
+import com.jventrib.formulainfo.ui.common.composable.Serie
+import com.jventrib.formulainfo.ui.common.composable.YOrientation
 import com.jventrib.formulainfo.ui.results.getLapsWithStart
 import com.jventrib.formulainfo.ui.theme.teamColor
-
 
 @Composable
 fun LapPositionChart(lapsByResult: Map<Result, List<Lap>>) {
@@ -46,7 +45,6 @@ fun LapPositionChart(lapsByResult: Map<Result, List<Lap>>) {
         series = series, yOrientation = YOrientation.Down, gridStep = Offset(5f, 1f),
     )
 }
-
 
 @Preview(showSystemUi = false)
 @Composable

@@ -2,15 +2,10 @@ package com.jventrib.formulainfo.data.remote
 
 import com.jventrib.formulainfo.util.JULLogger
 import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.HiltTestApplication
+import java.util.logging.Level
 import logcat.LogcatLogger
 import org.junit.Before
 import org.junit.Rule
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
-import java.util.logging.Level
 
 open class RoboTest {
     @get:Rule

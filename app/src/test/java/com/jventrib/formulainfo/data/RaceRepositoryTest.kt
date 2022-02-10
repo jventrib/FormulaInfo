@@ -16,6 +16,8 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import java.time.Duration
+import java.time.Instant
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -28,8 +30,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import java.time.Duration
-import java.time.Instant
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -66,8 +66,7 @@ class RaceRepositoryTest : TestCase() {
                 "http://image1.svg"
             ),
 
-            )
-
+        )
 
         val raceRemote = RaceRemote(
             2020,
@@ -139,27 +138,25 @@ class RaceRepositoryTest : TestCase() {
         val round = slot<Int>()
         val driverId = slot<String>()
         every { lapTimeDao.getAll(capture(season), capture(round), capture(driverId)) } returns
-                flow {
-                    delay(2000)
-                    emit(
+            flow {
+                delay(2000)
+                emit(
 
-                        (1..10).map {
-                            Lap(
-                                season.captured,
-                                round.captured,
-                                driverId.captured,
-                                driverId.captured,
-                                it,
-                                1,
-                                Duration.ofSeconds(65),
-                                Duration.ofSeconds(65)
-                            )
-                        }
+                    (1..10).map {
+                        Lap(
+                            season.captured,
+                            round.captured,
+                            driverId.captured,
+                            driverId.captured,
+                            it,
+                            1,
+                            Duration.ofSeconds(65),
+                            Duration.ofSeconds(65)
+                        )
+                    }
 
-                    )
-
-                }
-
+                )
+            }
 
         val cacheMock = mockk<LruCache<List<Any>, Any>>()
         every { cacheMock.get(any()) }.returns(null)
@@ -175,7 +172,6 @@ class RaceRepositoryTest : TestCase() {
             }
         }
     }
-
 
     @Test
     fun testFlowListToMap() {
@@ -198,10 +194,7 @@ class RaceRepositoryTest : TestCase() {
                 println(it)
             }
         }
-
-
     }
-
 
     private fun getLaps() =
         flowOf((1..10).toList())

@@ -10,10 +10,10 @@ import androidx.compose.ui.unit.dp
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.ui.common.Chart
-import com.jventrib.formulainfo.ui.common.DataPoint
-import com.jventrib.formulainfo.ui.common.Serie
-import com.jventrib.formulainfo.ui.common.YOrientation
+import com.jventrib.formulainfo.ui.common.composable.Chart
+import com.jventrib.formulainfo.ui.common.composable.DataPoint
+import com.jventrib.formulainfo.ui.common.composable.Serie
+import com.jventrib.formulainfo.ui.common.composable.YOrientation
 import com.jventrib.formulainfo.ui.results.getLapsWithStart
 import com.jventrib.formulainfo.ui.theme.teamColor
 
@@ -48,8 +48,8 @@ fun LapTimeChart(lapsByResult: Map<Result, List<Lap>>) {
     Chart(
         series = series,
         yOrientation = YOrientation.Down,
-    ) { series ->
-        series
+    ) { list ->
+        list
             .flatMap { it.seriePoints }
             .groupBy { it.element?.number }
             .map { it.value }
@@ -60,7 +60,6 @@ fun LapTimeChart(lapsByResult: Map<Result, List<Lap>>) {
                     1.dp.toPx(),
                     StrokeCap.Round,
                 )
-
             }
     }
 }

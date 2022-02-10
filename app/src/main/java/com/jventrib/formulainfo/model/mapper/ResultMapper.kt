@@ -6,7 +6,7 @@ import com.jventrib.formulainfo.model.remote.ResultRemote
 object ResultMapper {
 
     fun toEntity(season: Int, round: Int, remote: ResultRemote) = ResultInfo(
-        "${season}-${round}-${remote.position}",
+        "$season-$round-${remote.position}",
         season,
         round,
         remote.number,
@@ -31,10 +31,10 @@ object ResultMapper {
 
     fun toEntity(season: Int, round: Int, remotes: List<ResultRemote>): List<ResultInfo> =
         if (remotes.isEmpty()) {
-            //Insert dummy line to store the no data from remote info
+            // Insert dummy line to store the no data from remote info
             listOf(
                 ResultInfo(
-                    "${season}-${round}-nodata",
+                    "$season-$round-nodata",
                     season,
                     round,
                     -1,

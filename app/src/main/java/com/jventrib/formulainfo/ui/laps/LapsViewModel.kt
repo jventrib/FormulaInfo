@@ -1,6 +1,11 @@
 package com.jventrib.formulainfo.ui.laps
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.switchMap
 import com.jventrib.formulainfo.data.RaceRepository
 import com.jventrib.formulainfo.model.db.Race
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,6 +40,4 @@ class LapsViewModel @Inject constructor(private val repository: RaceRepository) 
                 repository.getLaps(season.value!!, round.value!!, it.driver).asLiveData()
             } ?: MutableLiveData(null)
         }
-
-
 }

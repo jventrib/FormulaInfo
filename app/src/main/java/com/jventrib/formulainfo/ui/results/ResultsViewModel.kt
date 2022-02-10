@@ -1,14 +1,18 @@
 package com.jventrib.formulainfo.ui.results
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.switchMap
 import com.jventrib.formulainfo.data.RaceRepository
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.onEach
-import logcat.logcat
 import java.time.Year
 import javax.inject.Inject
 
@@ -25,7 +29,6 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
 
     data class SeasonRound(val season: Int, val round: Int?)
 
-
     val map = MutableLiveData<Map<Driver, List<Lap>>>()
 
     val race: LiveData<Race?> =
@@ -39,7 +42,7 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
     val results: LiveData<List<Result>> =
         race.distinctUntilChanged().switchMap {
             it?.let {
-                repository.getResults(season.value!!, it.raceInfo.round,true).asLiveData()
+                repository.getResults(season.value!!, it.raceInfo.round, true).asLiveData()
             } ?: MutableLiveData(listOf())
         }
 
@@ -52,7 +55,6 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
             } ?: MutableLiveData(null)
         }
 
-
     val standings =
         seasonAndRound.distinctUntilChanged().switchMap {
             repository.getRoundStandings(it.season, it.round).asLiveData()
@@ -62,5 +64,4 @@ class ResultsViewModel @Inject constructor(private val repository: RaceRepositor
         season.distinctUntilChanged().switchMap {
             repository.getSeasonStandings(it, false).asLiveData()
         }
-
 }

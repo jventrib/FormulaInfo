@@ -9,5 +9,4 @@ interface CircuitDao : IDao<Circuit> {
 
     @Query("DELETE FROM circuit")
     suspend fun deleteAll()
-
 }
