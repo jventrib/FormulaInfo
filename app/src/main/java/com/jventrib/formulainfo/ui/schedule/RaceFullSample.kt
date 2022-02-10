@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo
+package com.jventrib.formulainfo.ui.schedule
 
 import com.jventrib.formulainfo.model.db.Circuit
 import com.jventrib.formulainfo.model.db.Race

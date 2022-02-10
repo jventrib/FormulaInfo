@@ -4,21 +4,9 @@
     <color name="colorPrimaryDark">#812019</color>
     <color name="colorAccent">#3F51B5</color>
 
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="light_grey">#EEEEEE</color>
 
 <!--CONSTRUCTOR COLORS-->
-    <color name="mercedes">#00D2BE</color>
-    <color name="ferrari">#DC0000</color>
-    <color name="mclaren">#FF8700</color>
-    <color name="racing_point">#F596C8</color>
-    <color name="alphatauri">#FFFFFF</color>
-    <color name="renault">#FFF500</color>
-    <color name="alfa">#960000</color>
-    <color name="williams">#0082FA</color>
-    <color name="red_bull">#0600EF</color>
-    <color name="haas">#787878</color>
 </resources>

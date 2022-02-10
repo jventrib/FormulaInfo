@@ -21,7 +21,6 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
 import com.jventrib.formulainfo.model.db.Race
-import com.jventrib.formulainfo.ui.schedule.item.Race
 import java.time.Year
 import kotlinx.coroutines.launch
 

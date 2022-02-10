@@ -14,10 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.ui.common.Chart
-import com.jventrib.formulainfo.ui.common.DataPoint
-import com.jventrib.formulainfo.ui.common.Serie
-import com.jventrib.formulainfo.ui.common.YOrientation
+import com.jventrib.formulainfo.ui.common.composable.Chart
+import com.jventrib.formulainfo.ui.common.composable.DataPoint
+import com.jventrib.formulainfo.ui.common.composable.Serie
+import com.jventrib.formulainfo.ui.common.composable.YOrientation
 import com.jventrib.formulainfo.ui.theme.teamColor
 
 @Composable

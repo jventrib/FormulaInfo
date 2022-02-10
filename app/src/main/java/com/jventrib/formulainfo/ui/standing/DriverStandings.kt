@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import coil.annotation.ExperimentalCoilApi
-import com.jventrib.formulainfo.getRaceSample
+import com.jventrib.formulainfo.ui.schedule.getRaceSample
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
@@ -46,8 +46,8 @@ fun DriverStandingScreen(
         }
     ) {
         LazyColumn {
-            items(items = standings) { result ->
-                DriverStanding(result, onDriverSelected = { onDriverSelected(it.driver) })
+            items(items = standings) { driverStanding ->
+                DriverStanding(driverStanding, onDriverSelected = { onDriverSelected(driverStanding.driver) })
             }
         }
     }
