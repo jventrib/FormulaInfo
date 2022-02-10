@@ -48,8 +48,8 @@ fun LapTimeChart(lapsByResult: Map<Result, List<Lap>>) {
     Chart(
         series = series,
         yOrientation = YOrientation.Down,
-    ) { series ->
-        series
+    ) { list ->
+        list
             .flatMap { it.seriePoints }
             .groupBy { it.element?.number }
             .map { it.value }
