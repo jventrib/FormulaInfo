@@ -15,7 +15,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Run Kotlin Linter
-      run: ./gradlew ktlintStagingDebugCheck
+      run: ./gradlew ktlintCheck
     - name: Run Android Linter
       run: ./gradlew lintStagingDebug
     - name: Build
