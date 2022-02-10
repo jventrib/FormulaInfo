@@ -3,6 +3,8 @@ package com.jventrib.formulainfo.data.remote
 import com.jventrib.formulainfo.model.remote.RaceRemote
 import com.jventrib.formulainfo.model.remote.ResultRemote
 import java.net.URLDecoder
+import java.time.Instant
+import java.time.Year
 import java.time.ZonedDateTime
 
 const val DEFAULT_IMAGE_SIZE = 100
@@ -16,22 +18,37 @@ open class RaceRemoteDataSource(
     suspend fun getRaces(season: Int): List<RaceRemote> {
 
         val races = mrdService.getSchedule(season).mrData.table.races
-        return try {
-            races.zip(f1calendarService.getRaces(season).races) { mrd, f1c ->
-                mrd.sessions = f1c.sessions
-                mrd
+        return if (season >= Year.now().value) {
+            try {
+                zipMrdAndF1cSessions(races, season)
+            } catch (e: Exception) {
+                getRacesRaceTimes(races)
             }
-        } catch (e: Exception) {
-            races.onEach {
-                val raceDateTime = if (it.timeInitialized) {
-                    ZonedDateTime.parse("${it.date}T${it.time}").toInstant()
-                } else {
-                    ZonedDateTime.parse("${it.date}T15:00:00Z").toInstant()
-                }
-                it.sessions = RaceRemote.Sessions(gp = raceDateTime)
-            }
+        } else {
+            getRacesRaceTimes(races)
         }
     }
+
+    private fun getRacesRaceTimes(races: List<RaceRemote>) =
+        races.onEach {
+            val raceDateTime = it.getRaceTime()
+            it.sessions = RaceRemote.Sessions(gp = raceDateTime)
+        }
+
+    private fun RaceRemote.getRaceTime(): Instant {
+        val raceDateTime = if (timeInitialized) {
+            ZonedDateTime.parse("${date}T$time").toInstant()
+        } else {
+            ZonedDateTime.parse("${date}T15:00:00Z").toInstant()
+        }
+        return raceDateTime
+    }
+
+    private suspend fun zipMrdAndF1cSessions(races: List<RaceRemote>, season: Int) =
+        races.zip(f1calendarService.getRaces(season).races) { mrd, f1c ->
+            mrd.sessions = f1c.sessions
+            mrd
+        }
 
     suspend fun getResults(season: Int, round: Int): List<ResultRemote> {
         return mrdService.getResults(
@@ -69,6 +86,7 @@ open class RaceRemoteDataSource(
     }
 
     suspend fun getLapTime(season: Int, round: Int, driver: String) =
-        mrdService.getLapTimes(season, round, driver).mrData.table.races.firstOrNull()?.laps ?: listOf()
+        mrdService.getLapTimes(season, round, driver).mrData.table.races.firstOrNull()?.laps
+            ?: listOf()
 
 }
