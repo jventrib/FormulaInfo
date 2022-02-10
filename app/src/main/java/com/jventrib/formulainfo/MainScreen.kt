@@ -16,7 +16,7 @@ import com.jventrib.formulainfo.ui.laps.LapsViewModel
 import com.jventrib.formulainfo.ui.results.LapChart
 import com.jventrib.formulainfo.ui.results.ResultsScreen
 import com.jventrib.formulainfo.ui.results.ResultsViewModel
-import com.jventrib.formulainfo.ui.schedule.DriverStandingChart
+import com.jventrib.formulainfo.ui.standing.DriverStandingChart
 import com.jventrib.formulainfo.ui.schedule.ScheduleScreen
 import com.jventrib.formulainfo.ui.schedule.SeasonViewModel
 import com.jventrib.formulainfo.ui.standing.DriverStandingScreen

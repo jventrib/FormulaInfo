@@ -1,9 +1,12 @@
 package com.jventrib.formulainfo.model.remote
 
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import com.jventrib.formulainfo.data.remote.IntegerTypeAdapter
 import java.io.Serializable
 
 data class ResultRemote(
+    @JsonAdapter(IntegerTypeAdapter::class)
     val number: Int,
     val position: Int,
     val positionText: String,
@@ -39,6 +42,7 @@ data class ResultRemote(
     )
 
     data class Time(
+        @JsonAdapter(IntegerTypeAdapter::class)
         val millis: Int,
         val time: String
     )

@@ -1,10 +1,6 @@
 package com.jventrib.formulainfo.ui.results.chart
 
-import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
@@ -20,13 +16,13 @@ import com.jventrib.formulainfo.ui.theme.teamColor
 
 @Composable
 fun LapPositionChart(lapsByResult: Map<Result, List<Lap>>) {
-    val scaffoldState = rememberScaffoldState()
-    val scope = rememberCoroutineScope()
-    val selectState = remember(lapsByResult) {
-        mutableStateMapOf<String, Boolean>().apply {
-            putAll(lapsByResult.keys.map { it.driver.driverId to true })
-        }
-    }
+//    val scaffoldState = rememberScaffoldState()
+//    val scope = rememberCoroutineScope()
+//    val selectState = remember(lapsByResult) {
+//        mutableStateMapOf<String, Boolean>().apply {
+//            putAll(lapsByResult.keys.map { it.driver.driverId to true })
+//        }
+//    }
 
     val lapsWithStart = getLapsWithStart(lapsByResult)
 

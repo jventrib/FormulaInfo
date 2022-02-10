@@ -34,10 +34,7 @@ class MrdServiceTest {
     @Test
     fun testResults() {
         // Assign
-        val file = "results.json"
-        val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_OK)
-            .setBody(readFileContent(file)!!)
+        val response = "results.json".mockResponse()
         mockWebServer.enqueue(response)
 // Act
         runBlocking {
@@ -77,17 +74,33 @@ class MrdServiceTest {
             assertThat(result.fastestLap!!.averageSpeed.speed).isEqualTo(237.049f)
         }
 // Assert
+    }
 
+    @Test
+    fun testResults_1963_10() {
+        val response = "results_1963_10.json".mockResponse()
+        mockWebServer.enqueue(response)
+        runBlocking {
+            val mrResponse = mrdService.getResults(1963, 10)
+            assertThat(mrResponse.mrData.table.races.first().results).hasSize(23)
+        }
+    }
+
+    @Test
+    fun testResults_1954_5() {
+        val response = "results_1954_5.json".mockResponse()
+        mockWebServer.enqueue(response)
+        runBlocking {
+            val mrResponse = mrdService.getResults(1954, 5)
+            assertThat(mrResponse.mrData.table.races.first().results).hasSize(30)
+        }
     }
 
 
     @Test
     fun testLapTimes() {
         // Assign
-        val file = "laps.json"
-        val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_OK)
-            .setBody(readFileContent(file)!!)
+        val response = "laps.json".mockResponse()
         mockWebServer.enqueue(response)
 // Act
         runBlocking {
@@ -99,6 +112,13 @@ class MrdServiceTest {
             assertThat(lap.timings.first().position).isEqualTo(2)
             assertThat(lap.timings.first().time).isEqualTo("1:42.612")
         }
+    }
+
+    private fun String.mockResponse(): MockResponse {
+        val response = MockResponse()
+            .setResponseCode(HttpURLConnection.HTTP_OK)
+            .setBody(readFileContent(this)!!)
+        return response
     }
 
 
