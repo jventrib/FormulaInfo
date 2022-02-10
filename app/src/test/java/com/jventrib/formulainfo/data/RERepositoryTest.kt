@@ -34,10 +34,6 @@ class RERepositoryTest {
         JULLogger.level = Level.FINEST
         hiltRule.inject()
         if (!LogcatLogger.isInstalled) LogcatLogger.install(JULLogger)
-//        AndroidLogcatLogger.installOnDebuggableApp(
-//            RuntimeEnvironment.application ,
-//            minPriority = LogPriority.VERBOSE
-//        )
     }
 
     @Inject
@@ -49,13 +45,11 @@ class RERepositoryTest {
             (2022 downTo 2020).asFlow().map {
                 raceRepository.getRaces(it, false)
             }.flattenConcat().collect {
-//                println(it)
                 Truth.assertThat(it).isNotEmpty()
             }
             (2022 downTo 2020).asFlow().map {
                 raceRepository.getRaces(it, false)
             }.flattenConcat().collect {
-//                println(it)
                 Truth.assertThat(it).isNotEmpty()
             }
         }
@@ -66,7 +60,7 @@ class RERepositoryTest {
         runBlocking {
             raceRepository.getSeasonStandings(2021, false)
                 .collect {
-                    println(it)
+                    Truth.assertThat(it).isNotEmpty()
                 }
         }
     }
@@ -75,10 +69,9 @@ class RERepositoryTest {
     @Ignore
     fun allSeasonsRacesWithResults() {
         runBlocking {
-            val t = (2022 downTo 1950).asFlow().map {
+            (2022 downTo 1950).asFlow().map {
                 raceRepository.getRacesWithResults(it, false, false)
             }.flattenConcat().collect {
-                println(it)
                 Truth.assertThat(it).isNotEmpty()
             }
         }

@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.data
 
+import android.util.LruCache
 import com.jventrib.formulainfo.data.db.LapDao
 import com.jventrib.formulainfo.data.db.RaceDao
 import com.jventrib.formulainfo.data.db.ResultDao
@@ -160,9 +161,13 @@ class RaceRepositoryTest : TestCase() {
                 }
 
 
+        val cacheMock = mockk<LruCache<List<Any>, Any>>()
+        every { cacheMock.get(any()) }.returns(null)
+        every { cacheMock.put(any(), any()) }.answers {}
         val resultGraph = RaceRepository(
             MockRoomData(resultDao = resultDao, lapDao = lapTimeDao),
-            raceRemoteDataSource, context = mockk()
+            raceRemoteDataSource, context = mockk(),
+            cache = cacheMock
         ).getResultsWithLaps(2021, 1)
         runBlocking {
             resultGraph.collect {

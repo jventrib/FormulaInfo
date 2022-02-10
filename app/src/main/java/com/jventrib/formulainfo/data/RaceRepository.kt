@@ -29,7 +29,8 @@ import java.time.Instant
 class RaceRepository(
     private val roomDb: AppRoomDatabase,
     private val raceRemoteDataSource: RaceRemoteDataSource,
-    private val context: Context
+    private val context: Context,
+    private val cache: LruCache<List<Any>, Any> = LruCache<List<Any>, Any>(200)
 ) {
     private val raceDao: RaceDao = roomDb.raceDao()
     private val circuitDao: CircuitDao = roomDb.circuitDao()
@@ -37,8 +38,6 @@ class RaceRepository(
     private val driverDao: DriverDao = roomDb.driverDao()
     private val constructorDao: ConstructorDao = roomDb.constructorDao()
     private val lapDao: LapDao = roomDb.lapTimeDao()
-
-    private val cache = LruCache<List<Any>, Any>(200)
 
     private inline fun <reified R : List<E>, reified E, reified S> repo(
         cacheKey: List<Any>,
