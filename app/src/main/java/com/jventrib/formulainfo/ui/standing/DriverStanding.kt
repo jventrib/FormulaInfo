@@ -22,12 +22,13 @@ import com.jventrib.formulainfo.ui.components.ItemCard
 @Composable
 fun DriverStanding(
     driverStanding: DriverStanding,
-    onDriverSelected: (result: Result) -> Any
+    onDriverSelected: (driver: Driver) -> Any
 ) {
     ItemCard(
         image = driverStanding.driver.image,
         shape = CircleShape,
-        faceBox = Rect.unflattenFromString(driverStanding.driver.faceBox)
+        faceBox = Rect.unflattenFromString(driverStanding.driver.faceBox),
+        onItemSelected = { onDriverSelected(driverStanding.driver) }
     ) {
         Row(Modifier.fillMaxWidth()) {
             Column {
