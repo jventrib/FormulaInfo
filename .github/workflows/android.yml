@@ -35,5 +35,9 @@ jobs:
       with:
         name: lint-reports
         path: 'app/build/reports/lint-results-*'
+    - name: Lint statistics
+      uses: MeilCli/android-lint-statistics@v2
+      with:
+        lint_xml_file_path: 'app/build/reports/lint-results-*.xml'
     - name: Assemble
       run: ./gradlew assembleDebug
