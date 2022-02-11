@@ -15,8 +15,8 @@ android {
         applicationId "com.jventrib.formulainfo"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 8
-        versionName "2.1.1"
+        versionCode 9
+        versionName "2.1.2"
         testInstrumentationRunner "com.jventrib.formulainfo.di.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary true
