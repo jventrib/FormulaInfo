@@ -285,6 +285,7 @@ class RaceRepository(
             constructorDao.deleteAll()
             lapDao.deleteAll()
         }
+        cache.evictAll()
         logcat { "Refresh done" }
     }
 
