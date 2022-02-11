@@ -14,9 +14,21 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Test
+      run: ./gradlew testDebug
+    - name: Upload Test Reports
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-reports
+        path: 'app/build/reports/tests/'
     - name: Run Kotlin Linter
       run: ./gradlew ktlintCheck
     - name: Run Android Linter
-      run: ./gradlew lint
-    - name: Build
-      run: ./gradlew build
+      run: ./gradlew lintDebug
+    - name: Upload Lint Reports
+      uses: actions/upload-artifact@v2
+      with:
+        name: lint-reports
+        path: 'app/build/reports/lint-results-*'
+    - name: Assemble
+      run: ./gradlew assembleDebug
