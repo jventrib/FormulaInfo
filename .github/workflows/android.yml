@@ -39,5 +39,10 @@ jobs:
       uses: MeilCli/android-lint-statistics@v2
       with:
         lint_xml_file_path: 'app/build/reports/lint-results-*.xml'
+    - name: Upload Lint Statistics
+      uses: actions/upload-artifact@v2
+      with:
+        name: lint-statistics
+        path: 'data.png'
     - name: Assemble
       run: ./gradlew assembleDebug
