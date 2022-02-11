@@ -35,14 +35,9 @@ jobs:
       with:
         name: lint-reports
         path: 'app/build/reports/lint-results-*'
-    - name: Lint statistics
-      uses: MeilCli/android-lint-statistics@v2
+    - name: Publish Android Lint
+      uses: yutailang0119/action-android-lint@v2.0.0
       with:
-        lint_xml_file_path: 'app/build/reports/lint-results-*.xml'
-    - name: Upload Lint Statistics
-      uses: actions/upload-artifact@v2
-      with:
-        name: lint-statistics
-        path: 'data.png'
+        report-path: 'app/build/reports/lint-results-*.xml'
     - name: Assemble
       run: ./gradlew assembleDebug
