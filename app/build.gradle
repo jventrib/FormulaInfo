@@ -6,6 +6,7 @@ plugins {
     id "kotlin-kapt"
     id "dagger.hilt.android.plugin"
     id "org.jlleitschuh.gradle.ktlint" version "10.2.1"
+    id "io.github.reactivecircus.app-versioning" version "1.1.0"
 }
 
 android {
@@ -15,8 +16,6 @@ android {
         applicationId "com.jventrib.formulainfo"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 9
-        versionName "2.1.2"
         testInstrumentationRunner "com.jventrib.formulainfo.di.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary true
