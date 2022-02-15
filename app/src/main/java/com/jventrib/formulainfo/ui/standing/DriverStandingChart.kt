@@ -12,6 +12,8 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.ui.common.composable.Chart
@@ -39,7 +41,8 @@ fun DriverStandingChart(
                     )
                 },
                 actions = {
-                    IconButton(onClick = onStandingClicked) {
+                    IconButton(onClick = onStandingClicked,
+                        modifier = Modifier.semantics { testTag = "standing" }) {
                         Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
                     }
                 }
