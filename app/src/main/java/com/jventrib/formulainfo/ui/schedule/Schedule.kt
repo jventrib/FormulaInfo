@@ -17,6 +17,8 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
@@ -64,10 +66,12 @@ fun ScheduleScreen(
                         }
                     }
                     if (raceList.any { it.results.isNotEmpty() }) {
-                        IconButton(onClick = onStandingClicked) {
+                        IconButton(onClick = onStandingClicked,
+                            modifier = Modifier.semantics { testTag = "standing" }) {
                             Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
                         }
-                        IconButton(onClick = onStandingChartClicked) {
+                        IconButton(onClick = onStandingChartClicked,
+                            modifier = Modifier.semantics { testTag = "standingChart" }) {
                             Icon(
                                 imageVector = Icons.Filled.MultilineChart,
                                 contentDescription = null
@@ -97,6 +101,7 @@ fun RaceList(
     SwipeRefresh(
         state = rememberSwipeRefreshState(raceList.isEmpty()),
         onRefresh = onRefresh,
+        modifier = Modifier.semantics { testTag = "raceListSwipe" }
     ) {
         LazyColumn(state = listState) {
             items(raceList) {

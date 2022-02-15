@@ -12,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MultilineChart
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
@@ -38,7 +40,8 @@ fun DriverStandingScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = onStandingChartClicked) {
+                    IconButton(onClick = onStandingChartClicked,
+                        modifier = Modifier.semantics { testTag = "standingChart" }) {
                         Icon(imageVector = Icons.Filled.MultilineChart, contentDescription = null)
                     }
                 }
@@ -47,7 +50,9 @@ fun DriverStandingScreen(
     ) {
         LazyColumn {
             items(items = standings) { driverStanding ->
-                DriverStanding(driverStanding, onDriverSelected = { onDriverSelected(driverStanding.driver) })
+                DriverStanding(
+                    driverStanding,
+                    onDriverSelected = { onDriverSelected(driverStanding.driver) })
             }
         }
     }

@@ -1,7 +1,10 @@
 package com.jventrib.formulainfo.ui.results.chart
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
@@ -65,7 +68,10 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
                 ) / 1000f
         ),
         yOrientation = YOrientation.Down,
-        gridStep = Offset(5f, 5f)
+        gridStep = Offset(5f, 5f),
+        modifier = Modifier.semantics {
+            testTag = "chart"
+        }
     )
 }
 
