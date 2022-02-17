@@ -49,10 +49,29 @@ jobs:
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
         keyPassword: ${{ secrets.KEY_PASSWORD }}
 
-    - name: Upload Released AAB
+    - name: Upload Released Artifact
       uses: actions/upload-artifact@v2
       with:
         name: Signed app bundle
         path: ${{steps.sign_app.outputs.signedReleaseFile}}
+    - name: Upload APK to release
+      uses: skx/github-action-publish-binaries@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        args: 'app/build/outputs/apk/release/**.apk'
 
+    - name: Create service_account.json
+      id: createServiceAccount
+      run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
 
+    - name: Deploy to Play Store (BETA)
+      id: deploy
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJson: service_account.json
+        packageName: com.jventrib.formulainfo
+        releaseFile: 'app/build/outputs/apk/release/**.aab'
+        track: internal
+        whatsNewDirectory: publish/whatsnew
+        mappingFile: 'app/build/outputs/mapping/release/mapping.txt'
