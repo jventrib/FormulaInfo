@@ -33,13 +33,13 @@ class MainScreenTest {
     @Test
     fun testMainScreen() {
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("TAG")
-        waitForNode("Monaco Grand Prix").performTouchInput {
+        waitForNode("Bahrain Grand Prix").performTouchInput {
             swipeDown(300f, 1600f, 500L)
         }
-        waitForNode("Monaco Grand Prix").performClick()
+        waitForNode("Bahrain Grand Prix").performClick()
 
-        // In Monaco 2022 result page
-        waitForNode("Monaco Grand Prix")
+        // In Bahrain 2022 result page
+        waitForNode("Bahrain Grand Prix")
         Espresso.pressBack()
 
         // Back to schedule
@@ -47,17 +47,17 @@ class MainScreenTest {
         composeTestRule.onNodeWithText("2021").assertExists().performClick()
         Thread.sleep(2000)
         // Select year 2021
-        waitForNode("Monaco Grand Prix").performClick()
+        waitForNode("Bahrain Grand Prix").performClick()
 
-        // In Monaco 2021 result page
-        waitForNode("1:Max Verstappen").performClick()
-        // In vertappen Monaco 2021 result page
+        // In Bahrain 2021 result page
+        waitForNode("2:Max Verstappen").performClick()
+        // In vertappen Bahrain 2021 result page
         Espresso.pressBack()
 
-        // In Monaco 2021 Result
-        waitForNode("Monaco Grand Prix")
+        // In Bahrain 2021 Result
+        waitForNode("Bahrain Grand Prix")
         composeTestRule.onNodeWithTag("standing").assertExists().performClick()
-        waitForNode("105")
+        waitForNode("25 pts")
         Espresso.pressBack()
 
         waitForNodeFromTag("resultChart").performClick()
