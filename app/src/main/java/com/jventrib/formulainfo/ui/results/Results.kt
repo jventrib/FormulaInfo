@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
@@ -70,12 +69,14 @@ fun ResultsScreen(
                     if (results.isNotEmpty()) {
                         IconButton(
                             onClick = onStandingClicked,
-                            modifier = Modifier.semantics { testTag = "standing" }) {
+                            modifier = Modifier.semantics { testTag = "standing" }
+                        ) {
                             Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
                         }
                         IconButton(
                             onClick = onChartClicked,
-                            modifier = Modifier.semantics { testTag = "resultChart" }) {
+                            modifier = Modifier.semantics { testTag = "resultChart" }
+                        ) {
                             Icon(
                                 imageVector = Icons.Filled.MultilineChart,
                                 contentDescription = null

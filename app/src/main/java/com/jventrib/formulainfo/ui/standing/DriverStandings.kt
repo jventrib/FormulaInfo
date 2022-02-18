@@ -40,8 +40,10 @@ fun DriverStandingScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = onStandingChartClicked,
-                        modifier = Modifier.semantics { testTag = "standingChart" }) {
+                    IconButton(
+                        onClick = onStandingChartClicked,
+                        modifier = Modifier.semantics { testTag = "standingChart" }
+                    ) {
                         Icon(imageVector = Icons.Filled.MultilineChart, contentDescription = null)
                     }
                 }
@@ -52,7 +54,8 @@ fun DriverStandingScreen(
             items(items = standings) { driverStanding ->
                 DriverStanding(
                     driverStanding,
-                    onDriverSelected = { onDriverSelected(driverStanding.driver) })
+                    onDriverSelected = { onDriverSelected(driverStanding.driver) }
+                )
             }
         }
     }
