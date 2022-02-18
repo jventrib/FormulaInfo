@@ -11,8 +11,13 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Test
-      run: ./gradlew testRelease
+    - uses: burrunan/gradle-cache-action@v1
+      name: Test
+      with:
+        job-id: jdk8
+        arguments: testRelease
+        properties: |
+          kotlin.parallel.tasks.in.project=true
     - name: Upload Test Reports
       uses: actions/upload-artifact@v2
       with:
@@ -23,10 +28,20 @@ jobs:
       if: always()
       with:
         files: app/build/test-results/**/*.xml
-    - name: Run Kotlin Linter
-      run: ./gradlew ktlintCheck
-    - name: Run Android Linter
-      run: ./gradlew lintRelease
+    - uses: burrunan/gradle-cache-action@v1
+      name: Run Kotlin Linter
+      with:
+        job-id: jdk8
+        arguments: ktlintCheck
+        properties: |
+          kotlin.parallel.tasks.in.project=true
+    - uses: burrunan/gradle-cache-action@v1
+      name: Run Android Linter
+      with:
+        job-id: jdk8
+        arguments: lintRelease
+        properties: |
+          kotlin.parallel.tasks.in.project=true
     - name: Upload Lint Reports
       uses: actions/upload-artifact@v2
       with:
@@ -36,8 +51,13 @@ jobs:
       uses: yutailang0119/action-android-lint@v2.0.0
       with:
         report-path: 'app/build/reports/lint-results-*.xml'
-    - name: Assemble
-      run: ./gradlew assembleRelease
+    - uses: burrunan/gradle-cache-action@v1
+      name: Assemble
+      with:
+        job-id: jdk8
+        arguments: assembleRelease
+        properties: |
+          kotlin.parallel.tasks.in.project=true
 
     - name: Sign release
       id: sign_app
@@ -49,11 +69,6 @@ jobs:
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
         keyPassword: ${{ secrets.KEY_PASSWORD }}
 
-    - name: Upload Released Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: Signed app bundle
-        path: ${{steps.sign_app.outputs.signedReleaseFile}}
     - name: Upload APK to release
       uses: skx/github-action-publish-binaries@master
       env:
@@ -61,17 +76,43 @@ jobs:
       with:
         args: 'app/build/outputs/apk/release/**.apk'
 
+    - uses: burrunan/gradle-cache-action@v1
+      name: Bundle
+      with:
+        job-id: jdk8
+        arguments: bundleRelease
+        properties: |
+          kotlin.parallel.tasks.in.project=true
+
+    - name: Sign release
+      id: sign_app_aab
+      uses: r0adkll/sign-android-release@v1
+      with:
+        releaseDirectory: app/build/outputs/bundle/release
+        signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+        alias: ${{ secrets.ALIAS }}
+        keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+        keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+    - name: Upload Released Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Signed apk & aab
+        path: |
+          ${{steps.sign_app.outputs.signedReleaseFile}}
+          ${{steps.sign_app_aab.outputs.signedReleaseFile}}
+
     - name: Create service_account.json
       id: createServiceAccount
       run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
 
-    - name: Deploy to Play Store (BETA)
+    - name: Deploy to Play Store
       id: deploy
       uses: r0adkll/upload-google-play@v1
       with:
         serviceAccountJson: service_account.json
         packageName: com.jventrib.formulainfo
-        releaseFile: 'app/build/outputs/apk/release/**.aab'
+        releaseFiles: ${{steps.sign_app_aab.outputs.signedReleaseFile}}
         track: internal
         whatsNewDirectory: publish/whatsnew
         mappingFile: 'app/build/outputs/mapping/release/mapping.txt'
