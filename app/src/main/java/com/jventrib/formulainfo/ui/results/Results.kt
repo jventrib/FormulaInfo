@@ -32,6 +32,8 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
@@ -65,10 +67,16 @@ fun ResultsScreen(
                 },
                 actions = {
                     if (results.isNotEmpty()) {
-                        IconButton(onClick = onStandingClicked) {
+                        IconButton(
+                            onClick = onStandingClicked,
+                            modifier = Modifier.semantics { testTag = "standing" }
+                        ) {
                             Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
                         }
-                        IconButton(onClick = onChartClicked) {
+                        IconButton(
+                            onClick = onChartClicked,
+                            modifier = Modifier.semantics { testTag = "resultChart" }
+                        ) {
                             Icon(
                                 imageVector = Icons.Filled.MultilineChart,
                                 contentDescription = null

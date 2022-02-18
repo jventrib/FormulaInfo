@@ -33,7 +33,7 @@ class SeasonViewModel @Inject constructor(private val repository: RaceRepository
 
     suspend fun refresh() {
         repository.refresh()
-        season.value = season.value
-        round.value = null
+        season.postValue(season.value)
+        round.postValue(null)
     }
 }
