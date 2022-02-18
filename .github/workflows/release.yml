@@ -173,4 +173,5 @@ jobs:
         releaseFiles: ${{steps.sign_app_aab.outputs.signedReleaseFile}}
         track: internal
         whatsNewDirectory: publish/whatsnew
+        status: completed
         mappingFile: 'app/build/outputs/mapping/release/mapping.txt'
