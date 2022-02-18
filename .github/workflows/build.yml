@@ -115,3 +115,9 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: ./gradlew connectedCheck
+      - name: Upload AVD
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: avd
+          path: '/Users/runner/.android/avd/**'
