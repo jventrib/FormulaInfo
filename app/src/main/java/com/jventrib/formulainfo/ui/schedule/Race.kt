@@ -40,12 +40,14 @@ fun Race(
                     style = MaterialTheme.typography.h6
                 )
                 if (expanded) {
-                    race.raceInfo.sessions.fp1?.let { SessionDateText(it) }
-                    race.raceInfo.sessions.fp2?.let { SessionDateText(it) }
-                    race.raceInfo.sessions.fp3?.let { SessionDateText(it) }
-                    race.raceInfo.sessions.qualifying?.let { SessionDateText(it) }
+                    race.raceInfo.sessions.fp1?.let { SessionDateText(it, "FP1") }
+                    race.raceInfo.sessions.fp2?.let { SessionDateText(it, "FP2") }
+                    race.raceInfo.sessions.fp3?.let { SessionDateText(it, "FP3") }
+                    race.raceInfo.sessions.qualifying?.let { SessionDateText(it, "Qual") }
+                    SessionDateText(race.raceInfo.sessions.race, "Race")
+                } else {
+                    SessionDateText(race.raceInfo.sessions.race)
                 }
-                SessionDateText(race.raceInfo.sessions.race)
             }
             if (results.size >= 3) {
                 Column(
@@ -63,9 +65,9 @@ fun Race(
 }
 
 @Composable
-private fun SessionDateText(it: Instant) {
+private fun SessionDateText(it: Instant, label: String? = null) {
     Text(
-        text = it.format(),
+        text = listOfNotNull(label, it.format()).joinToString(": "),
         style = MaterialTheme.typography.body2,
         fontWeight = if (it.isAfter(Instant.now())) FontWeight.Bold else FontWeight.Normal
     )
