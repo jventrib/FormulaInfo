@@ -1,6 +1,5 @@
 package com.jventrib.formulainfo.ui
 
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -10,11 +9,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.pinch
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.swipeDown
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions.swipeDown
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jventrib.formulainfo.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -45,7 +42,7 @@ class MainScreenTest {
         waitForNode("Monaco Grand Prix")
         Espresso.pressBack()
 
-        //Back to schedule
+        // Back to schedule
         waitForNode("2022", false).performClick()
         composeTestRule.onNodeWithText("2021").assertExists().performClick()
         Thread.sleep(2000)
