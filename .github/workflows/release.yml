@@ -18,6 +18,7 @@ jobs:
         arguments: testRelease
         properties: |
           kotlin.parallel.tasks.in.project=true
+        gradle-distribution-sha-256-sum-warning: false
     - name: Upload Test Reports
       uses: actions/upload-artifact@v2
       with:
@@ -35,6 +36,7 @@ jobs:
         arguments: ktlintCheck
         properties: |
           kotlin.parallel.tasks.in.project=true
+        gradle-distribution-sha-256-sum-warning: false
     - uses: burrunan/gradle-cache-action@v1
       name: Run Android Linter
       with:
@@ -42,6 +44,7 @@ jobs:
         arguments: lintRelease
         properties: |
           kotlin.parallel.tasks.in.project=true
+        gradle-distribution-sha-256-sum-warning: false
     - name: Upload Lint Reports
       uses: actions/upload-artifact@v2
       with:
@@ -116,6 +119,7 @@ jobs:
         arguments: assembleRelease
         properties: |
           kotlin.parallel.tasks.in.project=true
+        gradle-distribution-sha-256-sum-warning: false
 
     - name: Sign release APK
       id: sign_app
@@ -141,6 +145,7 @@ jobs:
         arguments: bundleRelease
         properties: |
           kotlin.parallel.tasks.in.project=true
+        gradle-distribution-sha-256-sum-warning: false
 
     - name: Sign release AAB
       id: sign_app_aab

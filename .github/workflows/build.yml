@@ -21,6 +21,7 @@ jobs:
         arguments: testDebug
         properties: |
           kotlin.parallel.tasks.in.project=true
+        gradle-distribution-sha-256-sum-warning: false
     - name: Upload Test Reports
       uses: actions/upload-artifact@v2
       with:
@@ -38,6 +39,7 @@ jobs:
         arguments: ktlintCheck
         properties: |
           kotlin.parallel.tasks.in.project=true
+        gradle-distribution-sha-256-sum-warning: false
     - uses: burrunan/gradle-cache-action@v1
       name: Run Android Linter
       with:
@@ -45,6 +47,7 @@ jobs:
         arguments: lintDebug
         properties: |
           kotlin.parallel.tasks.in.project=true
+        gradle-distribution-sha-256-sum-warning: false
     - name: Upload Lint Reports
       uses: actions/upload-artifact@v2
       with:
@@ -61,6 +64,7 @@ jobs:
         arguments: assembleDebug
         properties: |
           kotlin.parallel.tasks.in.project=true
+        gradle-distribution-sha-256-sum-warning: false
 
 
   androidtest:
