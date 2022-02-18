@@ -41,8 +41,10 @@ fun DriverStandingChart(
                     )
                 },
                 actions = {
-                    IconButton(onClick = onStandingClicked,
-                        modifier = Modifier.semantics { testTag = "standing" }) {
+                    IconButton(
+                        onClick = onStandingClicked,
+                        modifier = Modifier.semantics { testTag = "standing" }
+                    ) {
                         Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
                     }
                 }

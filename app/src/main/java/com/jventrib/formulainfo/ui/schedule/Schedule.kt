@@ -66,12 +66,16 @@ fun ScheduleScreen(
                         }
                     }
                     if (raceList.any { it.results.isNotEmpty() }) {
-                        IconButton(onClick = onStandingClicked,
-                            modifier = Modifier.semantics { testTag = "standing" }) {
+                        IconButton(
+                            onClick = onStandingClicked,
+                            modifier = Modifier.semantics { testTag = "standing" }
+                        ) {
                             Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
                         }
-                        IconButton(onClick = onStandingChartClicked,
-                            modifier = Modifier.semantics { testTag = "standingChart" }) {
+                        IconButton(
+                            onClick = onStandingChartClicked,
+                            modifier = Modifier.semantics { testTag = "standingChart" }
+                        ) {
                             Icon(
                                 imageVector = Icons.Filled.MultilineChart,
                                 contentDescription = null
