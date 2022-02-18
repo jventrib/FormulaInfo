@@ -63,7 +63,7 @@ jobs:
           kotlin.parallel.tasks.in.project=true
 
 
-  test:
+  androidtest:
     runs-on: macos-latest
     steps:
       - name: checkout
