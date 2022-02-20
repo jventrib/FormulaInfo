@@ -18,7 +18,7 @@ open class RaceRemoteDataSource(
     suspend fun getRaces(season: Int): List<RaceRemote> {
 
         val races = mrdService.getSchedule(season).mrData.table.races
-        return if (season >= Year.now().value) {
+        return if (season >= 2018) {
             try {
                 zipMrdAndF1cSessions(races, season)
             } catch (e: Exception) {
