@@ -100,7 +100,10 @@ class RaceRepository(
         return fromDb
     }
 
-    private inline fun <reified T : List<E>, reified E> withCache(cacheKey: List<Any>, block: () -> Flow<T>): Flow<T> {
+    private inline fun <reified T : List<E>, reified E> withCache(
+        cacheKey: List<Any>,
+        block: () -> Flow<T>
+    ): Flow<T> {
         logcat { "Cache: $cache" }
         return cache[cacheKey]?.let {
             check(it is T) { it }
