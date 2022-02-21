@@ -4,10 +4,11 @@ import com.jventrib.formulainfo.model.remote.RaceRemote
 import com.jventrib.formulainfo.model.remote.ResultRemote
 import java.net.URLDecoder
 import java.time.Instant
-import java.time.Year
 import java.time.ZonedDateTime
 
 const val DEFAULT_IMAGE_SIZE = 100
+
+const val F1C_MIN_YEAR = 2018
 
 open class RaceRemoteDataSource(
     private val mrdService: MrdService,
@@ -18,7 +19,7 @@ open class RaceRemoteDataSource(
     suspend fun getRaces(season: Int): List<RaceRemote> {
 
         val races = mrdService.getSchedule(season).mrData.table.races
-        return if (season >= 2018) {
+        return if (season >= F1C_MIN_YEAR) {
             try {
                 zipMrdAndF1cSessions(races, season)
             } catch (e: Exception) {

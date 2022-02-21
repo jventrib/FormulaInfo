@@ -13,6 +13,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
@@ -50,6 +51,7 @@ fun ItemCard(
     onItemSelected: () -> Unit = {},
     shape: Shape = RectangleShape,
     faceBox: Rect? = null,
+    belowImage: @Composable (() -> Unit) = {},
     content: @Composable (() -> Unit)
 ) {
     Card(
@@ -60,18 +62,24 @@ fun ItemCard(
                 onItemSelected()
             },
         elevation = 4.dp,
-//        backgroundColor = LightLightGrey
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                imageModel = image,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
+                    .align(Top)
                     .padding(horizontal = 8.dp)
-                    .size(64.dp)
-                    .clip(shape),
-                faceBox = faceBox,
-                contentScale = ContentScale.FillWidth
-            )
+            ) {
+                Image(
+                    imageModel = image,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(shape),
+                    faceBox = faceBox,
+                    contentScale = ContentScale.FillWidth
+                )
+                belowImage()
+            }
             content()
 //            Column(
 //                Modifier.padding(bottom = 4.dp),
