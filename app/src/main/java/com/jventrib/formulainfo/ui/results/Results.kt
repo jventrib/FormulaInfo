@@ -87,7 +87,7 @@ fun ResultsScreen(
             )
         }
     ) {
-        val raceDetailHeight = 140.dp
+        val raceDetailHeight = if (race.raceInfo.sessions.fp1 != null) 140.dp else 80.dp
         val circuitHeight = 150.dp
         val headerHeight = raceDetailHeight + circuitHeight
         var circuitScrollHeightPx by remember { mutableStateOf(0f) }

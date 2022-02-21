@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
@@ -31,7 +32,17 @@ fun Race(
 ) {
     ItemCard(
         image = race.circuit.location.flag,
-        onItemSelected = { onRaceSelected(race) }
+        onItemSelected = { onRaceSelected(race) },
+        belowImage = {
+            if (expanded) {
+                Text(
+                    text = race.circuit.location.locality,
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
     ) {
         Row(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(bottom = 4.dp)) {
