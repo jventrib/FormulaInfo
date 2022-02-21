@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -28,7 +29,7 @@ fun Podium(results: List<Result>, modifier: Modifier = Modifier) {
     val h = 11.dp
     val w = 20.dp
     val result = results[0]
-    Column(horizontalAlignment = CenterHorizontally, modifier = modifier.width(60.dp)) {
+    Column(horizontalAlignment = CenterHorizontally, modifier = modifier.requiredWidth(60.dp)) {
         Driver(result, w)
         Row {
             Driver(results[1], w)
