@@ -53,7 +53,7 @@ fun ItemCard(
 ) {
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(6.dp)
             .fillMaxWidth()
             .clickable {
                 onItemSelected()
