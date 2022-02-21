@@ -10,7 +10,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.utils.FaceCrop
 
 @ExperimentalCoilApi
@@ -50,7 +49,7 @@ fun ImagePreview() {
 @Composable
 fun ImagePreview_cropped() {
     Image(
-        imageModel = R.drawable.vettel,
+        imageModel = "",
         modifier = Modifier.size(64.dp),
         faceBox = Rect.unflattenFromString("72 19 120 67"),
         contentScale = ContentScale.FillWidth
