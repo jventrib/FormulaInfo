@@ -46,11 +46,10 @@ fun Race(
                         .fillMaxHeight()
                         .padding(horizontal = 8.dp)
                 ) {
-
                     Image(
                         imageModel = race.circuit.location.flag,
                         modifier = Modifier
-                            .padding(vertical = 13.dp)
+                            .padding(top = 13.dp)
                             .width(64.dp)
                             .height(38.dp)
                             .clip(RectangleShape),
