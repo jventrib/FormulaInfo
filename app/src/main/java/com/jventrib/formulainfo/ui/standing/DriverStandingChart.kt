@@ -70,7 +70,7 @@ fun DriverStandingChart(
         }
 
         Chart(
-            series = series, yOrientation = YOrientation.Up, gridStep = Offset(5f, 10f)
+            series = series, yOrientation = YOrientation.Up, gridStep = Offset(5f, 10f),
         )
     }
 }

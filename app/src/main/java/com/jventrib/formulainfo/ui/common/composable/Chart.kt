@@ -63,7 +63,9 @@ fun <E> Chart(
     boundaries: Boundaries? = null,
     yOrientation: YOrientation,
     gridStep: Offset? = null,
-    customDraw: DrawScope.(List<Serie<E>>) -> Unit = {}
+    customDraw: DrawScope.(List<Serie<E>>) -> Unit = {},
+    xLabelTransform: (Float) -> String = { it.formatDecimal(false) },
+    yLabelTransform: (Float) -> String = { it.formatDecimal(false) }
 ) {
     if (series.isEmpty()) return
     val axisColor = colors.onBackground
@@ -142,7 +144,13 @@ fun <E> Chart(
                     drawSerie(serieScreen.seriePoints, serieScreen.color, pointAlpha)
                 }
 
-                drawAxisLabels(axisColor, backgroundColor, state)
+                drawAxisLabels(
+                    axisColor = axisColor,
+                    backgroundColor = backgroundColor,
+                    state = state,
+                    xLabelTransform,
+                    yLabelTransform
+                )
 
                 // custom
                 customDraw(onScreenSeries)
@@ -226,7 +234,9 @@ private fun <E> DrawScope.drawGrid(state: ChartState<E>) {
 private fun <E> DrawScope.drawAxisLabels(
     axisColor: Color,
     backgroundColor: Color,
-    state: ChartState<E>
+    state: ChartState<E>,
+    xLabelTransform: (Float) -> String,
+    yLabelTransform: (Float) -> String
 ) {
     val axisLabelPaint = Paint().asFrameworkPaint().apply {
         textSize = 32f
@@ -238,20 +248,20 @@ private fun <E> DrawScope.drawAxisLabels(
             range(state.boundaries.minX, state.boundaries.maxX, gridStep.x)
 
         xRange.forEach { x ->
-            val decimal = x.formatDecimal(false)
+            val label = xLabelTransform(x)
             val onScreenPoint = getOnScreenPoint(Offset(x, 0f), state).copy(y = 0f)
             if (size.toRect().contains(onScreenPoint)) {
                 drawRoundRect(
                     backgroundColor,
                     onScreenPoint.copy(x = onScreenPoint.x - 8.dp.toPx(), y = this.size.height),
-                    Size(decimal.length * 24f, 40f),
+                    Size(label.length * 24f, 40f),
                     CornerRadius(12f, 12f),
                     alpha = 0.7f
                 )
                 drawIntoCanvas {
                     it.nativeCanvas.drawText(
-                        decimal,
-                        onScreenPoint.x - 8 * decimal.length, // Center Axis Label on grid line
+                        label,
+                        onScreenPoint.x - 8 * label.length, // Center Axis Label on grid line
                         this.size.height + 12.dp.toPx(),
                         axisLabelPaint
                     )
@@ -265,17 +275,17 @@ private fun <E> DrawScope.drawAxisLabels(
         yRange.forEach { y ->
             val onScreenPoint = getOnScreenPoint(Offset(0f, y), state).copy(x = 0f)
             if (size.toRect().contains(onScreenPoint)) {
-                val decimal = y.formatDecimal(false)
+                val label = yLabelTransform(y)
                 drawRoundRect(
                     backgroundColor,
-                    onScreenPoint.copy(x = -4f, y = onScreenPoint.y - 20f),
-                    Size(decimal.length * 24f, 40f),
+                    onScreenPoint.copy(x = -8f, y = onScreenPoint.y - 20f),
+                    Size(20f + label.length * 16f, 40f),
                     CornerRadius(12f, 12f),
                     alpha = 0.7f
                 )
                 drawIntoCanvas {
                     it.nativeCanvas.drawText(
-                        decimal,
+                        label,
                         0f,
                         onScreenPoint.y + 10, // Center Axis Label on grid line
                         axisLabelPaint
@@ -438,7 +448,7 @@ fun ChartPreview() {
                 .fillMaxHeight(1f)
                 .border(2.dp, Color.Red),
             yOrientation = YOrientation.Down,
-            gridStep = Offset(5f, 1000f)
+            gridStep = Offset(5f, 1000f),
         )
     }
 }

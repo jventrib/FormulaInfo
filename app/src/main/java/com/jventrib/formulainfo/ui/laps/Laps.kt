@@ -23,12 +23,10 @@ import androidx.compose.ui.unit.dp
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.ui.common.toLapTimeString
 import com.jventrib.formulainfo.ui.results.DriverResult
 import com.jventrib.formulainfo.ui.results.getResultSample
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
-import java.time.Duration
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 @Composable
@@ -75,7 +73,10 @@ fun Laps(race: Race?, result: Result, laps: List<Lap>) {
                         Modifier
                             .fillMaxWidth()
                             .border(.5.dp, Color.Black)
-                            .background(if (index % 2 == 1) MaterialTheme.colors.background else MaterialTheme.colors.surface)
+                            .background(
+                                if (index % 2 == 1) MaterialTheme.colors.background
+                                else MaterialTheme.colors.surface
+                            )
                             .padding(4.dp)
                     ) {
                         Column(
@@ -161,11 +162,6 @@ private fun lap(
     "VER",
     number,
     2,
-    Duration.ofMillis(time),
-    Duration.ofMillis(time)
+    time,
+    time
 )
-
-private fun Duration.toLapTimeString(): String {
-    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("mm:ss.SSS")
-    return LocalTime.ofNanoOfDay(this.toNanos()).format(formatter)
-}

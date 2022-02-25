@@ -16,7 +16,6 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import java.time.Duration
 import java.time.Instant
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -150,8 +149,8 @@ class RaceRepositoryTest : TestCase() {
                             driverId.captured,
                             it,
                             1,
-                            Duration.ofSeconds(65),
-                            Duration.ofSeconds(65)
+                            65_000,
+                            65_000
                         )
                     }
 
