@@ -34,7 +34,7 @@ fun DriverResult(
             Image(
                 imageModel = result.driver.image,
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 8.dp, vertical = 2.dp)
                     .size(64.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.FillWidth,

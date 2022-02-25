@@ -4,6 +4,7 @@ import android.graphics.Rect
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
@@ -34,6 +35,7 @@ fun DriverStanding(
             Image(
                 imageModel = driverStanding.driver.image,
                 modifier = Modifier
+                    .padding(horizontal = 8.dp, vertical = 2.dp)
                     .size(64.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.FillWidth,
