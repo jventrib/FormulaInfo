@@ -31,7 +31,6 @@ import com.jventrib.formulainfo.model.mapper.ResultDriverMapper
 import com.jventrib.formulainfo.model.mapper.ResultMapper
 import com.jventrib.formulainfo.utils.FaceDetection
 import com.jventrib.formulainfo.utils.concat
-import java.time.Duration
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -240,8 +239,8 @@ class RaceRepository(
                                 driver.code ?: driver.driverId,
                                 -1,
                                 -1,
-                                Duration.ZERO,
-                                Duration.ZERO
+                                0,
+                                0
                             )
                         )
                     }

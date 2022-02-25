@@ -2,7 +2,9 @@ package com.jventrib.formulainfo.model.remote
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
-import java.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 data class LapTimeRemote(
     val number: Int,
@@ -17,11 +19,11 @@ data class LapTimeRemote(
 
     val time get() = timings[0].time.toDuration()
 
-    private fun String.toDuration(): Duration {
+    private fun String.toDuration(): Long {
         val min = this.substringBefore(":").toLong()
         val sec = this.substringAfter(":").substringBefore(".").toLong()
         val millis = this.substringAfter(".").toLong()
-        return Duration.ofMinutes(min).plus(Duration.ofSeconds(sec))
-            .plus(Duration.ofMillis(millis))
+        return min.minutes.inWholeMilliseconds.plus(sec.seconds.inWholeMilliseconds)
+            .plus(millis.milliseconds.inWholeMilliseconds)
     }
 }

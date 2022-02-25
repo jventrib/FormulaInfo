@@ -2,6 +2,9 @@ package com.jventrib.formulainfo.ui.common
 
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import kotlin.time.Duration.Companion.milliseconds
 
 private val formatSymbols = DecimalFormatSymbols.getInstance().apply {
     decimalSeparator = ','
@@ -25,3 +28,8 @@ fun Float.formatDecimal(withDecimalZeros: Boolean = false) = if (withDecimalZero
         twoTrailingZerosFormat
     }
 }.format(this)!!
+
+fun Long.toLapTimeString(pattern: String = "mm:ss.SSS"): String {
+    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(pattern)
+    return LocalTime.ofNanoOfDay(this.milliseconds.inWholeNanoseconds).format(formatter)
+}

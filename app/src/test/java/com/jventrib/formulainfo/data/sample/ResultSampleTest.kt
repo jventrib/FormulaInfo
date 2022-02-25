@@ -2,7 +2,6 @@ package com.jventrib.formulainfo.data.sample
 
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
-import java.time.Duration
 import junit.framework.TestCase
 import org.junit.Test
 
@@ -39,8 +38,8 @@ class ResultSampleTest : TestCase() {
                                     entry.key.driver.code ?: entry.key.driver.driverId,
                                     0,
                                     entry.key.resultInfo.grid,
-                                    Duration.ZERO,
-                                    Duration.ZERO
+                                    0,
+                                    0
                                 )
                             )
                         }

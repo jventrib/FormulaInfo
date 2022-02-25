@@ -2,7 +2,6 @@ package com.jventrib.formulainfo.model.mapper
 
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.remote.LapTimeRemote
-import java.time.Duration
 
 object LapTimeMapper {
 
@@ -12,7 +11,7 @@ object LapTimeMapper {
         driverId: String,
         driverCode: String,
         remote: LapTimeRemote,
-        total: Duration
+        total: Long
     ) = Lap(
         season,
         round,
@@ -31,7 +30,7 @@ object LapTimeMapper {
         driverCode: String,
         remotes: List<LapTimeRemote>
     ): List<Lap> {
-        var total = Duration.ZERO
+        var total = 0L
         return remotes.map {
             total += it.time
             toEntity(season, round, driverId, driverCode, it, total)

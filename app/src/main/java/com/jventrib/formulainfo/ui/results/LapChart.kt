@@ -20,7 +20,6 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.results.chart.LapPositionChart
 import com.jventrib.formulainfo.ui.results.chart.LapTimeChart
 import com.jventrib.formulainfo.ui.results.chart.LeaderIntervalChart
-import java.time.Duration
 
 @Composable
 fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
@@ -71,8 +70,8 @@ internal fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result,
                                 driverCode = entry.key.driver.code ?: entry.key.driver.driverId,
                                 number = 0,
                                 position = entry.key.resultInfo.grid,
-                                time = Duration.ZERO,
-                                total = Duration.ZERO
+                                time = 0,
+                                total = 0
                             )
                         )
                     }

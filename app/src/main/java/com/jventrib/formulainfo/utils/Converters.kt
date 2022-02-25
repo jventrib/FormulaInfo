@@ -1,8 +1,9 @@
 package com.jventrib.formulainfo.utils
 
 import androidx.room.TypeConverter
-import java.time.Duration
 import java.time.Instant
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 class Converters {
     @TypeConverter
@@ -17,11 +18,11 @@ class Converters {
 
     @TypeConverter
     fun toDuration(value: Long?): Duration? {
-        return if (value == null) null else Duration.ofMillis(value)
+        return value?.milliseconds
     }
 
     @TypeConverter
     fun fromDuration(duration: Duration?): Long? {
-        return duration?.toMillis()
+        return duration?.inWholeMilliseconds
     }
 }
