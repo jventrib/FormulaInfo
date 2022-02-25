@@ -42,7 +42,9 @@ fun MainScreen() {
                         raceList = rl,
                         onRaceClicked = { race ->
                             //                        navController.navigate("resultsGraph/${race.raceInfo.season}/${race.raceInfo.round}")
-                            navController.navigate("race/${race.raceInfo.season}/${race.raceInfo.round}")
+                            navController.navigate(
+                                "race/${race.raceInfo.season}/${race.raceInfo.round}"
+                            )
                         },
                         seasonList = seasonList,
                         selectedSeason = viewModel.season.observeAsState().value,
@@ -52,8 +54,16 @@ fun MainScreen() {
                         },
                         onAboutClicked = { navController.navigate("about") },
                         onRefreshClicked = { scope.launch { viewModel.refresh() } },
-                        onStandingClicked = { navController.navigate("standing/${viewModel.season.value}/0") },
-                        onStandingChartClicked = { navController.navigate("standing/${viewModel.season.value}/chart") }
+                        onStandingClicked = {
+                            navController.navigate(
+                                "standing/${viewModel.season.value}/0"
+                            )
+                        },
+                        onStandingChartClicked = {
+                            navController.navigate(
+                                "standing/${viewModel.season.value}/chart"
+                            )
+                        }
                     )
                 }
             }

@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.ui.schedule
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -13,18 +14,21 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.MultilineChart
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
 import com.jventrib.formulainfo.model.db.Race
-import java.time.Year
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 @Composable
 fun ScheduleScreen(
@@ -39,8 +43,16 @@ fun ScheduleScreen(
     onStandingChartClicked: () -> Unit
 ) {
     val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-
+    var alreadyScrolled by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    LaunchedEffect(alreadyScrolled) {
+        if (raceList.any { it.race.nextRace } && !alreadyScrolled) {
+            delay(300)
+            listState.animateScrollToItem(index = raceList.indexOfFirst { it.race.nextRace })
+            alreadyScrolled = true
+            Toast.makeText(context, "Auto scrolled to next race", Toast.LENGTH_SHORT).show()
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,20 +63,6 @@ fun ScheduleScreen(
                     )
                 },
                 actions = {
-                    if (currentSeason(selectedSeason)) {
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                listState.animateScrollToItem(
-                                    index = raceList.indexOfFirst { it.race.nextRace }
-                                )
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Notifications,
-                                contentDescription = null
-                            )
-                        }
-                    }
                     if (raceList.any { it.results.isNotEmpty() }) {
                         IconButton(
                             onClick = onStandingClicked,
@@ -119,8 +117,6 @@ fun RaceList(
         }
     }
 }
-
-private fun currentSeason(selectedSeason: Int?) = Year.now().value == selectedSeason
 
 // TODO look for a better way to provide a "mock" MainViewModel
 // @Preview
