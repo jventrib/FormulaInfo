@@ -3,21 +3,26 @@ package com.jventrib.formulainfo.ui.drivers
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.DrawerValue
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
-import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -34,23 +39,40 @@ import com.jventrib.formulainfo.ui.theme.teamColor
 @Composable
 fun DriverSelector(drivers: List<Result>, selectState: MutableMap<String, Boolean>) {
     rememberDrawerState(DrawerValue.Open)
-
-    drivers.forEach { result ->
-        Row(modifier = Modifier.width(90.dp)) {
-            Box(
+    val scrollState = rememberScrollState()
+    Column(Modifier.verticalScroll(scrollState)) {
+//
+        drivers.forEach { result ->
+            Row(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .background(teamColor[result.constructor.id]!!)
-                    .width(16.dp)
-                    .align(CenterVertically)
-            ) { Text("") }
-            Box(modifier = Modifier.align(CenterVertically)) {
-                Text(text = result.driver.code!!)
-            }
-            Column(horizontalAlignment = End, modifier = Modifier.fillMaxWidth()) {
-                Checkbox(checked = selectState[result.driver.driverId] ?: false, onCheckedChange = {
-                    selectState[result.driver.driverId] = it
-                })
+                    .width(IntrinsicSize.Max)
+                    .padding(vertical = 2.dp),
+                verticalAlignment = CenterVertically
+            ) {
+                Box(modifier = Modifier.weight(.5f)) {
+                    Text(
+                        text = result.driver.code!!,
+                        color = Color.White,
+                        modifier = Modifier
+                            .align(Center)
+                            .clip(MaterialTheme.shapes.medium)
+                            .background(teamColor[result.constructor.id]!!)
+                            .padding(4.dp)
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(.5f)
+                        .height(8.dp)
+                    // .wrapContentSize(Center, true)
+                ) {
+                    Checkbox(
+                        checked = selectState[result.driver.driverId] ?: false,
+                        onCheckedChange = {
+                            selectState[result.driver.driverId] = it
+                        },
+                    )
+                }
             }
         }
     }
@@ -65,7 +87,12 @@ fun DriverSelectorPreview() {
             rememberDrawerState(initialValue = DrawerValue.Open)
         ),
         drawerShape = customShape(),
-        drawerContent = { DriverSelector(drivers = ResultSample.get202101Results(), mutableMapOf()) },
+        drawerContent = {
+            DriverSelector(
+                drivers = ResultSample.get202101Results(),
+                mutableMapOf()
+            )
+        },
     ) {
         Box(
             Modifier
