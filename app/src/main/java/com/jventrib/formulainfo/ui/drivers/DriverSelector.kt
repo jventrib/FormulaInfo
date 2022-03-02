@@ -108,7 +108,7 @@ fun DriverSelector(drivers: List<DriverAndConstructor>, selectState: MutableMap<
             ) {
                 Box(modifier = Modifier.weight(.5f)) {
                     Text(
-                        text = result.driver.code!!,
+                        text = result.driver.code ?: result.driver.driverId.take(3),
                         color = Color.White,
                         modifier = Modifier
                             .align(Center)
