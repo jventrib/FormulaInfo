@@ -8,15 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
+import com.jventrib.formulainfo.model.aggregate.DriverAndConstructor
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.ui.drivers.DriverSelector
+import com.jventrib.formulainfo.ui.drivers.customShape
+import com.jventrib.formulainfo.ui.drivers.driverSelectionSaver
 import com.jventrib.formulainfo.ui.results.chart.LapPositionChart
 import com.jventrib.formulainfo.ui.results.chart.LapTimeChart
 import com.jventrib.formulainfo.ui.results.chart.LeaderIntervalChart
@@ -24,12 +26,10 @@ import com.jventrib.formulainfo.ui.results.chart.LeaderIntervalChart
 @Composable
 fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
     val scaffoldState = rememberScaffoldState()
-    rememberCoroutineScope()
     var selectedChart by rememberSaveable { mutableStateOf(Charts.values().first()) }
-    remember(lapsByResult) {
-        mutableStateMapOf<String, Boolean>().apply {
-            putAll(lapsByResult.keys.map { it.driver.driverId to true })
-        }
+    val pairs = lapsByResult.keys.map { it.driver.driverId to true }.toTypedArray()
+    val selectedDrivers = rememberSaveable(lapsByResult, saver = driverSelectionSaver) {
+        mutableStateMapOf(*pairs)
     }
 
     Scaffold(
@@ -44,8 +44,21 @@ fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
                 }
             )
         },
+        drawerShape = customShape(),
+        drawerContent = {
+            DriverSelector(
+                drivers = lapsByResult.keys.toList().sortedBy { it.resultInfo.position }
+                    .map { DriverAndConstructor(it.driver, it.constructor) },
+                selectedDrivers
+            )
+        },
+
     ) {
-        selectedChart.compose(lapsByResult)
+        selectedChart.compose(
+            lapsByResult.filter {
+                selectedDrivers[it.key.driver.driverId] ?: false
+            }
+        )
     }
 }
 
