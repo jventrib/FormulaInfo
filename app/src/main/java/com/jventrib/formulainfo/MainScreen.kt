@@ -118,9 +118,7 @@ fun MainScreen() {
                         season = season,
                         race = race,
                         standings = st,
-                        onDriverSelected = { driver ->
-                            navController.navigate("laps/$season/$round/${driver.driverId}")
-                        }
+                        onDriverSelected = {}
                     ) {
                         navController.popBackStack()
                         navController.navigate("standing/${viewModel.season.value}/chart")
