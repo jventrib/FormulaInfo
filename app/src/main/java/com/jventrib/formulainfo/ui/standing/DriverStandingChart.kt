@@ -10,16 +10,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import com.jventrib.formulainfo.model.aggregate.DriverAndConstructor
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.ui.common.composable.Chart
 import com.jventrib.formulainfo.ui.common.composable.DataPoint
 import com.jventrib.formulainfo.ui.common.composable.Serie
 import com.jventrib.formulainfo.ui.common.composable.YOrientation
+import com.jventrib.formulainfo.ui.drivers.DriverSelector
+import com.jventrib.formulainfo.ui.drivers.customShape
+import com.jventrib.formulainfo.ui.drivers.driverSelectionSaver
 import com.jventrib.formulainfo.ui.theme.teamColor
 
 @Composable
@@ -29,6 +35,11 @@ fun DriverStandingChart(
     onStandingClicked: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
+    val pairs = standings.keys.map { it.driverId to true }.toTypedArray()
+
+    val selectedDrivers = rememberSaveable(standings, saver = driverSelectionSaver) {
+        mutableStateMapOf(*pairs)
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -49,25 +60,38 @@ fun DriverStandingChart(
                     }
                 }
             )
+        },
+        drawerShape = customShape(),
+        drawerContent = {
+            DriverSelector(
+                drivers = standings.values.map { it.last() }.sortedByDescending { it.points }
+                    .map { DriverAndConstructor(it.driver, it.constructor) },
+                selectedDrivers
+            )
         }
+
     ) {
 
 // ) {
-        val series = standings.map { entry ->
-            Serie(
-                entry.value.map { round ->
-                    DataPoint(
-                        round,
-                        Offset(
-                            round.round!!.toFloat(),
-                            round.points
+        val series = standings
+            .filter {
+                selectedDrivers[it.key.driverId] ?: false
+            }
+            .map { entry ->
+                Serie(
+                    entry.value.map { round ->
+                        DataPoint(
+                            round,
+                            Offset(
+                                round.round!!.toFloat(),
+                                round.points
+                            )
                         )
-                    )
-                },
-                teamColor.getValue(entry.value.first().constructor.id),
-                entry.key.code ?: entry.key.driverId.take(3)
-            )
-        }
+                    },
+                    teamColor.getValue(entry.value.first().constructor.id),
+                    entry.key.code ?: entry.key.driverId.take(3)
+                )
+            }
 
         Chart(
             series = series, yOrientation = YOrientation.Up, gridStep = Offset(5f, 10f),
