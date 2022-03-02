@@ -73,14 +73,16 @@ fun ResultsScreen(
                         ) {
                             Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
                         }
-                        IconButton(
-                            onClick = onChartClicked,
-                            modifier = Modifier.semantics { testTag = "resultChart" }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.MultilineChart,
-                                contentDescription = null
-                            )
+                        if (results.first().resultInfo.season > 1995) {
+                            IconButton(
+                                onClick = onChartClicked,
+                                modifier = Modifier.semantics { testTag = "resultChart" }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.MultilineChart,
+                                    contentDescription = null
+                                )
+                            }
                         }
                     }
                 }
