@@ -6,6 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.ui.common.composable.Boundaries
 import com.jventrib.formulainfo.ui.common.composable.Chart
 import com.jventrib.formulainfo.ui.common.composable.DataPoint
 import com.jventrib.formulainfo.ui.common.composable.Serie
@@ -39,11 +40,15 @@ fun LapTimeChart(lapsByResult: Map<Result, List<Lap>>) {
         )
     }
 
+    val average =
+        if (series.isEmpty()) null else series.flatMap { it.seriePoints }
+            .map { it.offset.y }.average().toFloat() * 1.2f
     Chart(
         series = series,
         yOrientation = YOrientation.Up,
         gridStep = Offset(5f, 1f),
-        yLabelTransform = { (it * 1000).toLong().toLapTimeString("mm:ss") }
+        yLabelTransform = { (it * 1000).toLong().toLapTimeString("mm:ss") },
+        boundaries = Boundaries(maxY = average)
     )
 }
 
