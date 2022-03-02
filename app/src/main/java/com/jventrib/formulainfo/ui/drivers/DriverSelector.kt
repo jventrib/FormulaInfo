@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
-import androidx.compose.material.Divider
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -23,6 +21,9 @@ import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -39,11 +40,11 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jventrib.formulainfo.data.sample.ResultSample
-import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.model.aggregate.DriverAndConstructor
 import com.jventrib.formulainfo.ui.theme.teamColor
 
 @Composable
-fun DriverSelector(drivers: List<Result>, selectState: MutableMap<String, Boolean>) {
+fun DriverSelector(drivers: List<DriverAndConstructor>, selectState: MutableMap<String, Boolean>) {
     rememberDrawerState(DrawerValue.Open)
     val scrollState = rememberScrollState()
     val allState = remember(*selectState.values.toTypedArray()) {
@@ -98,11 +99,6 @@ fun DriverSelector(drivers: List<Result>, selectState: MutableMap<String, Boolea
             }
         }
 
-
-
-
-
-
         drivers.forEach { result ->
             Row(
                 modifier = Modifier
@@ -150,7 +146,8 @@ fun DriverSelectorPreview() {
         drawerShape = customShape(),
         drawerContent = {
             DriverSelector(
-                drivers = ResultSample.get202101Results(),
+                drivers = ResultSample.get202101Results()
+                    .map { DriverAndConstructor(it.driver, it.constructor) },
                 mutableMapOf()
             )
         },
@@ -181,3 +178,8 @@ fun customShape() = object : Shape {
         )
     }
 }
+
+val driverSelectionSaver = listSaver<SnapshotStateMap<String, Boolean>, Pair<String, Boolean>>(
+    save = { it.toList() },
+    restore = { it.toMutableStateMap() }
+)
