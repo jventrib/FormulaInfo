@@ -28,6 +28,7 @@ object PersistenceModule {
                 AppRoomDatabase::class.java,
                 application.getString(R.string.database)
             )
+            .createFromAsset("f1_database.db")
             .fallbackToDestructiveMigration()
             .build()
     }

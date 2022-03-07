@@ -32,6 +32,7 @@ import com.jventrib.formulainfo.model.mapper.ResultMapper
 import com.jventrib.formulainfo.utils.FaceDetection
 import com.jventrib.formulainfo.utils.concat
 import java.time.Instant
+import java.time.Year
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.combine
@@ -186,7 +187,7 @@ class RaceRepository(
 //                it.size != 1 || it.first().resultInfo.number != -1
 //            }
             .completeMissing(completeDriverImage, { it.driver.image }) {
-                logcat { "Completing driver ${it.driver.code} with image" }
+                logcat { "Completing driver ${it.driver.driverId} with image" }
                 driverDao.insert(getDriverWithImage(it.driver))
             }
             .onEach { response ->
@@ -205,7 +206,7 @@ class RaceRepository(
 
     private fun getSeasonDrivers(season: Int): Flow<List<Driver>> =
         driverDao.getSeasonDrivers(season).completeMissing(true, { it.image }) {
-            logcat { "Completing driver ${it.code} with image" }
+            logcat { "Completing driver ${it.driverId} with image" }
             driverDao.insert(getDriverWithImage(it))
         }.onEach { response ->
             if (response.all { it.image != null }) {
@@ -280,12 +281,12 @@ class RaceRepository(
     suspend fun refresh() {
         logcat { "Refreshing" }
         roomDb.withTransaction {
-            raceDao.deleteAll()
-            circuitDao.deleteAll()
-            resultDao.deleteAll()
-            driverDao.deleteAll()
-            constructorDao.deleteAll()
-            lapDao.deleteAll()
+            raceDao.deleteCurrentSeason(Year.now().value)
+            // circuitDao.deleteAll()
+            // resultDao.deleteAll()
+            // driverDao.deleteAll()
+            // constructorDao.deleteAll()
+            // lapDao.deleteAll()
         }
         cache.evictAll()
         logcat { "Refresh done" }
@@ -331,6 +332,7 @@ class RaceRepository(
         val imageUrl = raceRemoteDataSource.getWikipediaImageFromUrl(
             driver.url, 200, WikipediaService.Licence.FREE
         ) ?: "NONE"
+        logcat(LogPriority.INFO) { "imageUrl: $imageUrl" }
 
         val drawable = context.imageLoader.execute(
             ImageRequest.Builder(context).data(imageUrl).build()
@@ -450,4 +452,12 @@ class RaceRepository(
                             }
                     }
             }
+
+    fun getAllDrivers(): Flow<List<Driver>> {
+        return driverDao.getAllDrivers()
+            .completeMissing(true, { it.image }) {
+                logcat { "Completing driver ${it.driverId} with image" }
+                driverDao.insert(getDriverWithImage(it))
+            }
+    }
 }
