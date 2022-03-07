@@ -10,7 +10,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LapDao {
 
-    @Query("SELECT * from lap_time WHERE season = :season and round = :round and driverId = :driverId ORDER BY number ASC")
+    @Query(
+        "SELECT * from lap_time WHERE season = :season and round = :round " +
+            "and driverId = :driverId ORDER BY number ASC"
+    )
     fun getAll(season: Int, round: Int, driverId: String): Flow<List<Lap>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
