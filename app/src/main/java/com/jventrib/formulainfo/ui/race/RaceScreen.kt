@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.results
+package com.jventrib.formulainfo.ui.race
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,14 +41,14 @@ import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.composable.Image
-import com.jventrib.formulainfo.ui.schedule.Race
+import com.jventrib.formulainfo.ui.schedule.RaceInfo
 import com.jventrib.formulainfo.ui.schedule.getRaceSample
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlin.math.roundToInt
 
 @ExperimentalCoilApi
 @Composable
-fun ResultsScreen(
+fun RaceScreen(
     race: Race,
     results: List<Result>,
     onDriverSelected: (driver: Driver) -> Unit,
@@ -123,7 +123,7 @@ fun ResultsScreen(
                     .background(MaterialTheme.colors.background)
             ) {
                 Column {
-                    Race(race = race, expanded = true)
+                    RaceInfo(race = race, expanded = true)
                     Image(
                         imageModel = race.circuit.imageUrl,
                         contentScale = ContentScale.Fit,
@@ -158,7 +158,7 @@ fun ResultsList(
 @Preview
 @Composable
 fun RaceDetailPreview() {
-    ResultsScreen(
+    RaceScreen(
         race = getRaceSample(3),
         results = listOf(),
         onDriverSelected = {},
@@ -173,7 +173,7 @@ fun RaceDetailPreview() {
 @Composable
 fun RaceDetailDarkPreview() {
     FormulaInfoTheme(darkTheme = true) {
-        ResultsScreen(
+        RaceScreen(
             race = getRaceSample(3),
             results = listOf(),
             onDriverSelected = {},

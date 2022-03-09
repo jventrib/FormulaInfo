@@ -24,8 +24,8 @@ import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.toLapTimeString
-import com.jventrib.formulainfo.ui.results.DriverResult
-import com.jventrib.formulainfo.ui.results.getResultSample
+import com.jventrib.formulainfo.ui.race.DriverResult
+import com.jventrib.formulainfo.ui.race.getResultSample
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlin.random.Random
 

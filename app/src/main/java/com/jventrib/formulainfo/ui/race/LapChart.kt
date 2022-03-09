@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.results
+package com.jventrib.formulainfo.ui.race
 
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -19,9 +19,9 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.drivers.DriverSelector
 import com.jventrib.formulainfo.ui.drivers.customShape
 import com.jventrib.formulainfo.ui.drivers.driverSelectionSaver
-import com.jventrib.formulainfo.ui.results.chart.LapPositionChart
-import com.jventrib.formulainfo.ui.results.chart.LapTimeChart
-import com.jventrib.formulainfo.ui.results.chart.LeaderIntervalChart
+import com.jventrib.formulainfo.ui.race.chart.LapPositionChart
+import com.jventrib.formulainfo.ui.race.chart.LapTimeChart
+import com.jventrib.formulainfo.ui.race.chart.LeaderIntervalChart
 
 @Composable
 fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {

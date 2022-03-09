@@ -107,7 +107,7 @@ fun RaceList(
     ) {
         LazyColumn(state = listState) {
             items(raceList) {
-                Race(
+                RaceInfo(
                     race = it.race,
                     results = it.results,
                     expanded = it.race.nextRace,

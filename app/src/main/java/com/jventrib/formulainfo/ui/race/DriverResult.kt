@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.results
+package com.jventrib.formulainfo.ui.race
 
 import android.graphics.Rect
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.results.chart
+package com.jventrib.formulainfo.ui.race.chart
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
@@ -10,7 +10,7 @@ import com.jventrib.formulainfo.ui.common.composable.Chart
 import com.jventrib.formulainfo.ui.common.composable.DataPoint
 import com.jventrib.formulainfo.ui.common.composable.Serie
 import com.jventrib.formulainfo.ui.common.composable.YOrientation
-import com.jventrib.formulainfo.ui.results.getLapsWithStart
+import com.jventrib.formulainfo.ui.race.getLapsWithStart
 import com.jventrib.formulainfo.ui.theme.teamColor
 
 @Composable

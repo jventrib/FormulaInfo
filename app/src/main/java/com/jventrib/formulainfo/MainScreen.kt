@@ -14,9 +14,9 @@ import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.laps.Laps
 import com.jventrib.formulainfo.ui.laps.LapsViewModel
-import com.jventrib.formulainfo.ui.results.LapChart
-import com.jventrib.formulainfo.ui.results.ResultsScreen
-import com.jventrib.formulainfo.ui.results.ResultsViewModel
+import com.jventrib.formulainfo.ui.race.LapChart
+import com.jventrib.formulainfo.ui.race.RaceScreen
+import com.jventrib.formulainfo.ui.race.RaceViewModel
 import com.jventrib.formulainfo.ui.schedule.ScheduleScreen
 import com.jventrib.formulainfo.ui.schedule.SeasonViewModel
 import com.jventrib.formulainfo.ui.standing.DriverStandingChart
@@ -74,7 +74,7 @@ fun MainScreen() {
                     navArgument("round") { type = NavType.IntType }
                 )
             ) { navBackStackEntry ->
-                val viewModel: ResultsViewModel = hiltViewModel(navBackStackEntry)
+                val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
                 val race by viewModel.race.observeAsState()
                 val results by viewModel.results.observeAsState()
                 val season = navBackStackEntry.arguments?.get("season") as Int
@@ -82,7 +82,7 @@ fun MainScreen() {
                 viewModel.season.value = season
                 viewModel.round.value = round
                 race?.let {
-                    ResultsScreen(
+                    RaceScreen(
                         race = it,
                         results = results ?: listOf(),
                         onDriverSelected = { driver ->
@@ -105,7 +105,7 @@ fun MainScreen() {
                     navArgument("round") { type = NavType.IntType }
                 )
             ) { navBackStackEntry ->
-                val viewModel: ResultsViewModel = hiltViewModel(navBackStackEntry)
+                val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
                 val race by viewModel.race.observeAsState()
                 val standings by viewModel.standings.observeAsState()
                 val season = navBackStackEntry.arguments?.get("season") as Int
@@ -129,7 +129,7 @@ fun MainScreen() {
                 "standing/{season}/chart",
                 listOf(navArgument("season") { type = NavType.IntType })
             ) { navBackStackEntry ->
-                val viewModel: ResultsViewModel =
+                val viewModel: RaceViewModel =
                     hiltViewModel(navController.currentBackStackEntry!!)
                 val standings by viewModel.seasonStandingsChart.observeAsState()
 
@@ -174,7 +174,7 @@ fun MainScreen() {
                     navArgument("round") { type = NavType.IntType }
                 )
             ) { navBackStackEntry ->
-                val viewModel: ResultsViewModel = hiltViewModel(navBackStackEntry)
+                val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
                 val season = navBackStackEntry.arguments?.get("season") as Int
                 val round = navBackStackEntry.arguments?.get("round") as Int
                 val race by viewModel.race.observeAsState()
