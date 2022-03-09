@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.results
+package com.jventrib.formulainfo.ui.race
 
 import org.junit.Test
 

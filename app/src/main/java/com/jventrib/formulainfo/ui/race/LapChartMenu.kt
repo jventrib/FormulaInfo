@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.results
+package com.jventrib.formulainfo.ui.race
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

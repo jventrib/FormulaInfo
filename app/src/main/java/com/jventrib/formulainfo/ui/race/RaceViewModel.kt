@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.results
+package com.jventrib.formulainfo.ui.race
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -17,7 +17,7 @@ import java.time.Year
 import javax.inject.Inject
 
 @HiltViewModel
-class ResultsViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
+class RaceViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
 
     val season = MutableLiveData(Year.now().value)
     val round: MutableLiveData<Int?> = MutableLiveData(null)

@@ -26,12 +26,12 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.common.composable.ItemCard
 import com.jventrib.formulainfo.ui.common.format
-import com.jventrib.formulainfo.ui.results.getResultSample
+import com.jventrib.formulainfo.ui.race.getResultSample
 import java.time.Instant
 
 @ExperimentalCoilApi
 @Composable
-fun Race(
+fun RaceInfo(
     race: Race,
     results: List<Result> = listOf(),
     expanded: Boolean = false,
@@ -120,7 +120,7 @@ private fun SessionDateText(it: Instant, label: String? = null) {
 @Preview(showBackground = true)
 @Composable
 fun RaceItemPreview() {
-    Race(
+    RaceInfo(
         race = getRaceSample(1, "Emilia Romagna Grand Prix"),
         results = listOf(
             getResultSample("Verstappen", 1),
@@ -135,7 +135,7 @@ fun RaceItemPreview() {
 @Preview(showBackground = true)
 @Composable
 fun RaceItemPreviewExpanded() {
-    Race(
+    RaceInfo(
         race = getRaceSample(1, "Emilia Romagna Grand Prix"),
         results = listOf(
             getResultSample("Verstappen", 1),
