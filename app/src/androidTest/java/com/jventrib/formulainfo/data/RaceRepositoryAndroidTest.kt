@@ -6,8 +6,13 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flattenConcat
+import kotlinx.coroutines.flow.flattenMerge
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -16,6 +21,7 @@ import kotlinx.coroutines.runBlocking
 import logcat.AndroidLogcatLogger
 import logcat.LogPriority
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -61,7 +67,7 @@ class RaceRepositoryAndroidTest {
             assertThat(racesEmits).hasSize(23)
             val lastEmit = racesEmits.last()
             lastEmit.forEach {
-                assertThat(it.race.circuit.location.flag).isNull()
+                assertThat(it.race.circuit.location.flag).isNotNull()
             }
         }
         runBlocking {
@@ -74,7 +80,7 @@ class RaceRepositoryAndroidTest {
             assertThat(racesEmits).hasSize(24)
             val lastEmit = racesEmits.last()
             lastEmit.forEach {
-                assertThat(it.race.circuit.location.flag).isNull()
+                assertThat(it.race.circuit.location.flag).isNotNull()
             }
         }
     }
@@ -111,9 +117,58 @@ class RaceRepositoryAndroidTest {
     fun allSeasonsRacesWithResults() {
         runBlocking {
             val l = (2022 downTo 1950).asFlow().map {
+                println("season $it")
                 raceRepository.getRacesWithResults(it, false, false)
             }.flattenConcat().last()
             assertThat(l).isNotEmpty()
+        }
+    }
+
+    @Test
+    @Ignore("DB Generation only")
+    fun allSeasonsRacesWithResultsWithImages() {
+        runBlocking {
+            (1950..2022).asFlow().map {
+                // val l = (2022 downTo 1950).asFlow().map {
+                raceRepository.getRacesWithResults(it, true, true)
+            }.flattenMerge(200).collect()
+        }
+    }
+
+    @Test
+    @Ignore("DB Generation only")
+    fun allDriversWithImages() {
+        runBlocking {
+            // val l = (2022 downTo 1950).asFlow().map {
+            raceRepository.getAllDrivers().collect()
+        }
+    }
+
+    @Test
+    @Ignore("DB Generation only")
+    fun allLaps() {
+        runBlocking {
+            val races = (1998 downTo 1994).asFlow().flatMapConcat { season ->
+                raceRepository.getRaces(season, false).first().asFlow()
+                    .map { season to it.raceInfo.round }
+            }
+
+            races
+                .map {
+                    delay(300)
+                    raceRepository.getResultsWithLaps(it.first, it.second)
+                }
+                .flattenConcat()
+                .collect()
+        }
+    }
+
+    @Test
+    @Ignore("DB Generation only")
+    fun refreshSeason() {
+        runBlocking {
+            raceRepository.refresh()
+            delay(200_000)
         }
     }
 }
