@@ -67,7 +67,7 @@ class RaceRepositoryAndroidTest {
             assertThat(racesEmits).hasSize(23)
             val lastEmit = racesEmits.last()
             lastEmit.forEach {
-                assertThat(it.race.circuit.location.flag).isNull()
+                assertThat(it.race.circuit.location.flag).isNotNull()
             }
         }
         runBlocking {
@@ -80,7 +80,7 @@ class RaceRepositoryAndroidTest {
             assertThat(racesEmits).hasSize(24)
             val lastEmit = racesEmits.last()
             lastEmit.forEach {
-                assertThat(it.race.circuit.location.flag).isNull()
+                assertThat(it.race.circuit.location.flag).isNotNull()
             }
         }
     }
@@ -125,10 +125,10 @@ class RaceRepositoryAndroidTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("DB Generation only")
     fun allSeasonsRacesWithResultsWithImages() {
         runBlocking {
-            val l = (1950..2022).asFlow().map {
+            (1950..2022).asFlow().map {
                 // val l = (2022 downTo 1950).asFlow().map {
                 raceRepository.getRacesWithResults(it, true, true)
             }.flattenMerge(200).collect()
@@ -136,7 +136,7 @@ class RaceRepositoryAndroidTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("DB Generation only")
     fun allDriversWithImages() {
         runBlocking {
             // val l = (2022 downTo 1950).asFlow().map {
@@ -145,32 +145,26 @@ class RaceRepositoryAndroidTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("DB Generation only")
     fun allLaps() {
         runBlocking {
             val races = (1998 downTo 1994).asFlow().flatMapConcat { season ->
                 raceRepository.getRaces(season, false).first().asFlow()
                     .map { season to it.raceInfo.round }
-                // .flatMap { it.raceInfo.round }
             }
 
-            val t = races
+            races
                 .map {
                     delay(300)
                     raceRepository.getResultsWithLaps(it.first, it.second)
                 }
                 .flattenConcat()
                 .collect()
-            //         .flatMapConcat {
-            //         it.map { race ->
-            //         }.asFlow()
-            //     }
-            // }.flattenMerge(200).collect()
         }
     }
 
     @Test
-    @Ignore
+    @Ignore("DB Generation only")
     fun refreshSeason() {
         runBlocking {
             raceRepository.refresh()
