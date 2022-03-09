@@ -25,4 +25,7 @@ interface RaceDao {
 
     @Query("DELETE FROM race")
     suspend fun deleteAll()
+
+    @Query("DELETE FROM race WHERE season >= :season")
+    suspend fun deleteCurrentSeason(season: Int)
 }
