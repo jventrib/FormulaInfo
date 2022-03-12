@@ -42,8 +42,10 @@ import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.schedule.RaceInfo
+import com.jventrib.formulainfo.ui.schedule.RaceInfoMode
 import com.jventrib.formulainfo.ui.schedule.getRaceSample
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
+import java.time.Instant
 import kotlin.math.roundToInt
 
 @ExperimentalCoilApi
@@ -123,7 +125,14 @@ fun RaceScreen(
                     .background(MaterialTheme.colors.background)
             ) {
                 Column {
-                    RaceInfo(race = race, expanded = true)
+                    RaceInfo(
+                        race = race,
+                        mode = if (Instant.now()
+                            .isBefore(race.raceInfo.sessions.race)
+                        ) RaceInfoMode.Maxi
+                        else
+                            RaceInfoMode.Expanded
+                    )
                     Image(
                         imageModel = race.circuit.imageUrl,
                         contentScale = ContentScale.Fit,

@@ -110,7 +110,7 @@ fun RaceList(
                 RaceInfo(
                     race = it.race,
                     results = it.results,
-                    expanded = it.race.nextRace,
+                    mode = if (it.race.nextRace) RaceInfoMode.Maxi else RaceInfoMode.Mini,
                     onRaceSelected = onRaceSelected
                 )
             }
