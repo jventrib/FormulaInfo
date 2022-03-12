@@ -91,8 +91,8 @@ fun RaceScreen(
             )
         }
     ) {
-        val raceDetailHeight = if (race.raceInfo.sessions.fp1 != null) 140.dp else 80.dp
-        val circuitHeight = 150.dp
+        val raceDetailHeight = if (race.raceInfo.sessions.fp1 != null) 147.dp else 80.dp
+        val circuitHeight = 260.dp
         val headerHeight = raceDetailHeight + circuitHeight
         var circuitScrollHeightPx by remember { mutableStateOf(0f) }
         val headerHeightPx = with(LocalDensity.current) { headerHeight.roundToPx().toFloat() }
