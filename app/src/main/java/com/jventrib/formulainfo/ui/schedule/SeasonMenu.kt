@@ -38,7 +38,7 @@ fun SeasonMenu(
             onValueChange = {},
             label = { Text("Season") },
             trailingIcon = { TrailingIcon(expanded = expanded) },
-            modifier = Modifier.width(110.dp),
+            modifier = Modifier.width(115.dp),
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
                 focusedLabelColor = LocalContentColor.current,
                 unfocusedLabelColor = LocalContentColor.current,
