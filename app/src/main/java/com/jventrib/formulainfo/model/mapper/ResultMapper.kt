@@ -1,6 +1,7 @@
 package com.jventrib.formulainfo.model.mapper
 
 import com.jventrib.formulainfo.model.db.ResultInfo
+import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.model.remote.ResultRemote
 
 object ResultMapper {
@@ -9,6 +10,7 @@ object ResultMapper {
         "$season-$round-${remote.position}",
         season,
         round,
+        Session.RACE,
         remote.number,
         remote.position,
         remote.positionText,
@@ -37,6 +39,7 @@ object ResultMapper {
                     "$season-$round-nodata",
                     season,
                     round,
+                    Session.RACE,
                     -1,
                     -1,
                     "nodata",
