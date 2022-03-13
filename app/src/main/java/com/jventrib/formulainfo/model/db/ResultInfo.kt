@@ -13,6 +13,8 @@ data class ResultInfo(
     val key: String,
     val season: Int,
     val round: Int,
+    @ColumnInfo(defaultValue = "RACE")
+    val session: Session,
     val number: Int,
     val position: Int,
     val positionText: String,

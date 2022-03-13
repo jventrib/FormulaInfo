@@ -20,6 +20,7 @@ import com.jventrib.formulainfo.model.db.Constructor
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.ResultInfo
+import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.ui.common.composable.DeltaTextP
 import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.common.composable.ItemCard
@@ -94,6 +95,7 @@ fun getResultSample(driver: String, position: Int) = Result(
         "11",
         2021,
         2,
+        Session.RACE,
         33,
         position,
         "1",

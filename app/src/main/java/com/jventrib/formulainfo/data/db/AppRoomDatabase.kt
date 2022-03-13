@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.data.db
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -20,8 +21,11 @@ import com.jventrib.formulainfo.utils.Converters
         Constructor::class,
         Lap::class
     ],
-    version = 10,
-    exportSchema = false
+    version = 11,
+    // exportSchema = false,
+    autoMigrations = [
+        AutoMigration(from = 10, to = 11)
+    ]
 )
 @TypeConverters(Converters::class)
 abstract class AppRoomDatabase : RoomDatabase() {
