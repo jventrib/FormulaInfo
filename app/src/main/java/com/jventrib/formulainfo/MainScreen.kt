@@ -14,6 +14,7 @@ import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.laps.Laps
 import com.jventrib.formulainfo.ui.laps.LapsViewModel
+import com.jventrib.formulainfo.ui.preferences.PreferencesScreen
 import com.jventrib.formulainfo.ui.race.LapChart
 import com.jventrib.formulainfo.ui.race.RaceScreen
 import com.jventrib.formulainfo.ui.race.RaceViewModel
@@ -53,6 +54,7 @@ fun MainScreen() {
                             viewModel.round.value = null
                         },
                         onAboutClicked = { navController.navigate("about") },
+                        onPreferenceClicked = { navController.navigate("preference") },
                         onRefreshClicked = { scope.launch { viewModel.refresh() } },
                         onStandingClicked = {
                             navController.navigate(
@@ -190,6 +192,7 @@ fun MainScreen() {
                     }
                 }
             }
+            composable("preference") { PreferencesScreen() }
             composable("about") { About() }
         }
     }

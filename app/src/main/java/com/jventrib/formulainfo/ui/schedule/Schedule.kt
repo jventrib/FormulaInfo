@@ -14,6 +14,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.MultilineChart
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,6 +39,7 @@ fun ScheduleScreen(
     selectedSeason: Int?,
     onSeasonSelected: (Int) -> Unit,
     onAboutClicked: () -> Unit,
+    onPreferenceClicked: () -> Unit,
     onRefreshClicked: () -> Unit,
     onStandingClicked: () -> Unit,
     onStandingChartClicked: () -> Unit
@@ -79,6 +81,15 @@ fun ScheduleScreen(
                                 contentDescription = null
                             )
                         }
+                    }
+                    IconButton(
+                        onClick = onPreferenceClicked,
+                        modifier = Modifier.semantics { testTag = "preference" }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = null
+                        )
                     }
                     SeasonMenu(
                         seasonList = seasonList,
