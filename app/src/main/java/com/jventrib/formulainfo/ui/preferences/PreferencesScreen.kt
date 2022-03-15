@@ -21,8 +21,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 @Composable
 fun PreferencesScreen() {
 
-    val context = LocalContext.current
-    val dataStore = context.dataStore
+    val dataStore = LocalContext.current.dataStore
     // val dataStoreManager = remember { DataStoreManager(dataStore) }
     // val scope = rememberCoroutineScope()
     // val switchPreference by dataStoreManager.getPreferenceFlow(waterRequest)
