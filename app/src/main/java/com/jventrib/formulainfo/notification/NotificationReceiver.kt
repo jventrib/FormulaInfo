@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.jventrib.formulainfo.R
+import java.time.Instant
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -18,6 +19,7 @@ class NotificationReceiver : BroadcastReceiver() {
         } else {
             // perform your scheduled task here (eg. send alarm notification)
             val raceName = intent.extras?.get("race_name") as String? ?: "Not Found"
+            val raceDateTime = intent.extras?.get("race_datetime") as Instant?
             Toast.makeText(
                 context,
                 raceName,
@@ -36,7 +38,7 @@ class NotificationReceiver : BroadcastReceiver() {
                 val builder =
                     NotificationCompat.Builder(context.getApplicationContext(), channelID)
                         .setContentTitle(raceName)
-                        .setContentText("Body of the notification")
+                        .setContentText(raceDateTime.toString())
                         .setSmallIcon(R.drawable.ic_launcher_foreground)
 
                 notificationManager.notify(1, builder.build())

@@ -9,10 +9,11 @@ import androidx.lifecycle.ViewModel
 import com.jventrib.formulainfo.data.RaceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.time.LocalDateTime
+import java.time.Instant
 import java.time.Year
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
+import logcat.logcat
 
 @HiltViewModel
 class NotificationViewModel @Inject constructor(
@@ -21,29 +22,27 @@ class NotificationViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    suspend fun notifyNextRace() {
-
+    suspend fun notifyNextRaces() {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val races = repository.getRaces(Year.now().value, false).first()
-        val nextRace = races.firstOrNull { it.nextRace }
-        nextRace?.let {
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        races.forEach { race ->
+            val date = Instant.now().plusSeconds(30 * race.raceInfo.round.toLong()).toEpochMilli()
+            logcat { "Creating notification for ${race.raceInfo.raceName}: $date" }
             val intent = Intent(context, NotificationReceiver::class.java)
-            intent.putExtra("race_name", it.raceInfo.raceName)
-            intent.putExtra("race_datetime", it.raceInfo.sessions.race)
-            intent.putExtra("circuit_name", it.circuit.name)
+            intent.putExtra("race_name", race.raceInfo.raceName)
+            // intent.putExtra("race_datetime", race.raceInfo.sessions.race)
+            // intent.putExtra("circuit_name", race.circuit.name)
 
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
-                0,
+                race.raceInfo.round,
                 intent,
                 PendingIntent.FLAG_IMMUTABLE
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    LocalDateTime.now().plusSeconds(30).second * 1000L,
-                    pendingIntent
-                )
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, date, pendingIntent)
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, date, pendingIntent)
             }
         }
     }

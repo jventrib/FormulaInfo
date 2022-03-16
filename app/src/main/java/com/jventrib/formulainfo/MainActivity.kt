@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
 
         val notificationViewModel: NotificationViewModel by viewModels()
         lifecycleScope.launch {
-            notificationViewModel.notifyNextRace()
+            notificationViewModel.notifyNextRaces()
         }
         setContent {
             CompositionLocalProvider(LocalImageLoader provides viewModel.imageLoader) {
