@@ -11,13 +11,18 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.jventrib.formulainfo.R
 
-class AlarmReceiver : BroadcastReceiver() {
+class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if ((Intent.ACTION_BOOT_COMPLETED) == intent.action) {
             // reset all alarms
         } else {
             // perform your scheduled task here (eg. send alarm notification)
-            Toast.makeText(context, "TEST", Toast.LENGTH_LONG).show()
+            val raceName = intent.extras?.get("race_name") as String? ?: "Not Found"
+            Toast.makeText(
+                context,
+                raceName,
+                Toast.LENGTH_LONG
+            ).show()
 
             val channelID = "channelID"
             val channelName = "Channel Name"
@@ -30,7 +35,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
                 val builder =
                     NotificationCompat.Builder(context.getApplicationContext(), channelID)
-                        .setContentTitle("Title of the notification")
+                        .setContentTitle(raceName)
                         .setContentText("Body of the notification")
                         .setSmallIcon(R.drawable.ic_launcher_foreground)
 
