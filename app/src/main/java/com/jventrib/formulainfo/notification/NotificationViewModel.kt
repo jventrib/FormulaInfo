@@ -12,10 +12,14 @@ import com.jventrib.formulainfo.model.db.Session.FP2
 import com.jventrib.formulainfo.model.db.Session.FP3
 import com.jventrib.formulainfo.model.db.Session.QUAL
 import com.jventrib.formulainfo.model.db.Session.RACE
+import com.jventrib.formulainfo.ui.preferences.PreferencesKeys
+import com.jventrib.formulainfo.ui.preferences.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import de.schnettler.datastore.manager.DataStoreManager
 import java.time.Instant
 import java.time.Year
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 import logcat.logcat
@@ -35,32 +39,50 @@ class NotificationViewModel @Inject constructor(
             // Get next session
             val sessions = race.raceInfo.sessions.run {
                 mapOf(
-                    FP1 to fp1,
-                    FP2 to fp2,
-                    FP3 to fp3,
-                    QUAL to qualifying,
-                    RACE to this.race,
+                    fp1 to FP1,
+                    fp2 to FP2,
+                    fp3 to FP3,
+                    qualifying to QUAL,
+                    // sprint to SPRINT,
+                    this.race to RACE,
                 )
             }
+            val nextSession =
+                sessions.entries
+                    .firstOrNull { it.key?.isAfter(Instant.now()) ?: false }
+                    ?.toPair()
+                    ?.let { it.first!! to it.second }
+            nextSession?.let { (instant, session) ->
 
-            val date = Instant.now().plusSeconds(10 * race.raceInfo.round.toLong()).toEpochMilli()
-            logcat { "Creating notification for ${race.raceInfo.raceName}: $date" }
-            val intent = Intent(context, NotificationReceiver::class.java)
-            intent.putExtra("race_name", race.raceInfo.raceName)
-            intent.putExtra("race_datetime", race.raceInfo.sessions.race)
-            intent.putExtra("circuit_name", race.circuit.name)
-            intent.putExtra("race_flag", race.circuit.location.flag)
+                val dataStoreManager = DataStoreManager(context.dataStore)
 
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                race.raceInfo.round,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE
-            )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, date, pendingIntent)
-            } else {
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, date, pendingIntent)
+                val notifyBefore: Float = dataStoreManager.getPreference(PreferencesKeys.notifyBefore)
+
+                val date = instant.minus(notifyBefore.toLong(), ChronoUnit.MINUTES).toEpochMilli()
+                // val date = Instant.now().plusSeconds(10 * race.raceInfo.round.toLong()).toEpochMilli()
+                logcat { "Creating notification for ${race.raceInfo.raceName}: $date" }
+                val intent = Intent(context, NotificationReceiver::class.java)
+                intent.putExtra("race_name", race.raceInfo.raceName)
+                intent.putExtra("race_session", session.label)
+                intent.putExtra("session_datetime", instant)
+                intent.putExtra("circuit_name", race.circuit.name)
+                intent.putExtra("race_flag", race.circuit.location.flag)
+
+                val pendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    race.raceInfo.round,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        date,
+                        pendingIntent
+                    )
+                } else {
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, date, pendingIntent)
+                }
             }
         }
     }
