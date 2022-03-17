@@ -34,8 +34,9 @@ class NotificationReceiver : BroadcastReceiver() {
         } else {
             // perform your scheduled task here (eg. send alarm notification)
             val raceName = intent.extras?.get("race_name") as String? ?: "Not Found"
-            val raceDateTime = intent.extras?.get("race_datetime") as Instant?
+            val sessionDateTime = intent.extras?.get("session_datetime") as Instant?
             val flag = intent.extras?.get("race_flag") as String?
+            val session = intent.extras?.get("race_session") as String?
             Toast.makeText(
                 context,
                 raceName,
@@ -62,7 +63,7 @@ class NotificationReceiver : BroadcastReceiver() {
                     val builder =
                         NotificationCompat.Builder(context.getApplicationContext(), channelID)
                             .setContentTitle(raceName)
-                            .setContentText(raceDateTime?.format())
+                            .setContentText("$session starting ${sessionDateTime?.format()}")
                             .setSmallIcon(R.drawable.ic_launcher_foreground)
                             .setLargeIcon(image)
 
