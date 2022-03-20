@@ -281,12 +281,13 @@ class RaceRepository(
     suspend fun refresh() {
         logcat { "Refreshing" }
         roomDb.withTransaction {
-            raceDao.deleteCurrentSeason(Year.now().value)
+            val season = Year.now().value
+            raceDao.deleteCurrentSeason(season)
+            resultDao.deleteCurrentSeason(season)
+            lapDao.deleteCurrentSeason(season)
             // circuitDao.deleteAll()
-            // resultDao.deleteAll()
             // driverDao.deleteAll()
             // constructorDao.deleteAll()
-            // lapDao.deleteAll()
         }
         cache.evictAll()
         logcat { "Refresh done" }
