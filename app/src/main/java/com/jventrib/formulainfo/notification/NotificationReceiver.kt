@@ -28,47 +28,57 @@ class NotificationReceiver : BroadcastReceiver() {
     @Inject
     lateinit var imageLoader: ImageLoader
 
+    @Inject
+    lateinit var sessionNotificationManager: SessionNotificationManager
+
     override fun onReceive(context: Context, intent: Intent) {
         if ((Intent.ACTION_BOOT_COMPLETED) == intent.action) {
             // reset all alarms
         } else {
-            // perform your scheduled task here (eg. send alarm notification)
-            val raceName = intent.extras?.get("race_name") as String? ?: "Not Found"
-            val sessionDateTime = intent.extras?.get("session_datetime") as Instant?
-            val flag = intent.extras?.get("race_flag") as String?
-            val session = intent.extras?.get("race_session") as String?
-            Toast.makeText(
-                context,
-                raceName,
-                Toast.LENGTH_LONG
-            ).show()
+            sendNotification(intent, context)
+            CoroutineScope(Dispatchers.IO).launch {
+                sessionNotificationManager.notifyNextRaces()
+            }
+        }
+    }
 
-            val channelID = "channelID"
-            val channelName = "Channel Name"
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channel =
-                    NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_HIGH)
-                val notificationManager =
-                    getSystemService(context, NotificationManager::class.java)!!
-                notificationManager.createNotificationChannel(channel)
+    private fun sendNotification(intent: Intent, context: Context) {
+        // perform your scheduled task here (eg. send alarm notification)
+        val raceName = intent.extras?.get("race_name") as String? ?: "Not Found"
+        val sessionDateTime = intent.extras?.get("session_datetime") as Instant?
+        val flag = intent.extras?.get("race_flag") as String?
+        val session = intent.extras?.get("race_session") as String?
+        Toast.makeText(
+            context,
+            raceName,
+            Toast.LENGTH_LONG
+        ).show()
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    val image = (
-                        imageLoader.execute(
-                            ImageRequest.Builder(context).data(flag)
-                                .scale(Scale.FIT)
-                                .build()
-                        ).drawable as BitmapDrawable?
-                        )?.bitmap
-                    val builder =
-                        NotificationCompat.Builder(context.getApplicationContext(), channelID)
-                            .setContentTitle(raceName)
-                            .setContentText("$session starting ${sessionDateTime?.format()}")
-                            .setSmallIcon(R.drawable.ic_launcher_foreground)
-                            .setLargeIcon(image)
+        val channelID = "channelID"
+        val channelName = "Channel Name"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel =
+                NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_HIGH)
+            val notificationManager =
+                getSystemService(context, NotificationManager::class.java)!!
+            notificationManager.createNotificationChannel(channel)
 
-                    notificationManager.notify(1, builder.build())
-                }
+            CoroutineScope(Dispatchers.IO).launch {
+                val image = (
+                    imageLoader.execute(
+                        ImageRequest.Builder(context).data(flag)
+                            .scale(Scale.FIT)
+                            .build()
+                    ).drawable as BitmapDrawable?
+                    )?.bitmap
+                val builder =
+                    NotificationCompat.Builder(context.getApplicationContext(), channelID)
+                        .setContentTitle(raceName)
+                        .setContentText("$session starting ${sessionDateTime?.format()}")
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setLargeIcon(image)
+
+                notificationManager.notify(1, builder.build())
             }
         }
     }
