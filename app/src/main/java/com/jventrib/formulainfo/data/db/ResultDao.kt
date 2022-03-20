@@ -23,6 +23,6 @@ interface ResultDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(raceRemotes: List<ResultInfo>)
 
-    @Query("DELETE FROM race_result")
-    suspend fun deleteAll()
+    @Query("DELETE FROM race_result WHERE season = :season ")
+    suspend fun deleteCurrentSeason(season: Int)
 }
