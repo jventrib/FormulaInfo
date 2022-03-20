@@ -5,31 +5,30 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import androidx.lifecycle.ViewModel
 import com.jventrib.formulainfo.data.RaceRepository
 import com.jventrib.formulainfo.model.db.Session.FP1
 import com.jventrib.formulainfo.model.db.Session.FP2
 import com.jventrib.formulainfo.model.db.Session.FP3
 import com.jventrib.formulainfo.model.db.Session.QUAL
 import com.jventrib.formulainfo.model.db.Session.RACE
+import com.jventrib.formulainfo.ui.common.format
 import com.jventrib.formulainfo.ui.preferences.PreferencesKeys
 import com.jventrib.formulainfo.ui.preferences.dataStore
-import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import de.schnettler.datastore.manager.DataStoreManager
 import java.time.Instant
 import java.time.Year
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.first
 import logcat.logcat
 
-@HiltViewModel
-class NotificationViewModel @Inject constructor(
+@Singleton
+class SessionNotificationManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val repository: RaceRepository
-) : ViewModel() {
-
+) {
     suspend fun notifyNextRaces() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val nextRace =
@@ -47,20 +46,23 @@ class NotificationViewModel @Inject constructor(
                     this.race to RACE,
                 )
             }
+            val dataStoreManager = DataStoreManager(context.dataStore)
+            val notifyBefore: Float = dataStoreManager.getPreference(PreferencesKeys.notifyBefore)
             val nextSession =
                 sessions.entries
-                    .firstOrNull { it.key?.isAfter(Instant.now()) ?: false }
+                    .firstOrNull {
+                        it.key
+                            ?.minus(notifyBefore.toLong(), ChronoUnit.MINUTES)
+                            ?.plusSeconds(10)
+                            ?.isAfter(Instant.now()) ?: false
+                    }
                     ?.toPair()
                     ?.let { it.first!! to it.second }
             nextSession?.let { (instant, session) ->
 
-                val dataStoreManager = DataStoreManager(context.dataStore)
-
-                val notifyBefore: Float = dataStoreManager.getPreference(PreferencesKeys.notifyBefore)
-
-                val date = instant.minus(notifyBefore.toLong(), ChronoUnit.MINUTES).toEpochMilli()
+                val minus = instant.minus(notifyBefore.toLong(), ChronoUnit.MINUTES)
+                val date = minus.toEpochMilli()
                 // val date = Instant.now().plusSeconds(10 * race.raceInfo.round.toLong()).toEpochMilli()
-                logcat { "Creating notification for ${race.raceInfo.raceName}: $date" }
                 val intent = Intent(context, NotificationReceiver::class.java)
                 intent.putExtra("race_name", race.raceInfo.raceName)
                 intent.putExtra("race_session", session.label)
@@ -70,7 +72,7 @@ class NotificationViewModel @Inject constructor(
 
                 val pendingIntent = PendingIntent.getBroadcast(
                     context,
-                    race.raceInfo.round,
+                    0,
                     intent,
                     PendingIntent.FLAG_IMMUTABLE
                 )
@@ -83,6 +85,7 @@ class NotificationViewModel @Inject constructor(
                 } else {
                     alarmManager.setExact(AlarmManager.RTC_WAKEUP, date, pendingIntent)
                 }
+                logcat { "Setting notification: ${race.raceInfo.raceName} ${session.label} -> ${instant.format()}" }
             }
         }
     }
