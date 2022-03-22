@@ -45,7 +45,7 @@ import com.jventrib.formulainfo.ui.schedule.RaceInfo
 import com.jventrib.formulainfo.ui.schedule.RaceInfoMode
 import com.jventrib.formulainfo.ui.schedule.getRaceSample
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
-import java.time.Instant
+import com.jventrib.formulainfo.utils.now
 import kotlin.math.roundToInt
 
 @ExperimentalCoilApi
@@ -127,7 +127,7 @@ fun RaceScreen(
                 Column {
                     RaceInfo(
                         race = race,
-                        mode = if (Instant.now()
+                        mode = if (now()
                             .isBefore(race.raceInfo.sessions.race)
                         ) RaceInfoMode.Maxi
                         else

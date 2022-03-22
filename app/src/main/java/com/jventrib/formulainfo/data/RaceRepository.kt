@@ -31,8 +31,8 @@ import com.jventrib.formulainfo.model.mapper.ResultDriverMapper
 import com.jventrib.formulainfo.model.mapper.ResultMapper
 import com.jventrib.formulainfo.utils.FaceDetection
 import com.jventrib.formulainfo.utils.concat
-import java.time.Instant
-import java.time.Year
+import com.jventrib.formulainfo.utils.currentYear
+import com.jventrib.formulainfo.utils.now
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.combine
@@ -148,7 +148,7 @@ class RaceRepository(
             .onEach { response ->
                 response.forEach { it.nextRace = false }
                 response
-                    .firstOrNull { it.raceInfo.sessions.race.isAfter(Instant.now()) }
+                    .firstOrNull { it.raceInfo.sessions.race.isAfter(now()) }
                     ?.let { it.nextRace = true }
             }
             .transformWhile { list ->
@@ -165,6 +165,7 @@ class RaceRepository(
         repo(
             cacheKey = listOf("results", season, round, completeDriverImage),
             dbRead = { resultDao.getResults(season, round) },
+            // remoteFetch = { listOf<ResultRemote>() },
             remoteFetch = { raceRemoteDataSource.getResults(season, round) },
             dbInsert = {
                 roomDb.withTransaction {
@@ -281,13 +282,23 @@ class RaceRepository(
     suspend fun refresh() {
         logcat { "Refreshing" }
         roomDb.withTransaction {
-            val season = Year.now().value
+            val season = currentYear()
             raceDao.deleteCurrentSeason(season)
             resultDao.deleteCurrentSeason(season)
             lapDao.deleteCurrentSeason(season)
             // circuitDao.deleteAll()
             // driverDao.deleteAll()
             // constructorDao.deleteAll()
+        }
+        cache.evictAll()
+        logcat { "Refresh done" }
+    }
+
+    suspend fun refreshPreviousRaces(round: Int) {
+        logcat { "Refreshing previous races" }
+        roomDb.withTransaction {
+            val season = currentYear()
+            resultDao.deleteCurrentSeasonPastRaces(season, round)
         }
         cache.evictAll()
         logcat { "Refresh done" }
@@ -367,6 +378,13 @@ class RaceRepository(
 
         val withResults = getRaces(season, withFlags)
             .take(1)
+            .onEach {
+                val prevRace = (
+                    it.firstOrNull { it.nextRace }?.raceInfo?.round?.minus(1)
+                        ?: it.last().raceInfo.round
+                    )
+                refreshPreviousRaces(prevRace)
+            }
             .flatMapLatest { it.asFlow() }
             .flatMapMerge(100) { race ->
                 getResults(season, race.raceInfo.round, false).map {

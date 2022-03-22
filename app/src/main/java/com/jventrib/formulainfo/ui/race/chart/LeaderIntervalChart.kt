@@ -33,7 +33,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
     val secondLastLaps = lapsWithStart.values
         .mapNotNull { it.getOrNull(anteLastLap) }
 
-    val longestTime = secondLastLaps.maxOf { it.total }
+    secondLastLaps.maxOf { it.total }
     val leaderLaps = lapsWithStart.values.flatten()
         .groupBy(Lap::number).mapValues { it.value.minByOrNull(Lap::position) }
         .values

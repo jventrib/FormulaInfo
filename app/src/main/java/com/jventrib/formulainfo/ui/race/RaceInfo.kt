@@ -34,6 +34,7 @@ import com.jventrib.formulainfo.ui.common.composable.ItemCard
 import com.jventrib.formulainfo.ui.common.format
 import com.jventrib.formulainfo.ui.race.getResultSample
 import com.jventrib.formulainfo.utils.countDownFlow
+import com.jventrib.formulainfo.utils.now
 import java.time.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -137,7 +138,7 @@ private fun SessionDateText(
     Text(
         text = listOfNotNull(label, it.format()).joinToString(": "),
         style = textStyle,
-        fontWeight = if (it.isAfter(Instant.now())) FontWeight.Bold else FontWeight.Normal
+        fontWeight = if (it.isAfter(now())) FontWeight.Bold else FontWeight.Normal
     )
 }
 
@@ -146,7 +147,7 @@ fun CountDown(to: Instant) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val countDown by remember(lifecycleOwner) {
         to.countDownFlow(1.seconds).flowWithLifecycle(lifecycleOwner.lifecycle)
-    }.collectAsState(initial = java.time.Duration.between(Instant.now(), to).toKotlinDuration())
+    }.collectAsState(initial = java.time.Duration.between(now(), to).toKotlinDuration())
     countDown
         .toComponents { days, hours, minutes, seconds, _ ->
             Text(
