@@ -3,16 +3,16 @@ package com.jventrib.formulainfo.ui.schedule
 import com.jventrib.formulainfo.model.db.Circuit
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.RaceInfo
-import java.time.Instant
+import com.jventrib.formulainfo.utils.now
 import java.time.temporal.ChronoUnit.DAYS
 
 fun getRaceSample(round: Int, name: String? = null): Race {
     val sessions = RaceInfo.Sessions(
-        fp1 = Instant.now(),
-        fp2 = Instant.now(),
-        fp3 = Instant.now(),
-        qualifying = Instant.now(),
-        race = Instant.now().plus(7, DAYS).plusSeconds(10000)
+        fp1 = now(),
+        fp2 = now(),
+        fp3 = now(),
+        qualifying = now(),
+        race = now().plus(7, DAYS).plusSeconds(10000)
     )
     val race = RaceInfo(2021, round, "", name ?: "Race$round", "Circuit$round", sessions)
     val circuit = Circuit(

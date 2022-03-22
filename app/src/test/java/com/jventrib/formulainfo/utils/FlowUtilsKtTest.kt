@@ -1,7 +1,6 @@
 package com.jventrib.formulainfo.utils
 
 import com.google.common.truth.Truth
-import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
@@ -14,7 +13,7 @@ class FlowUtilsKtTest {
     @Test
     fun countDownFlow() {
         runBlocking {
-            val futurDate = Instant.now().plusSeconds(66666)
+            val futurDate = now().plusSeconds(66666)
             val countDownFlow = futurDate.countDownFlow(1.seconds)
             val toList = countDownFlow
                 .take(5)
@@ -24,13 +23,13 @@ class FlowUtilsKtTest {
                     }
                 }
                 .toList()
-            toList[3].toComponents { days, hours, minutes, seconds, nanoseconds ->
+            toList[3].toComponents { days, hours, minutes, seconds, _ ->
                 Truth.assertThat(days).isEqualTo(0)
                 Truth.assertThat(hours).isEqualTo(18)
                 Truth.assertThat(minutes).isEqualTo(31)
                 Truth.assertThat(seconds).isEqualTo(2)
             }
-            toList[4].toComponents { days, hours, minutes, seconds, nanoseconds ->
+            toList[4].toComponents { days, hours, minutes, seconds, _ ->
                 Truth.assertThat(days).isEqualTo(0)
                 Truth.assertThat(hours).isEqualTo(18)
                 Truth.assertThat(minutes).isEqualTo(31)

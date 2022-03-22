@@ -7,19 +7,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import com.jventrib.formulainfo.data.RaceRepository
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.utils.currentYear
+import com.jventrib.formulainfo.utils.now
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.Year
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class RaceViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
 
-    val season = MutableLiveData(Year.now().value)
+    val season = MutableLiveData(currentYear())
     val round: MutableLiveData<Int?> = MutableLiveData(null)
 
     private val seasonAndRound = MediatorLiveData<SeasonRound>().apply {
@@ -42,6 +45,9 @@ class RaceViewModel @Inject constructor(private val repository: RaceRepository) 
     val results: LiveData<List<Result>> =
         race.distinctUntilChanged().switchMap {
             it?.let {
+                if (now().isAfter(it.raceInfo.sessions.race)) {
+                    viewModelScope.launch { repository.refreshPreviousRaces(it.raceInfo.round) }
+                }
                 repository.getResults(season.value!!, it.raceInfo.round, true).asLiveData()
             } ?: MutableLiveData(listOf())
         }
