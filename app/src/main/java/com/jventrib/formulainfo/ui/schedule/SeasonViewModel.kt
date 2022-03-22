@@ -7,17 +7,17 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
 import com.jventrib.formulainfo.data.RaceRepository
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
+import com.jventrib.formulainfo.utils.currentYear
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.Year
 import javax.inject.Inject
 
 @HiltViewModel
 class SeasonViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
 
-    val seasonList = (1950..Year.now().value).toList().reversed()
+    val seasonList = (1950..currentYear()).toList().reversed()
 
     //    val season = MutableLiveData(2021)
-    val season = MutableLiveData(Year.now().value)
+    val season = MutableLiveData(currentYear())
 
     val round: MutableLiveData<Int?> = MutableLiveData(null)
 

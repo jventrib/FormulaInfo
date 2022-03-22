@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.swipeDown
+import androidx.compose.ui.test.swipeUp
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jventrib.formulainfo.MainActivity
@@ -36,6 +37,7 @@ class MainScreenTest {
         waitForNode("Bahrain Grand Prix").performTouchInput {
             swipeDown(300f, 1600f, 500L)
         }
+        Thread.sleep(5000)
         waitForNode("Bahrain Grand Prix").performClick()
 
         // In Bahrain 2022 result page
@@ -48,10 +50,12 @@ class MainScreenTest {
         Thread.sleep(2000)
         // Select year 2021
         waitForNode("Bahrain Grand Prix").performClick()
-
+        waitForNode("Bahrain Grand Prix").performTouchInput {
+            swipeUp(1600f, 900f, 1500L)
+        }
         // In Bahrain 2021 result page
         waitForNode("2:Max Verstappen").performClick()
-        // In vertappen Bahrain 2021 result page
+        // In verstappen Bahrain 2021 result page
         Espresso.pressBack()
 
         // In Bahrain 2021 Result
