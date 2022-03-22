@@ -12,11 +12,11 @@ import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.RaceInfo
 import com.jventrib.formulainfo.model.remote.RaceRemote
 import com.jventrib.formulainfo.ui.race.getResultSample
+import com.jventrib.formulainfo.utils.now
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import java.time.Instant
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -45,11 +45,11 @@ class RaceRepositoryTest : TestCase() {
                 "race1",
                 "cir1",
                 RaceInfo.Sessions(
-                    Instant.now(),
-                    Instant.now(),
-                    Instant.now(),
-                    Instant.now(),
-                    Instant.now()
+                    now(),
+                    now(),
+                    now(),
+                    now(),
+                    now()
                 )
             ),
             Circuit(
@@ -85,11 +85,11 @@ class RaceRepositoryTest : TestCase() {
                 "http://image1.svg"
             ),
             RaceRemote.Sessions(
-                Instant.now(),
-                Instant.now(),
-                Instant.now(),
-                Instant.now(),
-                Instant.now()
+                now(),
+                now(),
+                now(),
+                now(),
+                now()
             )
         )
         val raceDao = mockk<RaceDao>()

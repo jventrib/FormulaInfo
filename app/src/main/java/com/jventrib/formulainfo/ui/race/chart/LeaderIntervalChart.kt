@@ -9,7 +9,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
-import com.jventrib.formulainfo.ui.common.composable.Boundaries
 import com.jventrib.formulainfo.ui.common.composable.Chart
 import com.jventrib.formulainfo.ui.common.composable.DataPoint
 import com.jventrib.formulainfo.ui.common.composable.Serie
@@ -34,7 +33,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
     val secondLastLaps = lapsWithStart.values
         .mapNotNull { it.getOrNull(anteLastLap) }
 
-    val longestTime = secondLastLaps.maxOf { it.total }
+    secondLastLaps.maxOf { it.total }
     val leaderLaps = lapsWithStart.values.flatten()
         .groupBy(Lap::number).mapValues { it.value.minByOrNull(Lap::position) }
         .values
@@ -62,12 +61,6 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
         modifier = Modifier.semantics {
             testTag = "chart"
         },
-        boundaries = Boundaries(
-            maxY = (
-                if (anteLastLap < leaderLaps.size)
-                    ((longestTime - leaderLaps[anteLastLap].total).toFloat()) else 5000f
-                ) / 1000f
-        ),
         yOrientation = YOrientation.Down,
         gridStep = Offset(5f, 5f),
     )

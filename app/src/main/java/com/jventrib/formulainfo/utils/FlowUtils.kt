@@ -15,7 +15,7 @@ fun <T> Flow<T>.concat(other: Flow<T>) = this.onCompletion { if (it == null) thi
 
 fun Instant.countDownFlow(period: Duration): Flow<Duration> = flow {
     do {
-        val between = between(Instant.now(), this@countDownFlow).toKotlinDuration()
+        val between = between(now(), this@countDownFlow).toKotlinDuration()
         emit(between)
         logcat { "countDown: $between" }
         delay(period)
