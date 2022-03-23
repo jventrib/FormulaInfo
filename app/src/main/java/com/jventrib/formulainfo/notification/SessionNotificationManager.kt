@@ -14,6 +14,7 @@ import com.jventrib.formulainfo.model.db.Session.QUAL
 import com.jventrib.formulainfo.model.db.Session.RACE
 import com.jventrib.formulainfo.ui.common.formatDateTime
 import com.jventrib.formulainfo.ui.preferences.PreferencesKeys
+import com.jventrib.formulainfo.ui.preferences.PreferencesKeys.notifyBefore
 import com.jventrib.formulainfo.ui.preferences.dataStore
 import com.jventrib.formulainfo.utils.currentYear
 import com.jventrib.formulainfo.utils.now
