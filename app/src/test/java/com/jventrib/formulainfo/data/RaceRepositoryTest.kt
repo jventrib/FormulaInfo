@@ -89,6 +89,7 @@ class RaceRepositoryTest : TestCase() {
                 now(),
                 now(),
                 now(),
+                now(),
                 now()
             )
         )
