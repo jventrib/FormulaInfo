@@ -31,12 +31,11 @@ import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.common.composable.ItemCard
-import com.jventrib.formulainfo.ui.common.format
+import com.jventrib.formulainfo.ui.common.formatDateTime
 import com.jventrib.formulainfo.ui.race.getResultSample
 import com.jventrib.formulainfo.utils.countDownFlow
 import com.jventrib.formulainfo.utils.now
 import java.time.Instant
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toKotlinDuration
 
@@ -136,7 +135,7 @@ private fun SessionDateText(
     textStyle: TextStyle = MaterialTheme.typography.body2
 ) {
     Text(
-        text = listOfNotNull(label, it.format()).joinToString(": "),
+        text = listOfNotNull(label, it.formatDateTime()).joinToString(": "),
         style = textStyle,
         fontWeight = if (it.isAfter(now())) FontWeight.Bold else FontWeight.Normal
     )
