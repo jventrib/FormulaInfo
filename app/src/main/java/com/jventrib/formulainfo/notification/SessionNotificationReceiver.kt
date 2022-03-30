@@ -8,12 +8,14 @@ import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.ui.common.formatTime
+import com.jventrib.formulainfo.utils.Padding
 import com.jventrib.formulainfo.utils.now
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Instant
@@ -64,6 +66,7 @@ class SessionNotificationReceiver : BroadcastReceiver() {
                 imageLoader.execute(
                     ImageRequest.Builder(context).data(flag)
                         .scale(Scale.FIT)
+                        .transformations(listOf(Padding(12f, 12f)))
                         .build()
                 ).drawable as BitmapDrawable?
                 )?.bitmap
@@ -78,8 +81,9 @@ class SessionNotificationReceiver : BroadcastReceiver() {
                         ).toKotlinDuration().plus(1.seconds).inWholeMinutes
                         } minutes (${sessionDateTime?.formatTime()})"
                     )
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setSmallIcon(R.drawable.ic_launcher_notif)
                     .setLargeIcon(image)
+                    .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                     .setPriority(NotificationCompat.PRIORITY_MAX)
 
             notificationManager.notify(1, builder.build())
