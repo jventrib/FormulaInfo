@@ -61,7 +61,7 @@ fun RaceInfo(
                         modifier = Modifier
                             .padding(top = 13.dp)
                             .width(64.dp)
-                            .height(38.dp)
+                            .height(42.dp)
                             .clip(RectangleShape),
                         contentScale = ContentScale.FillBounds
                     )
@@ -76,9 +76,9 @@ fun RaceInfo(
                 Image(
                     imageModel = race.circuit.location.flag,
                     modifier = Modifier
-                        .padding(vertical = 13.dp, horizontal = 8.dp)
+                        .padding(vertical = 8.dp, horizontal = 8.dp)
                         .width(64.dp)
-                        .height(38.dp)
+                        .height(42.dp)
                         .clip(RectangleShape),
                     contentScale = ContentScale.FillBounds
                 )

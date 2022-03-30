@@ -495,26 +495,30 @@ class RaceRepository(
 
     private fun Flow<List<Race>>.mockDate(): Flow<List<Race>> = this.map { races ->
         var offset = 0L
+        val minRace = 3
         races.map { race ->
-            race.copy(
-                raceInfo = race.raceInfo.copy(
-                    sessions = race.raceInfo.sessions.copy(
-                        fp1 = testNow.plus(120, ChronoUnit.MINUTES)
-                            .plusSeconds(offset + 30),
-                        fp2 = testNow.plus(120, ChronoUnit.MINUTES)
-                            .plusSeconds(offset + 60),
-                        fp3 = testNow.plus(120, ChronoUnit.MINUTES)
-                            .plusSeconds(offset + 90),
-                        qualifying = testNow.plus(120, ChronoUnit.MINUTES)
-                            .plusSeconds(offset + 120),
-                        race = testNow.plus(120, ChronoUnit.MINUTES)
-                            .plusSeconds(offset + 150)
+            if (race.raceInfo.round >= minRace)
+                race.copy(
+                    raceInfo = race.raceInfo.copy(
+                        sessions = race.raceInfo.sessions.copy(
+                            fp1 = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 30),
+                            fp2 = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 60),
+                            fp3 = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 90),
+                            qualifying = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 120),
+                            race = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 150)
+                        )
                     )
-                )
-            ).apply {
-                nextRace = true
-                offset += 150
-            }
+                ).apply {
+                    nextRace = true
+                    offset += 150
+                }
+            else race
         }
+            .filter { it.raceInfo.round >= minRace }
     }
 }
