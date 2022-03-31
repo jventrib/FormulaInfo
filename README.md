@@ -1,6 +1,8 @@
 # Formula Info
 ![Formula Info](https://play-lh.googleusercontent.com/_uCswjBOWgxz8h_VExW2biO0IHNrQZrIf4dftGtEPYpFy49sxWYU-gMjRp5hftEPMp0=w720-h310-rw)
 ![Formula Info](https://play-lh.googleusercontent.com/wzCfTrWAJNzuTHj32F712KNHwknyFkOiMN5NReeJwG4ga5fok8fYbO8AEWwgHzGM9pau=w720-h310-rw)
+![Formula Info](https://play-lh.googleusercontent.com/EJx3Nk8m8Ocl2eg9odEwr4MT8ggAOrCJGZP2hGrPceYqgUbEsj1O1UgASYAmwd7gTAUU=w720-h310-rw)
+![Formula Info](https://play-lh.googleusercontent.com/Z9xaQ7qj8y0WcD47466-IGNs_uaSlBouZkrzmLMHaUcyM76rECeWQ3tfgZfoMcIA9Q=w720-h310-rw)
 
 This app is a personal project to improve my personal skills in Android application development. By now, there is no dedicated backend, and no static content inside the app. All the content is coming from various public APIs
 
