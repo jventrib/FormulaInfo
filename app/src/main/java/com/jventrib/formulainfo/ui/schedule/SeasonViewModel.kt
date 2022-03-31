@@ -28,7 +28,8 @@ class SeasonViewModel @Inject constructor(private val repository: RaceRepository
 
     val racesWithResults: LiveData<List<RaceWithResults>> =
         season.switchMap {
-            repository.getRacesWithResults(it, false, true).asLiveData()
+            repository.getRacesWithResults(it, false, true)
+                .asLiveData()
         }
 
     suspend fun refresh() {

@@ -37,6 +37,12 @@ fun Long.toLapTimeString(pattern: String = "mm:ss.SSS"): String {
     return LocalTime.ofNanoOfDay(this.milliseconds.inWholeNanoseconds).format(formatter)
 }
 
+fun Long.toDurationString(): String {
+    return this.minutes.toComponents { hours, minutes, _, _ ->
+        "${hours}h${minutes.toString().padStart(2, '0')}m"
+    }
+}
+
 fun String.toDuration(): Long {
     val split = this.split(':')
     if (split.size == 3) {
