@@ -6,3 +6,5 @@ import java.time.Year
 fun currentYear() = Year.now().value
 
 fun now(): Instant = Instant.now()
+
+val testNow = now()

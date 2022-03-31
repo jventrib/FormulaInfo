@@ -134,11 +134,15 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-common-java8:$archLifecycleVersion"
 
-    // Material design
+    //Material design
     implementation "com.google.android.material:material:$materialVersion"
 
     //Accompanist
     implementation 'com.google.accompanist:accompanist-swiperefresh:0.24.0-alpha'
+
+    //Preference
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+    implementation("com.github.Sh4dowSoul.ComposePreferences:preferences-material:0.1.4")
 
     // Testing
     testImplementation 'junit:junit:4.13.2'

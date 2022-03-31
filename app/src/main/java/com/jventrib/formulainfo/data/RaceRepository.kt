@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.util.LruCache
+import android.widget.Toast
 import androidx.room.withTransaction
 import coil.imageLoader
 import coil.request.ImageRequest
@@ -33,8 +34,12 @@ import com.jventrib.formulainfo.utils.FaceDetection
 import com.jventrib.formulainfo.utils.concat
 import com.jventrib.formulainfo.utils.currentYear
 import com.jventrib.formulainfo.utils.now
+import com.jventrib.formulainfo.utils.testNow
+import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -96,6 +101,9 @@ class RaceRepository(
                         }
                     }
             }
+                .handleError {
+                    this.emit(listOf<E>() as R)
+                }
 
         return fromDb
     }
@@ -151,6 +159,7 @@ class RaceRepository(
                     .firstOrNull { it.raceInfo.sessions.race.isAfter(now()) }
                     ?.let { it.nextRace = true }
             }
+            // .mockDate()
             .transformWhile { list ->
                 emit(list)
                 list.isNotEmpty() && list.any { it.circuit.location.flag == null }
@@ -165,7 +174,6 @@ class RaceRepository(
         repo(
             cacheKey = listOf("results", season, round, completeDriverImage),
             dbRead = { resultDao.getResults(season, round) },
-            // remoteFetch = { listOf<ResultRemote>() },
             remoteFetch = { raceRemoteDataSource.getResults(season, round) },
             dbInsert = {
                 roomDb.withTransaction {
@@ -184,9 +192,6 @@ class RaceRepository(
                 }
             }
         )
-//            .filter {
-//                it.size != 1 || it.first().resultInfo.number != -1
-//            }
             .completeMissing(completeDriverImage, { it.driver.image }) {
                 logcat { "Completing driver ${it.driver.driverId} with image" }
                 driverDao.insert(getDriverWithImage(it.driver))
@@ -274,6 +279,7 @@ class RaceRepository(
             }
             .filterNotNull()
             .flatMapLatest { completeRace(it) }
+            .handleError()
     }
 
     fun getResult(season: Int, round: Int, driverId: String): Flow<Result> =
@@ -328,7 +334,7 @@ class RaceRepository(
                     action(it)
                 }
             }
-        }
+        }.handleError()
 
     private suspend fun getCircuitWithFlag(race: Race) = race.circuit.copy(
         location = race.circuit.location.copy(
@@ -378,12 +384,12 @@ class RaceRepository(
 
         val withResults = getRaces(season, withFlags)
             .take(1)
-            .onEach {
+            .onEach { list ->
                 val prevRace = (
-                    it.firstOrNull { it.nextRace }?.raceInfo?.round?.minus(1)
-                        ?: it.last().raceInfo.round
+                    list.firstOrNull { it.nextRace }?.raceInfo?.round?.minus(1)
+                        ?: list.lastOrNull()?.raceInfo?.round
                     )
-                refreshPreviousRaces(prevRace)
+                prevRace?.let { refreshPreviousRaces(it) }
             }
             .flatMapLatest { it.asFlow() }
             .flatMapMerge(100) { race ->
@@ -478,5 +484,41 @@ class RaceRepository(
                 logcat { "Completing driver ${it.driverId} with image" }
                 driverDao.insert(getDriverWithImage(it))
             }
+    }
+
+    private fun <T> Flow<T>.handleError(block: suspend FlowCollector<T>.(Throwable) -> Unit = {}): Flow<T> =
+        this.catch { e ->
+            logcat(priority = LogPriority.ERROR) { "Network Error: ${e.message}" }
+            Toast.makeText(context, "Network Error, check connection", Toast.LENGTH_LONG).show()
+            block(e)
+        }
+
+    private fun Flow<List<Race>>.mockDate(): Flow<List<Race>> = this.map { races ->
+        var offset = 0L
+        val minRace = 3
+        races.map { race ->
+            if (race.raceInfo.round >= minRace)
+                race.copy(
+                    raceInfo = race.raceInfo.copy(
+                        sessions = race.raceInfo.sessions.copy(
+                            fp1 = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 30),
+                            fp2 = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 60),
+                            fp3 = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 90),
+                            qualifying = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 120),
+                            race = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 150)
+                        )
+                    )
+                ).apply {
+                    nextRace = true
+                    offset += 150
+                }
+            else race
+        }
+            .filter { it.raceInfo.round >= minRace }
     }
 }

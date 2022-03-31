@@ -58,5 +58,19 @@ val customDateTimeFormatter: DateTimeFormatter?
             .toFormatter()
     }
 
-fun Instant.format(): String =
+fun Instant.formatDateTime(): String =
     ZonedDateTime.ofInstant(this, ZoneId.systemDefault()).format(customDateTimeFormatter)
+
+val customTimeHourMinFormatter: DateTimeFormatter?
+    get() {
+        return DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .parseLenient()
+            .appendValue(ChronoField.HOUR_OF_DAY, 2)
+            .appendLiteral(':')
+            .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+            .toFormatter()
+    }
+
+fun Instant.formatTime(): String =
+    ZonedDateTime.ofInstant(this, ZoneId.systemDefault()).format(customTimeHourMinFormatter)
