@@ -14,7 +14,6 @@ import com.jventrib.formulainfo.model.db.Session.QUAL
 import com.jventrib.formulainfo.model.db.Session.RACE
 import com.jventrib.formulainfo.ui.common.formatDateTime
 import com.jventrib.formulainfo.ui.preferences.PreferencesKeys
-import com.jventrib.formulainfo.ui.preferences.PreferencesKeys.notifyBefore
 import com.jventrib.formulainfo.ui.preferences.dataStore
 import com.jventrib.formulainfo.utils.currentYear
 import com.jventrib.formulainfo.utils.now
@@ -34,47 +33,49 @@ class SessionNotificationManager @Inject constructor(
 ) {
     suspend fun notifyNextRaces() {
         val dataStoreManager = DataStoreManager(context.dataStore)
-        val notifyBefore: Float = dataStoreManager.getPreference(PreferencesKeys.notifyBefore)
+
+        val notifyFP = dataStoreManager.getPreference(PreferencesKeys.notifyFP)
+        val notifyQual = dataStoreManager.getPreference(PreferencesKeys.notifyQual)
+        val notifyRace = dataStoreManager.getPreference(PreferencesKeys.notifyRace)
+        val notifyBefore =
+            dataStoreManager.getPreference(PreferencesKeys.notifyBefore).calcNotifyBefore()
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val nextRace = repository.getRaces(currentYear(), false).first()
             .firstOrNull {
-                it.raceInfo.sessions.race.minus(notifyBefore.toLong(), ChronoUnit.MINUTES)
+                it.raceInfo.sessions.race.minus(notifyBefore, ChronoUnit.MINUTES)
                     .isAfter(now())
             }
-        nextRace?.let { race ->
+        nextRace?.let { r ->
 
             // Get next session
-            val sessions: Map<Instant?, Session> = race.raceInfo.sessions.run {
-                mapOf(
-                    fp1 to FP1,
-                    fp2 to FP2,
-                    fp3 to FP3,
-                    qualifying to QUAL,
-                    // sprint to SPRINT,
-                    this.race to RACE,
-                )
+            val sessions: Map<Instant, Session> = r.raceInfo.sessions.run {
+                buildMap {
+                    if (fp1 != null && notifyFP) put(fp1, FP1)
+                    if (fp2 != null && notifyFP) put(fp2, FP2)
+                    if (fp3 != null && notifyFP) put(fp3, FP3)
+                    if (qualifying != null && notifyQual) put(qualifying, QUAL)
+                    if (notifyRace) put(race, RACE)
+                }
             }
             val nextSession =
                 sessions.entries
                     .firstOrNull {
-                        it.key
-                            ?.minus(notifyBefore.toLong(), ChronoUnit.MINUTES)
-                            ?.isAfter(now()) ?: false
+                        it.key.minus(notifyBefore, ChronoUnit.MINUTES).isAfter(now())
                     }
                     ?.toPair()
-                    ?.let { it.first!! to it.second }
+                    ?.let { it.first to it.second }
             nextSession?.let { (instant, session) ->
 
-                val minus = instant.minus(notifyBefore.toLong(), ChronoUnit.MINUTES)
-                val date = minus.toEpochMilli()
-                // val date = Instant.now().plusSeconds(10 * race.raceInfo.round.toLong()).toEpochMilli()
+                val withDelay = instant.minus(notifyBefore, ChronoUnit.MINUTES)
+                val date = withDelay.toEpochMilli()
+                // val date = Instant.now().plusSeconds(10 * r.raceInfo.round.toLong()).toEpochMilli()
                 val intent = Intent(context, SessionNotificationReceiver::class.java)
-                intent.putExtra("race_name", race.raceInfo.raceName)
+                intent.putExtra("race_name", r.raceInfo.raceName)
                 intent.putExtra("race_session", session.label)
                 intent.putExtra("session_datetime", instant)
-                intent.putExtra("circuit_name", race.circuit.name)
-                intent.putExtra("race_flag", race.circuit.location.flag)
+                intent.putExtra("circuit_name", r.circuit.name)
+                intent.putExtra("race_flag", r.circuit.location.flag)
                 intent.addCategory("android.intent.category.DEFAULT")
 
                 val pendingIntent = PendingIntent.getBroadcast(
@@ -96,8 +97,10 @@ class SessionNotificationManager @Inject constructor(
                 } else {
                     alarmManager.setExact(AlarmManager.RTC_WAKEUP, date, pendingIntent)
                 }
-                logcat { "Setting notification: ${race.raceInfo.raceName} ${session.label} -> ${instant.formatDateTime()}" }
+                logcat { "Setting notification: ${r.raceInfo.raceName} ${session.label} -> ${withDelay.formatDateTime()}" }
             }
         }
     }
 }
+
+fun Float.calcNotifyBefore() = toLong() * 5
