@@ -34,6 +34,8 @@ import com.jventrib.formulainfo.utils.FaceDetection
 import com.jventrib.formulainfo.utils.concat
 import com.jventrib.formulainfo.utils.currentYear
 import com.jventrib.formulainfo.utils.now
+import com.jventrib.formulainfo.utils.testNow
+import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.asFlow
@@ -157,6 +159,7 @@ class RaceRepository(
                     .firstOrNull { it.raceInfo.sessions.race.isAfter(now()) }
                     ?.let { it.nextRace = true }
             }
+            // .mockDate()
             .transformWhile { list ->
                 emit(list)
                 list.isNotEmpty() && list.any { it.circuit.location.flag == null }
@@ -489,4 +492,33 @@ class RaceRepository(
             Toast.makeText(context, "Network Error, check connection", Toast.LENGTH_LONG).show()
             block(e)
         }
+
+    private fun Flow<List<Race>>.mockDate(): Flow<List<Race>> = this.map { races ->
+        var offset = 0L
+        val minRace = 3
+        races.map { race ->
+            if (race.raceInfo.round >= minRace)
+                race.copy(
+                    raceInfo = race.raceInfo.copy(
+                        sessions = race.raceInfo.sessions.copy(
+                            fp1 = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 30),
+                            fp2 = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 60),
+                            fp3 = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 90),
+                            qualifying = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 120),
+                            race = testNow.plus(120, ChronoUnit.MINUTES)
+                                .plusSeconds(offset + 150)
+                        )
+                    )
+                ).apply {
+                    nextRace = true
+                    offset += 150
+                }
+            else race
+        }
+            .filter { it.raceInfo.round >= minRace }
+    }
 }
