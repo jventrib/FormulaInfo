@@ -1,73 +1,80 @@
 package com.jventrib.formulainfo.ui.race
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.jventrib.formulainfo.data.RaceRepository
-import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.model.db.Lap
-import com.jventrib.formulainfo.model.db.Race
-import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.ui.common.composable.toSharedFlow
 import com.jventrib.formulainfo.utils.currentYear
+import com.jventrib.formulainfo.utils.mutableSharedFlow
 import com.jventrib.formulainfo.utils.now
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import logcat.logcat
 
 @HiltViewModel
 class RaceViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
+    private val _season = mutableSharedFlow(currentYear())
+    val season = _season.asSharedFlow()
 
-    val season = MutableLiveData(currentYear())
-    val round: MutableLiveData<Int?> = MutableLiveData(null)
+    private val _round = mutableSharedFlow<Int?>()
+    val round = _round.asSharedFlow()
 
-    private val seasonAndRound = MediatorLiveData<SeasonRound>().apply {
-        addSource(season) { value = SeasonRound(season.value!!, round.value) }
-        addSource(round) { value = SeasonRound(season.value!!, round.value) }
+    fun setSeason(season: Int) {
+        this._season.tryEmit(season)
     }
+
+    fun setRound(round: Int?) {
+        this._round.tryEmit(round)
+    }
+
+    private val seasonAndRound = season.combine(round) { s, r -> SeasonRound(s, r) }
 
     data class SeasonRound(val season: Int, val round: Int?)
 
-    val map = MutableLiveData<Map<Driver, List<Lap>>>()
+    val race = seasonAndRound
+        .distinctUntilChanged()
+        .filter { it.round != null }
+        .flatMapLatest { sr -> repository.getRace(sr.season, sr.round!!) }
+        .toSharedFlow(viewModelScope)
 
-    val race: LiveData<Race?> =
-        seasonAndRound.distinctUntilChanged().switchMap { sr ->
-            sr.round?.let {
-                repository.getRace(sr.season, it)
-                    .asLiveData()
-            } ?: MutableLiveData(null)
+    val results = race
+        .filterNotNull()
+        .flatMapLatest {
+            if (now().isAfter(it.raceInfo.sessions.race)) {
+                viewModelScope.launch { repository.refreshPreviousRaces(it.raceInfo.round) }
+            }
+            repository.getResults(it.raceInfo.season, it.raceInfo.round, true)
         }
-
-    val results: LiveData<List<Result>> =
-        race.distinctUntilChanged().switchMap {
-            it?.let {
-                if (now().isAfter(it.raceInfo.sessions.race)) {
-                    viewModelScope.launch { repository.refreshPreviousRaces(it.raceInfo.round) }
-                }
-                repository.getResults(season.value!!, it.raceInfo.round, true).asLiveData()
-            } ?: MutableLiveData(listOf())
-        }
+        .toSharedFlow(viewModelScope)
 
     val resultsWithLaps =
-        race.distinctUntilChanged().switchMap {
-            it?.let {
-                repository.getResultsWithLaps(season.value!!, it.raceInfo.round)
-//                    .map { it.toMap() }
-                    .asLiveData()
-            } ?: MutableLiveData(null)
-        }
+        race
+            .filterNotNull()
+            .flatMapLatest {
+                repository.getResultsWithLaps(it.raceInfo.season, it.raceInfo.round)
+            }
+            .toSharedFlow(viewModelScope)
 
     val standings =
-        seasonAndRound.distinctUntilChanged().switchMap {
-            repository.getRoundStandings(it.season, it.round).asLiveData()
+        seasonAndRound.flatMapLatest {
+            repository.getRoundStandings(it.season, it.round)
         }
 
     val seasonStandingsChart =
-        season.distinctUntilChanged().switchMap {
-            repository.getSeasonStandings(it, false).asLiveData()
-        }
+        season
+            .onEach {
+                logcat { "Season emit: $it" }
+            }
+            .flatMapLatest {
+                repository.getSeasonStandings(it, false)
+            }
+            .toSharedFlow(viewModelScope)
 }
