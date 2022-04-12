@@ -1,8 +1,9 @@
 package com.jventrib.formulainfo
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -12,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.ui.about.About
+import com.jventrib.formulainfo.ui.common.composable.collectAsStateWithLifecycle
 import com.jventrib.formulainfo.ui.laps.Laps
 import com.jventrib.formulainfo.ui.laps.LapsViewModel
 import com.jventrib.formulainfo.ui.preferences.PreferencesScreen
@@ -23,6 +25,7 @@ import com.jventrib.formulainfo.ui.schedule.SeasonViewModel
 import com.jventrib.formulainfo.ui.standing.DriverStandingChart
 import com.jventrib.formulainfo.ui.standing.DriverStandingScreen
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
+import com.jventrib.formulainfo.utils.currentYear
 import kotlinx.coroutines.launch
 
 @ExperimentalCoilApi
@@ -33,41 +36,40 @@ fun MainScreen() {
         val scope = rememberCoroutineScope()
 
         NavHost(navController = navController, startDestination = "races") {
-            composable("races") {
-                val viewModel: SeasonViewModel =
-                    hiltViewModel(navController.currentBackStackEntry!!)
-                val raceList by viewModel.racesWithResults.observeAsState()
+            composable("races") { navBackStackEntry ->
+                val viewModel: SeasonViewModel = hiltViewModel(navBackStackEntry)
+
                 val seasonList = viewModel.seasonList
-                raceList?.let { rl ->
-                    ScheduleScreen(
-                        raceList = rl,
-                        onRaceClicked = { race ->
-                            //                        navController.navigate("resultsGraph/${race.raceInfo.season}/${race.raceInfo.round}")
-                            navController.navigate(
-                                "race/${race.raceInfo.season}/${race.raceInfo.round}"
-                            )
-                        },
-                        seasonList = seasonList,
-                        selectedSeason = viewModel.season.observeAsState().value,
-                        onSeasonSelected = {
-                            viewModel.season.value = it
-                            viewModel.round.value = null
-                        },
-                        onAboutClicked = { navController.navigate("about") },
-                        onPreferenceClicked = { navController.navigate("preference") },
-                        onRefreshClicked = { scope.launch { viewModel.refresh() } },
-                        onStandingClicked = {
-                            navController.navigate(
-                                "standing/${viewModel.season.value}/0"
-                            )
-                        },
-                        onStandingChartClicked = {
-                            navController.navigate(
-                                "standing/${viewModel.season.value}/chart"
-                            )
-                        }
-                    )
-                }
+                val selectedSeason by viewModel.season.collectAsStateWithLifecycle(currentYear())
+                val raceList by viewModel.racesWithResults.collectAsStateWithLifecycle(listOf())
+
+                ScheduleScreen(
+                    raceList = raceList,
+                    onRaceClicked = { race ->
+                        //                        navController.navigate("resultsGraph/${race.raceInfo.season}/${race.raceInfo.round}")
+                        navController.navigate(
+                            "race/${race.raceInfo.season}/${race.raceInfo.round}"
+                        )
+                    },
+                    seasonList = seasonList,
+                    selectedSeason = selectedSeason,
+                    onSeasonSelected = {
+                        viewModel.setSeason(it)
+                    },
+                    onAboutClicked = { navController.navigate("about") },
+                    onPreferenceClicked = { navController.navigate("preference") },
+                    onRefreshClicked = { scope.launch { viewModel.refresh() } },
+                    onStandingClicked = {
+                        navController.navigate(
+                            "standing/$selectedSeason/0"
+                        )
+                    },
+                    onStandingChartClicked = {
+                        navController.navigate(
+                            "standing/$selectedSeason/chart"
+                        )
+                    }
+                )
             }
             composable(
                 "race/{season}/{round}",
@@ -77,16 +79,22 @@ fun MainScreen() {
                 )
             ) { navBackStackEntry ->
                 val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
-                val race by viewModel.race.observeAsState()
-                val results by viewModel.results.observeAsState()
+
                 val season = navBackStackEntry.arguments?.get("season") as Int
                 val round = navBackStackEntry.arguments?.get("round") as Int
-                viewModel.season.value = season
-                viewModel.round.value = round
+
+                LaunchedEffect(season, round) {
+                    viewModel.setSeason(season)
+                    viewModel.setRound(round)
+                }
+
+                val race by viewModel.race.collectAsStateWithLifecycle(null)
+                val results by viewModel.results.collectAsStateWithLifecycle(listOf())
+
                 race?.let {
                     RaceScreen(
                         race = it,
-                        results = results ?: listOf(),
+                        results = results,
                         onDriverSelected = { driver ->
                             navController.navigate("laps/$season/$round/${driver.driverId}")
                         },
@@ -108,13 +116,18 @@ fun MainScreen() {
                 )
             ) { navBackStackEntry ->
                 val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
-                val race by viewModel.race.observeAsState()
-                val standings by viewModel.standings.observeAsState()
+
                 val season = navBackStackEntry.arguments?.get("season") as Int
                 val round = (navBackStackEntry.arguments?.get("round") as Int)
                     .let { if (it == 0) null else it }
-                viewModel.season.value = season
-                viewModel.round.value = round
+
+                LaunchedEffect(season, round) {
+                    viewModel.setSeason(season)
+                    viewModel.setRound(round)
+                }
+
+                val race by viewModel.race.collectAsState(null)
+                val standings by viewModel.standings.collectAsState(null)
                 standings?.let { st ->
                     DriverStandingScreen(
                         season = season,
@@ -123,7 +136,7 @@ fun MainScreen() {
                         onDriverSelected = {}
                     ) {
                         navController.popBackStack()
-                        navController.navigate("standing/${viewModel.season.value}/chart")
+                        navController.navigate("standing/$season/chart")
                     }
                 }
             }
@@ -131,24 +144,23 @@ fun MainScreen() {
                 "standing/{season}/chart",
                 listOf(navArgument("season") { type = NavType.IntType })
             ) { navBackStackEntry ->
-                val viewModel: RaceViewModel =
-                    hiltViewModel(navController.currentBackStackEntry!!)
-                val standings by viewModel.seasonStandingsChart.observeAsState()
+                val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
 
                 val season = navBackStackEntry.arguments?.get("season") as Int
-                viewModel.season.value = season
-                viewModel.round.value = null
 
-//                standings?.let {
+                LaunchedEffect(season) {
+                    viewModel.setSeason(season)
+                }
+
+                val standings by viewModel.seasonStandingsChart.collectAsStateWithLifecycle(mapOf())
                 DriverStandingChart(
                     season = season,
-                    standings = standings ?: mapOf(),
+                    standings = standings,
                     onStandingClicked = {
                         navController.popBackStack()
-                        navController.navigate("standing/${viewModel.season.value}/0")
+                        navController.navigate("standing/$season/0")
                     }
                 )
-//                }
             }
             composable(
                 "laps/{season}/{round}/{driver}",
@@ -159,15 +171,21 @@ fun MainScreen() {
                 )
             ) { navBackStackEntry ->
                 val viewModel: LapsViewModel = hiltViewModel(navBackStackEntry)
-                val result by viewModel.result.observeAsState()
-                val lapTimes by viewModel.laps.observeAsState()
 
-                viewModel.season.value = navBackStackEntry.arguments?.get("season") as Int
-                viewModel.round.value = navBackStackEntry.arguments?.get("round") as Int
-                viewModel.driverId.value = navBackStackEntry.arguments?.get("driver") as String
-                val race by viewModel.race.observeAsState()
+                val season = navBackStackEntry.arguments?.get("season") as Int
+                val round = navBackStackEntry.arguments?.get("round") as Int
+                val driverId = navBackStackEntry.arguments?.get("driver") as String
 
-                result?.let { Laps(race, it, lapTimes ?: listOf()) }
+                LaunchedEffect(season, round, driverId) {
+                    viewModel.setSeason(season)
+                    viewModel.setRound(round)
+                    viewModel.setDriverId(driverId)
+                }
+
+                val race by viewModel.race.collectAsStateWithLifecycle(null)
+                val result by viewModel.result.collectAsStateWithLifecycle(null)
+                val lapTimes by viewModel.laps.collectAsStateWithLifecycle(listOf())
+                result?.let { Laps(race, it, lapTimes) }
             }
             composable(
                 "resultsGraph/{season}/{round}",
@@ -177,19 +195,20 @@ fun MainScreen() {
                 )
             ) { navBackStackEntry ->
                 val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
+
                 val season = navBackStackEntry.arguments?.get("season") as Int
                 val round = navBackStackEntry.arguments?.get("round") as Int
-                val race by viewModel.race.observeAsState()
 
-                val graph by viewModel.resultsWithLaps
-                    .observeAsState(null)
+                LaunchedEffect(season, round) {
+                    viewModel.setSeason(season)
+                    viewModel.setRound(round)
+                }
 
-                viewModel.season.value = season
-                viewModel.round.value = round
-                graph?.let {
-                    if (it.isNotEmpty()) {
-                        LapChart(race, lapsByResult = it)
-                    }
+                val race by viewModel.race.collectAsStateWithLifecycle(null)
+                val resultsWithLaps by viewModel.resultsWithLaps.collectAsStateWithLifecycle(mapOf())
+
+                if (resultsWithLaps.isNotEmpty()) {
+                    LapChart(race, lapsByResult = resultsWithLaps)
                 }
             }
             composable("preference") { PreferencesScreen() }
