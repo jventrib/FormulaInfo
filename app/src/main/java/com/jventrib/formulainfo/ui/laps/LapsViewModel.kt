@@ -1,43 +1,62 @@
 package com.jventrib.formulainfo.ui.laps
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import com.jventrib.formulainfo.data.RaceRepository
-import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.ui.common.composable.toSharedFlow
+import com.jventrib.formulainfo.ui.race.RaceViewModel
 import com.jventrib.formulainfo.utils.currentYear
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 
 @HiltViewModel
 class LapsViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
 
-    val season = MutableLiveData(currentYear())
-    val round: MutableLiveData<Int?> = MutableLiveData(null)
-    val driverId: MutableLiveData<String?> = MutableLiveData(null)
+    private val _season = MutableStateFlow(currentYear())
+    val season = _season.asStateFlow()
 
-    val race: LiveData<Race?> =
-        round.distinctUntilChanged().switchMap {
-            it?.let {
-                repository.getRace(season.value!!, it)
-                    .asLiveData()
-            } ?: MutableLiveData(null)
-        }
+    private val _round = MutableStateFlow<Int?>(null)
+    val round = _round.asStateFlow()
+
+    private val seasonAndRound = season.combine(round) { s, r -> RaceViewModel.SeasonRound(s, r) }
+
+    val driverId = MutableStateFlow<String?>(null)
+
+    fun setSeason(season: Int) {
+        this._season.value = season
+    }
+
+    fun setRound(round: Int?) {
+        this._round.value = round
+    }
+
+    fun setDriverId(driverId: String) {
+        this.driverId.value = driverId
+    }
+
+    val race = seasonAndRound
+        .distinctUntilChanged()
+        .filter { it.round != null }
+        .flatMapLatest { repository.getRace(it.season, it.round!!) }
+        .toSharedFlow(viewModelScope)
 
     val result =
-        driverId.distinctUntilChanged().switchMap {
-            it?.let {
-                repository.getResult(season.value!!, round.value!!, it).asLiveData()
-            } ?: MutableLiveData(null)
-        }
+        driverId
+            .filterNotNull()
+            .flatMapLatest { repository.getResult(season.value, round.value!!, it) }
+            .toSharedFlow(viewModelScope)
 
     val laps =
-        result.distinctUntilChanged().switchMap {
-            it?.let {
-                repository.getLaps(season.value!!, round.value!!, it.driver).asLiveData()
-            } ?: MutableLiveData(null)
-        }
+        result
+            .filterNotNull()
+            .flatMapLatest {
+                repository.getLaps(it.resultInfo.season, it.resultInfo.round, it.driver)
+            }.toSharedFlow(viewModelScope)
 }

@@ -1,40 +1,36 @@
 package com.jventrib.formulainfo.ui.schedule
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import com.jventrib.formulainfo.data.RaceRepository
-import com.jventrib.formulainfo.model.aggregate.RaceWithResults
+import com.jventrib.formulainfo.ui.common.composable.toSharedFlow
 import com.jventrib.formulainfo.utils.currentYear
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 
 @HiltViewModel
 class SeasonViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
 
     val seasonList = (1950..currentYear()).toList().reversed()
 
-    //    val season = MutableLiveData(2021)
-    val season = MutableLiveData(currentYear())
+    val _season = MutableSharedFlow<Int>(1).apply { tryEmit(currentYear()) }
+    val season = _season.asSharedFlow()
 
-    val round: MutableLiveData<Int?> = MutableLiveData(null)
+    fun setSeason(season: Int) {
+        _season.tryEmit(season)
+    }
 
-//    val races: LiveData<List<Race>> =
-//        season.distinctUntilChanged().switchMap {
-//            repository.getRaces(it,true).asLiveData()
-//        }
-
-    val racesWithResults: LiveData<List<RaceWithResults>> =
-        season.switchMap {
-            repository.getRacesWithResults(it, false, true)
-                .asLiveData()
-        }
+    val racesWithResults =
+        season
+            .flatMapLatest { repository.getRacesWithResults(it, false, true) }
+            .toSharedFlow(viewModelScope)
 
     suspend fun refresh() {
         repository.refresh()
-        season.postValue(season.value)
-        round.postValue(null)
+        _season.tryEmit(season.first())
     }
 }

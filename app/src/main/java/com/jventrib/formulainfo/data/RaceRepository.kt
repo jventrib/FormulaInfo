@@ -274,9 +274,7 @@ class RaceRepository(
     fun getRace(season: Int, round: Int): Flow<Race> {
         return raceDao.getRace(season, round)
             .distinctUntilChanged()
-            .onEach {
-                logcat { "GetRace $it" }
-            }
+            .onEach { logcat { "GetRace $it" } }
             .filterNotNull()
             .flatMapLatest { completeRace(it) }
             .handleError()
