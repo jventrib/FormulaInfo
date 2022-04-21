@@ -53,7 +53,7 @@ data class ResultRemote(
         @SerializedName("Time")
         val time: Time,
         @SerializedName("AverageSpeed")
-        val averageSpeed: AverageSpeed
+        val averageSpeed: AverageSpeed?
     ) {
         data class AverageSpeed(
             val units: String,

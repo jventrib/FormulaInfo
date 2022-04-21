@@ -69,8 +69,8 @@ class MrdServiceTest {
             assertThat(result.fastestLap!!.lap).isEqualTo(46)
             assertThat(result.fastestLap!!.time.time).isEqualTo("1:29.465")
 
-            assertThat(result.fastestLap!!.averageSpeed.units).isEqualTo("kph")
-            assertThat(result.fastestLap!!.averageSpeed.speed).isEqualTo(237.049f)
+            assertThat(result.fastestLap!!.averageSpeed?.units).isEqualTo("kph")
+            assertThat(result.fastestLap!!.averageSpeed?.speed).isEqualTo(237.049f)
         }
 // Assert
     }

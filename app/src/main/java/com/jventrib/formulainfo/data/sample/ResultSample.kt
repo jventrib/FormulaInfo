@@ -2,6 +2,7 @@ package com.jventrib.formulainfo.data.sample
 
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.model.mapper.ResultConstructorMapper
 import com.jventrib.formulainfo.model.mapper.ResultDriverMapper
 import com.jventrib.formulainfo.model.mapper.ResultMapper
@@ -20,7 +21,7 @@ object ResultSample {
         val remotes = remote.mrData.table.races.firstOrNull()?.results!!
         val results: List<Result> = remotes.map {
             Result(
-                ResultMapper.toEntity(2021, 1, it),
+                ResultMapper.toEntity(2021, 1, Session.RACE, it),
                 ResultDriverMapper.toEntity(it, 0),
                 ResultConstructorMapper.toEntity(it)
             )

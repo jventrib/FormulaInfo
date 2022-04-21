@@ -49,6 +49,7 @@ class RaceRepositoryTest : TestCase() {
                     now(),
                     now(),
                     now(),
+                    now(),
                     now()
                 )
             ),
@@ -118,7 +119,7 @@ class RaceRepositoryTest : TestCase() {
     fun testGetRaceGraph() {
         val raceRemoteDataSource = mockk<RaceRemoteDataSource>()
         val resultDao = mockk<ResultDao>()
-        every { resultDao.getResults(any(), any()) } returns flowOf(
+        every { resultDao.getResults(any(), any(), any()) } returns flowOf(
             listOf(
                 getResultSample("verstappen", 1),
                 getResultSample("hamilton", 2),

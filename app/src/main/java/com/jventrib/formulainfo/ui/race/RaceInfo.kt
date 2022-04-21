@@ -97,6 +97,7 @@ fun RaceInfo(
                     race.raceInfo.sessions.fp2?.let { SessionDateText(it, "FP2") }
                     race.raceInfo.sessions.fp3?.let { SessionDateText(it, "FP3") }
                     race.raceInfo.sessions.qualifying?.let { SessionDateText(it, "Qual") }
+                    race.raceInfo.sessions.sprint?.let { SessionDateText(it, "Sprint") }
                     SessionDateText(
                         race.raceInfo.sessions.race,
                         "Race",

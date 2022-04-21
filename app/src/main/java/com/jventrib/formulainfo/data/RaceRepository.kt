@@ -24,12 +24,14 @@ import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.model.mapper.LapTimeMapper
 import com.jventrib.formulainfo.model.mapper.RaceCircuitMapper
 import com.jventrib.formulainfo.model.mapper.RaceMapper
 import com.jventrib.formulainfo.model.mapper.ResultConstructorMapper
 import com.jventrib.formulainfo.model.mapper.ResultDriverMapper
 import com.jventrib.formulainfo.model.mapper.ResultMapper
+import com.jventrib.formulainfo.model.remote.ResultRemote
 import com.jventrib.formulainfo.utils.FaceDetection
 import com.jventrib.formulainfo.utils.concat
 import com.jventrib.formulainfo.utils.currentYear
@@ -166,15 +168,50 @@ class RaceRepository(
             }
             .let { if (completeFlags) it else it.take(1) }
 
-    fun getResults(
+    fun getQualResults(
         season: Int,
         round: Int,
         completeDriverImage: Boolean
-    ): Flow<List<Result>> =
-        repo(
+    ): Flow<List<Result>> = getResults(
+        season,
+        round,
+        Session.QUAL,
+        completeDriverImage
+    ) { s, r -> raceRemoteDataSource.getQualResults(s, r) }
+
+    fun getSprintResults(
+        season: Int,
+        round: Int,
+        completeDriverImage: Boolean
+    ): Flow<List<Result>> = getResults(
+        season,
+        round,
+        Session.SPRINT,
+        completeDriverImage
+    ) { s, r -> raceRemoteDataSource.getSprintResults(s, r) }
+
+    fun getRaceResults(
+        season: Int,
+        round: Int,
+        completeDriverImage: Boolean
+    ): Flow<List<Result>> = getResults(
+        season,
+        round,
+        Session.RACE,
+        completeDriverImage
+    ) { s, r -> raceRemoteDataSource.getResults(s, r) }
+
+    private fun getResults(
+        season: Int,
+        round: Int,
+        session: Session,
+        completeDriverImage: Boolean,
+        sessionResults: suspend RaceRemoteDataSource.(Int, Int) -> List<ResultRemote>
+    ): Flow<List<Result>> {
+        return repo(
             cacheKey = listOf("results", season, round, completeDriverImage),
-            dbRead = { resultDao.getResults(season, round) },
-            remoteFetch = { raceRemoteDataSource.getResults(season, round) },
+            dbRead = { resultDao.getResults(season, round, session) },
+            remoteFetch = { raceRemoteDataSource.sessionResults(season, round) },
             dbInsert = {
                 roomDb.withTransaction {
                     driverDao.insertAll(
@@ -186,7 +223,7 @@ class RaceRepository(
                             .also { logcat { "Inserting Constructors" } }
                     )
                     resultDao.insertAll(
-                        ResultMapper.toEntity(season, round, it)
+                        ResultMapper.toEntity(season, round, session, it)
                             .also { logcat { "Inserting Results" } }
                     )
                 }
@@ -209,6 +246,7 @@ class RaceRepository(
                 realData && list.any { it.driver.image == null }
             }
             .let { if (completeDriverImage) it else it.take(1) }
+    }
 
     private fun getSeasonDrivers(season: Int): Flow<List<Driver>> =
         driverDao.getSeasonDrivers(season).completeMissing(true, { it.image }) {
@@ -260,7 +298,7 @@ class RaceRepository(
     fun getResultsWithLaps(
         season: Int,
         round: Int,
-    ) = getResults(season, round, false)
+    ) = getRaceResults(season, round, false)
         .take(1)
         .flatMapLatest { it.asFlow() }
         .flatMapMerge(20) { result ->
@@ -287,9 +325,10 @@ class RaceRepository(
         logcat { "Refreshing" }
         roomDb.withTransaction {
             val season = currentYear()
-            raceDao.deleteCurrentSeason(season)
-            resultDao.deleteCurrentSeason(season)
-            lapDao.deleteCurrentSeason(season)
+            raceDao.deleteSeason(season)
+            resultDao.deleteSeason(season)
+            // resultDao.deleteCurrentSeason(season - 1)
+            lapDao.deleteSeason(season)
             // circuitDao.deleteAll()
             // driverDao.deleteAll()
             // constructorDao.deleteAll()
@@ -391,9 +430,7 @@ class RaceRepository(
             }
             .flatMapLatest { it.asFlow() }
             .flatMapMerge(100) { race ->
-                getResults(season, race.raceInfo.round, false).map {
-                    RaceWithResults(race, it)
-                }
+                getRaceAndSprintResults(season, race, false)
             }
             .scan(mapOf<Int, RaceWithResults>()) { acc, value ->
                 acc + (value.race.raceInfo.round to value)
@@ -431,6 +468,28 @@ class RaceRepository(
                     .zip(left) { a, b -> a.copy(race = b.race) }
             }
         }
+    }
+
+    private fun getRaceAndSprintResults(
+        season: Int,
+        race: Race,
+        completeDriverImage: Boolean
+    ): Flow<RaceWithResults> {
+        val sprintResultsFlow = flowOf(listOf<Result>()).concat(
+            getSprintResults(season, race.raceInfo.round, completeDriverImage)
+        ).map { it.associateBy { it.resultInfo.driverId } }
+        return getRaceResults(season, race.raceInfo.round, completeDriverImage)
+            .combine(sprintResultsFlow) { raceResults, sprintResults ->
+                logcat { "race: ${raceResults.size},  sprint: ${sprintResults.size}" }
+                if (sprintResults.isEmpty()) {
+                    raceResults
+                } else {
+                    raceResults.map { rl -> rl + sprintResults[rl.resultInfo.driverId] }
+                }
+            }
+            .map {
+                RaceWithResults(race, it)
+            }
     }
 
     fun getRoundStandings(season: Int, round: Int?): Flow<List<DriverStanding>> {
@@ -519,4 +578,12 @@ class RaceRepository(
         }
             .filter { it.raceInfo.round >= minRace }
     }
+
+    private operator fun Result.plus(result: Result?): Result = this.copy(
+        resultInfo = this.resultInfo
+            .copy(
+                points = this.resultInfo.points
+                    .let { r -> (result?.let { r.plus((it.resultInfo.points)) }) ?: r }
+            )
+    )
 }
