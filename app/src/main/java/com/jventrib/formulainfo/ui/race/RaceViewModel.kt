@@ -51,7 +51,7 @@ class RaceViewModel @Inject constructor(private val repository: RaceRepository) 
             if (now().isAfter(it.raceInfo.sessions.race)) {
                 viewModelScope.launch { repository.refreshPreviousRaces(it.raceInfo.round) }
             }
-            repository.getResults(it.raceInfo.season, it.raceInfo.round, true)
+            repository.getRaceResults(it.raceInfo.season, it.raceInfo.round, true)
         }
         .toSharedFlow(viewModelScope)
 

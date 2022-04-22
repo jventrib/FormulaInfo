@@ -40,6 +40,7 @@ import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.schedule.RaceInfo
 import com.jventrib.formulainfo.ui.schedule.RaceInfoMode
@@ -52,7 +53,7 @@ import kotlin.math.roundToInt
 @Composable
 fun RaceScreen(
     race: Race,
-    results: List<Result>,
+    sessionState: SessionState,
     onDriverSelected: (driver: Driver) -> Unit,
     onRaceImageSelected: (Race) -> Unit,
     onChartClicked: () -> Unit,
@@ -68,14 +69,14 @@ fun RaceScreen(
                     )
                 },
                 actions = {
-                    if (results.isNotEmpty()) {
+                    if (sessionState.results.isNotEmpty()) {
                         IconButton(
                             onClick = onStandingClicked,
                             modifier = Modifier.semantics { testTag = "standing" }
                         ) {
                             Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
                         }
-                        if (results.first().resultInfo.season > 1995) {
+                        if (sessionState.results.first().resultInfo.season > 1995) {
                             IconButton(
                                 onClick = onChartClicked,
                                 modifier = Modifier.semantics { testTag = "resultChart" }
@@ -108,7 +109,7 @@ fun RaceScreen(
         }
         Box(Modifier.nestedScroll(nestedScrollConnection)) {
             ResultsList(
-                results = results,
+                sessionState = sessionState,
                 contentPadding = PaddingValues(top = headerHeight),
                 onDriverSelected = onDriverSelected
             )
@@ -127,8 +128,7 @@ fun RaceScreen(
                 Column {
                     RaceInfo(
                         race = race,
-                        mode = if (now()
-                            .isBefore(race.raceInfo.sessions.race)
+                        mode = if (now().isBefore(race.raceInfo.sessions.race)
                         ) RaceInfoMode.Maxi
                         else
                             RaceInfoMode.Expanded
@@ -151,17 +151,40 @@ fun RaceScreen(
 
 @Composable
 fun ResultsList(
-    results: List<Result>,
+    sessionState: SessionState,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues,
     onDriverSelected: (driver: Driver) -> Unit
 ) {
     LazyColumn(contentPadding = contentPadding, modifier = modifier) {
-        items(results) { result ->
+        items(sessionState.results) { result ->
             DriverResult(result, onResultSelected = { onDriverSelected(it.driver) })
         }
     }
+    // TODO Tabs for Qual/Sprint/Race Results
+    // val sessions = listOf(Session.SPRINT, Session.QUAL, Session.RACE)
+    // Column {
+    //     TabRow(selectedTabIndex = sessions.indexOf(sessionState.session), modifier = modifier) {
+    //         sessions.forEachIndexed { index, title ->
+    //             Tab(
+    //                 text = { Text(title.label) },
+    //                 selected = sessionState.session == sessions[index],
+    //                 onClick = { sessionState.session = sessions[index] }
+    //             )
+    //         }
+    //     }
+    //     LazyColumn(contentPadding = contentPadding) {
+    //         items(sessionState.results) { result ->
+    //             DriverResult(result, onResultSelected = { onDriverSelected(it.driver) })
+    //         }
+    //     }
+    // }
 }
+
+data class SessionState(
+    var results: List<Result>,
+    var session: Session
+)
 
 @ExperimentalCoilApi
 @Preview
@@ -169,7 +192,7 @@ fun ResultsList(
 fun RaceDetailPreview() {
     RaceScreen(
         race = getRaceSample(3),
-        results = listOf(),
+        sessionState = SessionState(listOf(getResultSample("verstappen", 1)), Session.RACE),
         onDriverSelected = {},
         onRaceImageSelected = {},
         onChartClicked = {},
@@ -184,7 +207,7 @@ fun RaceDetailDarkPreview() {
     FormulaInfoTheme(darkTheme = true) {
         RaceScreen(
             race = getRaceSample(3),
-            results = listOf(),
+            sessionState = SessionState(listOf(getResultSample("verstappen", 1)), Session.RACE),
             onDriverSelected = {},
             onRaceImageSelected = {},
             onChartClicked = {},

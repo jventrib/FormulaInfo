@@ -12,6 +12,7 @@ import com.jventrib.formulainfo.model.db.Session.FP2
 import com.jventrib.formulainfo.model.db.Session.FP3
 import com.jventrib.formulainfo.model.db.Session.QUAL
 import com.jventrib.formulainfo.model.db.Session.RACE
+import com.jventrib.formulainfo.model.db.Session.SPRINT
 import com.jventrib.formulainfo.ui.common.formatDateTime
 import com.jventrib.formulainfo.ui.preferences.PreferencesKeys
 import com.jventrib.formulainfo.ui.preferences.dataStore
@@ -55,6 +56,7 @@ class SessionNotificationManager @Inject constructor(
                     if (fp2 != null && notifyFP) put(fp2, FP2)
                     if (fp3 != null && notifyFP) put(fp3, FP3)
                     if (qualifying != null && notifyQual) put(qualifying, QUAL)
+                    if (sprint != null && notifyRace) put(sprint, SPRINT)
                     if (notifyRace) put(race, RACE)
                 }
             }

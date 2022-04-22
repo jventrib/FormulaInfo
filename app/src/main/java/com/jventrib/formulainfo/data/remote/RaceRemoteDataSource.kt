@@ -58,6 +58,20 @@ open class RaceRemoteDataSource(
         ).mrData.table.races.firstOrNull()?.results ?: listOf()
     }
 
+    suspend fun getQualResults(season: Int, round: Int): List<ResultRemote> {
+        return mrdService.getQualResults(
+            season,
+            round
+        ).mrData.table.races.firstOrNull()?.qualResults ?: listOf()
+    }
+
+    suspend fun getSprintResults(season: Int, round: Int): List<ResultRemote> {
+        return mrdService.getSprintResults(
+            season,
+            round
+        ).mrData.table.races.firstOrNull()?.sprintResults ?: listOf()
+    }
+
     suspend fun getCountryFlag(country: String) =
         getWikipediaImage(country, DEFAULT_IMAGE_SIZE, WikipediaService.Licence.FREE)
 

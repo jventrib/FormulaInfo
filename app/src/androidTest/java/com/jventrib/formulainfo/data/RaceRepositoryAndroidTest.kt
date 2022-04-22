@@ -61,10 +61,9 @@ class RaceRepositoryAndroidTest {
             raceRepository.refresh()
             val racesEmits =
                 raceRepository.getRacesWithResults(2021, false, false)
-                    .onEach { println(it) }
                     .toList()
             println(racesEmits.size)
-            assertThat(racesEmits).hasSize(23)
+            assertThat(racesEmits).hasSize(26)
             val lastEmit = racesEmits.last()
             lastEmit.forEach {
                 assertThat(it.race.circuit.location.flag).isNotNull()
@@ -77,7 +76,7 @@ class RaceRepositoryAndroidTest {
                     .onEach { println(it) }
                     .toList()
             println(racesEmits.size)
-            assertThat(racesEmits).hasSize(24)
+            assertThat(racesEmits).hasSize(27)
             val lastEmit = racesEmits.last()
             lastEmit.forEach {
                 assertThat(it.race.circuit.location.flag).isNotNull()

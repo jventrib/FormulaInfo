@@ -15,6 +15,18 @@ interface MrdService {
         @Path("round") round: Int
     ): MRResponse<RaceTable>
 
+    @GET("{season}/{round}/sprint.json")
+    suspend fun getSprintResults(
+        @Path("season") season: Int,
+        @Path("round") round: Int
+    ): MRResponse<RaceTable>
+
+    @GET("{season}/{round}/qualifying.json")
+    suspend fun getQualResults(
+        @Path("season") season: Int,
+        @Path("round") round: Int
+    ): MRResponse<RaceTable>
+
     @GET("{season}/{round}/drivers/{driver}/laps.json?limit=100")
     suspend fun getLapTimes(
         @Path("season") season: Int,

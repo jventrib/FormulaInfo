@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
+import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.ui.about.About
 import com.jventrib.formulainfo.ui.common.composable.collectAsStateWithLifecycle
 import com.jventrib.formulainfo.ui.laps.Laps
@@ -20,6 +21,7 @@ import com.jventrib.formulainfo.ui.preferences.PreferencesScreen
 import com.jventrib.formulainfo.ui.race.LapChart
 import com.jventrib.formulainfo.ui.race.RaceScreen
 import com.jventrib.formulainfo.ui.race.RaceViewModel
+import com.jventrib.formulainfo.ui.race.SessionState
 import com.jventrib.formulainfo.ui.schedule.ScheduleScreen
 import com.jventrib.formulainfo.ui.schedule.SeasonViewModel
 import com.jventrib.formulainfo.ui.standing.DriverStandingChart
@@ -94,7 +96,7 @@ fun MainScreen() {
                 race?.let {
                     RaceScreen(
                         race = it,
-                        results = results,
+                        sessionState = SessionState(results, Session.RACE),
                         onDriverSelected = { driver ->
                             navController.navigate("laps/$season/$round/${driver.driverId}")
                         },

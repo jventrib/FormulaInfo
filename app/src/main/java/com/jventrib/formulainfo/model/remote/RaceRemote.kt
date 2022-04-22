@@ -20,6 +20,12 @@ class RaceRemote(
     @SerializedName("Results")
     var results: List<ResultRemote>? = null
 
+    @SerializedName("QualifyingResults")
+    var qualResults: List<ResultRemote>? = null
+
+    @SerializedName("SprintResults")
+    var sprintResults: List<ResultRemote>? = null
+
     @SerializedName("Laps")
     var laps: List<LapTimeRemote>? = null
 

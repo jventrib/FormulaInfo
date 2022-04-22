@@ -42,7 +42,7 @@ data class ResultInfo(
         @Embedded(prefix = "fastest_")
         val time: Time,
         @Embedded
-        val averageSpeed: AverageSpeed
+        val averageSpeed: AverageSpeed?
     ) {
         data class AverageSpeed(
             val units: String,
