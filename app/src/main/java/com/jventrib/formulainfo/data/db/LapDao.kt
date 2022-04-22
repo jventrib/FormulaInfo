@@ -20,5 +20,5 @@ interface LapDao {
     suspend fun insertAll(laps: List<Lap>)
 
     @Query("DELETE FROM lap_time WHERE season = :season")
-    suspend fun deleteCurrentSeason(season: Int)
+    suspend fun deleteSeason(season: Int)
 }

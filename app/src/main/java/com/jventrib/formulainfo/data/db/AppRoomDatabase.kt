@@ -21,10 +21,11 @@ import com.jventrib.formulainfo.utils.Converters
         Constructor::class,
         Lap::class
     ],
-    version = 11,
+    version = 12,
     // exportSchema = false,
     autoMigrations = [
-        AutoMigration(from = 10, to = 11)
+        AutoMigration(from = 10, to = 11),
+        AutoMigration(from = 11, to = 12)
     ]
 )
 @TypeConverters(Converters::class)

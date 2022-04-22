@@ -6,11 +6,11 @@ import com.jventrib.formulainfo.model.remote.ResultRemote
 
 object ResultMapper {
 
-    fun toEntity(season: Int, round: Int, remote: ResultRemote) = ResultInfo(
-        "$season-$round-${remote.position}",
+    fun toEntity(season: Int, round: Int, session: Session, remote: ResultRemote) = ResultInfo(
+        "$season-$round-$session-${remote.position}",
         season,
         round,
-        Session.RACE,
+        session,
         remote.number,
         remote.position,
         remote.positionText,
@@ -26,20 +26,20 @@ object ResultMapper {
                 rank,
                 lap,
                 ResultInfo.Time(time.millis, time.time),
-                ResultInfo.FastestLap.AverageSpeed(averageSpeed.units, averageSpeed.speed)
+                averageSpeed?.let { ResultInfo.FastestLap.AverageSpeed(it.units, it.speed) }
             )
         },
     )
 
-    fun toEntity(season: Int, round: Int, remotes: List<ResultRemote>): List<ResultInfo> =
+    fun toEntity(season: Int, round: Int, session: Session, remotes: List<ResultRemote>): List<ResultInfo> =
         if (remotes.isEmpty()) {
             // Insert dummy line to store the no data from remote info
             listOf(
                 ResultInfo(
-                    "$season-$round-nodata",
+                    "$season-$round-$session-nodata",
                     season,
                     round,
-                    Session.RACE,
+                    session,
                     -1,
                     -1,
                     "nodata",
@@ -54,6 +54,6 @@ object ResultMapper {
                 )
             )
         } else {
-            remotes.map { toEntity(season, round, it) }
+            remotes.map { toEntity(season, round, session, it) }
         }
 }
