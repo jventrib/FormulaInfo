@@ -3,6 +3,7 @@ package com.jventrib.formulainfo.ui.race
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jventrib.formulainfo.data.RaceRepository
+import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.ui.common.composable.toSharedFlow
 import com.jventrib.formulainfo.utils.currentYear
 import com.jventrib.formulainfo.utils.mutableSharedFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flattenConcat
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -27,12 +29,19 @@ class RaceViewModel @Inject constructor(private val repository: RaceRepository) 
     private val _round = mutableSharedFlow<Int?>()
     val round = _round.asSharedFlow()
 
+    private val _session = mutableSharedFlow<Session>(Session.RACE)
+    val session = _session.asSharedFlow()
+
     fun setSeason(season: Int) {
         this._season.tryEmit(season)
     }
 
     fun setRound(round: Int?) {
         this._round.tryEmit(round)
+    }
+
+    fun setSession(session: Session) {
+        this._session.tryEmit(session)
     }
 
     private val seasonAndRound = season.combine(round) { s, r -> SeasonRound(s, r) }
@@ -46,13 +55,16 @@ class RaceViewModel @Inject constructor(private val repository: RaceRepository) 
         .toSharedFlow(viewModelScope)
 
     val results = race
-        .filterNotNull()
-        .flatMapLatest {
-            if (now().isAfter(it.raceInfo.sessions.race)) {
-                viewModelScope.launch { repository.refreshPreviousRaces(it.raceInfo.round) }
+        .combine(session) { r, session ->
+            if (now().isAfter(r.raceInfo.sessions.race)) {
+                viewModelScope.launch { repository.refreshPreviousRaces(r.raceInfo.round) }
             }
-            repository.getRaceResults(it.raceInfo.season, it.raceInfo.round, true)
-        }
+            when (session) {
+                Session.QUAL -> repository.getQualResults(r.raceInfo.season, r.raceInfo.round, true)
+                Session.SPRINT -> repository.getSprintResults(r.raceInfo.season, r.raceInfo.round, true)
+                else -> repository.getRaceResults(r.raceInfo.season, r.raceInfo.round, true)
+            }
+        }.flattenConcat()
         .toSharedFlow(viewModelScope)
 
     val resultsWithLaps =

@@ -60,6 +60,7 @@ import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.transformWhile
 import logcat.LogPriority
+import logcat.asLog
 import logcat.logcat
 
 class RaceRepository(
@@ -209,7 +210,7 @@ class RaceRepository(
         sessionResults: suspend RaceRemoteDataSource.(Int, Int) -> List<ResultRemote>
     ): Flow<List<Result>> {
         return repo(
-            cacheKey = listOf("results", season, round, completeDriverImage),
+            cacheKey = listOf("results", season, round, session, completeDriverImage),
             dbRead = { resultDao.getResults(season, round, session) },
             remoteFetch = { raceRemoteDataSource.sessionResults(season, round) },
             dbInsert = {
@@ -246,6 +247,7 @@ class RaceRepository(
                 realData && list.any { it.driver.image == null }
             }
             .let { if (completeDriverImage) it else it.take(1) }
+            .onEach { logcat { "getResult for session ${session.name} " } }
     }
 
     private fun getSeasonDrivers(season: Int): Flow<List<Driver>> =
@@ -326,8 +328,9 @@ class RaceRepository(
         roomDb.withTransaction {
             val season = currentYear()
             raceDao.deleteSeason(season)
+            // raceDao.deleteSeason(season - 1)
             resultDao.deleteSeason(season)
-            // resultDao.deleteCurrentSeason(season - 1)
+            // resultDao.deleteSeason(season - 1)
             lapDao.deleteSeason(season)
             // circuitDao.deleteAll()
             // driverDao.deleteAll()
@@ -475,9 +478,13 @@ class RaceRepository(
         race: Race,
         completeDriverImage: Boolean
     ): Flow<RaceWithResults> {
-        val sprintResultsFlow = flowOf(listOf<Result>()).concat(
-            getSprintResults(season, race.raceInfo.round, completeDriverImage)
-        ).map { it.associateBy { it.resultInfo.driverId } }
+        val sprintResultsFlow = flowOf(listOf<Result>())
+            .run {
+                if (race.raceInfo.sessions.sprint != null)
+                    concat(getSprintResults(season, race.raceInfo.round, completeDriverImage))
+                else this
+            }
+            .map { it.associateBy { it.resultInfo.driverId } }
         return getRaceResults(season, race.raceInfo.round, completeDriverImage)
             .combine(sprintResultsFlow) { raceResults, sprintResults ->
                 logcat { "race: ${raceResults.size},  sprint: ${sprintResults.size}" }
@@ -545,8 +552,8 @@ class RaceRepository(
 
     private fun <T> Flow<T>.handleError(block: suspend FlowCollector<T>.(Throwable) -> Unit = {}): Flow<T> =
         this.catch { e ->
-            logcat(priority = LogPriority.ERROR) { "Network Error: ${e.message}" }
-            Toast.makeText(context, "Network Error, check connection", Toast.LENGTH_LONG).show()
+            logcat(priority = LogPriority.ERROR) { "Error: ${e.asLog()}" }
+            Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             block(e)
         }
 
