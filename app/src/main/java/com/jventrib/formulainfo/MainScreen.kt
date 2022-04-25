@@ -92,13 +92,17 @@ fun MainScreen() {
 
                 val race by viewModel.race.collectAsStateWithLifecycle(null)
                 val results by viewModel.results.collectAsStateWithLifecycle(listOf())
+                val session = viewModel.session.collectAsStateWithLifecycle(Session.RACE)
+                val sessionState = SessionState(results, session.value, viewModel::setSession)
 
                 race?.let {
                     RaceScreen(
                         race = it,
-                        sessionState = SessionState(results, Session.RACE),
+                        sessionState = sessionState,
                         onDriverSelected = { driver ->
-                            navController.navigate("laps/$season/$round/${driver.driverId}")
+                            if (sessionState.session == Session.RACE) {
+                                navController.navigate("laps/$season/$round/${driver.driverId}")
+                            }
                         },
                         onRaceImageSelected = {},
                         onChartClicked = {

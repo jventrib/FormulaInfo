@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 import java.io.Serializable
 
 @Entity(tableName = "race_result")
-// @Entity(tableName = "race_result", primaryKeys = ["season", "round", "number"])
 data class ResultInfo(
     @PrimaryKey
     val key: String,
