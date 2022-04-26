@@ -61,21 +61,23 @@ fun DriverResult(
                 )
             }
             Column(horizontalAlignment = End, modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "${result.resultInfo.points.toInt()} pts",
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.align(End)
-                )
-                Row {
-
+                if (result.resultInfo.session != Session.QUAL) {
                     Text(
-                        text = "Started ${result.resultInfo.grid}",
-                        style = MaterialTheme.typography.body1
+                        text = "${result.resultInfo.points.toInt()} pts",
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.align(End)
                     )
-                    DeltaTextP(
-                        delta = result.resultInfo.position - result.resultInfo.grid,
-                        Modifier.padding(start = 8.dp)
-                    )
+                    Row {
+
+                        Text(
+                            text = "Started ${result.resultInfo.grid}",
+                            style = MaterialTheme.typography.body1
+                        )
+                        DeltaTextP(
+                            delta = result.resultInfo.position - result.resultInfo.grid,
+                            Modifier.padding(start = 8.dp)
+                        )
+                    }
                 }
             }
         }
