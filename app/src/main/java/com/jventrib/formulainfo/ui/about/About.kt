@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -99,6 +100,7 @@ private fun B2(resId: Int, modifier: Modifier = Modifier) {
     Text(
         text = stringResource(resId),
         style = MaterialTheme.typography.body2,
+        textAlign = TextAlign.Justify,
         modifier = modifier.padding(top = 16.dp)
     )
 }
