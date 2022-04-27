@@ -24,6 +24,7 @@ import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.ui.common.composable.DeltaTextP
 import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.common.composable.ItemCard
+import com.jventrib.formulainfo.ui.theme.color
 
 @Composable
 fun DriverResult(
@@ -31,6 +32,7 @@ fun DriverResult(
     onResultSelected: (result: Result) -> Any
 ) {
     ItemCard(
+        border = result.constructor.color,
         image = {
             Image(
                 imageModel = result.driver.image,
@@ -129,5 +131,5 @@ fun getResultSample(driver: String, position: Int) = Result(
         null,
         1
     ),
-    Constructor("RedBull", "url", "RedBull", "UK", "img")
+    Constructor("red_bull", "url", "RedBull", "UK", "img")
 )

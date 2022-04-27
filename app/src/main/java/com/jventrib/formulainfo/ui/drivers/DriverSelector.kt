@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.aggregate.DriverAndConstructor
-import com.jventrib.formulainfo.ui.theme.teamColor
+import com.jventrib.formulainfo.ui.theme.color
 
 @Composable
 fun DriverSelector(
@@ -115,7 +115,7 @@ fun DriverSelector(
                         modifier = Modifier
                             .align(Center)
                             .clip(MaterialTheme.shapes.medium)
-                            .background(teamColor.getValue(result.constructor.id))
+                            .background(result.constructor.color)
                             .padding(4.dp)
                     )
                 }

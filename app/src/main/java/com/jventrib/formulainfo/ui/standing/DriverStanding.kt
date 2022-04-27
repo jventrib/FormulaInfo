@@ -25,6 +25,7 @@ import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.common.composable.ItemCard
 import com.jventrib.formulainfo.ui.common.formatDecimal
+import com.jventrib.formulainfo.ui.theme.color
 
 @Composable
 fun DriverStanding(
@@ -32,6 +33,7 @@ fun DriverStanding(
     onDriverSelected: (driver: Driver) -> Any
 ) {
     ItemCard(
+        border = driverStanding.constructor.color,
         image = {
             Image(
                 imageModel = driverStanding.driver.image,
