@@ -10,8 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.semantics
@@ -27,6 +27,7 @@ import com.jventrib.formulainfo.ui.drivers.DriverSelector
 import com.jventrib.formulainfo.ui.drivers.customShape
 import com.jventrib.formulainfo.ui.drivers.driverSelectionSaver
 import com.jventrib.formulainfo.ui.theme.teamColor
+import logcat.logcat
 
 @Composable
 fun DriverStandingChart(
@@ -35,10 +36,12 @@ fun DriverStandingChart(
     onStandingClicked: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
-    val pairs = standings.keys.map { it.driverId to true }.toTypedArray()
+    // val pairs = standings.keys.map { it.driverId to true }.toMutableStateMap()
 
-    val selectedDrivers = rememberSaveable(standings, saver = driverSelectionSaver) {
-        mutableStateMapOf(*pairs)
+    val selectedDrivers = rememberSaveable(standings, key = "standingDrivers", saver = driverSelectionSaver) {
+        // val selectedDrivers = remember(pairs) {
+        logcat("Standing") { "Init standings: ${standings.count()}" }
+        standings.keys.map { it.driverId to true }.toMutableStateMap()
     }
 
     Scaffold(

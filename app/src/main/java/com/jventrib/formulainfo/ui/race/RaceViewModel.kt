@@ -29,7 +29,7 @@ class RaceViewModel @Inject constructor(private val repository: RaceRepository) 
     private val _round = mutableSharedFlow<Int?>()
     val round = _round.asSharedFlow()
 
-    private val _session = mutableSharedFlow<Session>(Session.RACE)
+    private val _session = mutableSharedFlow(Session.RACE)
     val session = _session.asSharedFlow()
 
     fun setSeason(season: Int) {
@@ -44,12 +44,11 @@ class RaceViewModel @Inject constructor(private val repository: RaceRepository) 
         this._session.tryEmit(session)
     }
 
-    private val seasonAndRound = season.combine(round) { s, r -> SeasonRound(s, r) }
+    private val seasonAndRound = season.combine(round) { s, r -> SeasonRound(s, r) }.distinctUntilChanged()
 
     data class SeasonRound(val season: Int, val round: Int?)
 
     val race = seasonAndRound
-        .distinctUntilChanged()
         .filter { it.round != null }
         .flatMapLatest { sr -> repository.getRace(sr.season, sr.round!!) }
         .toSharedFlow(viewModelScope)
@@ -61,7 +60,11 @@ class RaceViewModel @Inject constructor(private val repository: RaceRepository) 
             }
             when (session) {
                 Session.QUAL -> repository.getQualResults(r.raceInfo.season, r.raceInfo.round, true)
-                Session.SPRINT -> repository.getSprintResults(r.raceInfo.season, r.raceInfo.round, true)
+                Session.SPRINT -> repository.getSprintResults(
+                    r.raceInfo.season,
+                    r.raceInfo.round,
+                    true
+                )
                 else -> repository.getRaceResults(r.raceInfo.season, r.raceInfo.round, true)
             }
         }.flattenConcat()
@@ -75,13 +78,14 @@ class RaceViewModel @Inject constructor(private val repository: RaceRepository) 
             }
             .toSharedFlow(viewModelScope)
 
-    val standings =
-        seasonAndRound.flatMapLatest {
+    val standings = seasonAndRound
+        .flatMapLatest {
             repository.getRoundStandings(it.season, it.round)
         }
 
     val seasonStandingsChart =
         season
+            .distinctUntilChanged()
             .onEach {
                 logcat { "Season emit: $it" }
             }
