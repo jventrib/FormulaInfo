@@ -153,20 +153,22 @@ fun MainScreen() {
                 val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
 
                 val season = navBackStackEntry.arguments?.get("season") as Int
-
                 LaunchedEffect(season) {
                     viewModel.setSeason(season)
                 }
 
                 val standings by viewModel.seasonStandingsChart.collectAsStateWithLifecycle(mapOf())
-                DriverStandingChart(
-                    season = season,
-                    standings = standings,
-                    onStandingClicked = {
-                        navController.popBackStack()
-                        navController.navigate("standing/$season/0")
-                    }
-                )
+
+                if (standings.isNotEmpty()) {
+                    DriverStandingChart(
+                        season = season,
+                        standings = standings,
+                        onStandingClicked = {
+                            navController.popBackStack()
+                            navController.navigate("standing/$season/0")
+                        }
+                    )
+                }
             }
             composable(
                 "laps/{season}/{round}/{driver}",
