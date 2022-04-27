@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,12 +27,14 @@ import coil.annotation.ExperimentalCoilApi
 
 @Composable
 fun ItemCard(
+    border: Color? = null,
     image: @Composable RowScope.() -> Unit,
     topText: String,
     bottomText: String,
     onItemSelected: () -> Unit
 ) {
     ItemCard(
+        border,
         image,
         onItemSelected,
     ) {
@@ -47,6 +50,7 @@ fun ItemCard(
 @ExperimentalCoilApi
 @Composable
 fun ItemCard(
+    border: Color? = null,
     image: @Composable RowScope.() -> Unit,
     onItemSelected: () -> Unit = {},
     content: @Composable RowScope.() -> Unit
@@ -64,6 +68,14 @@ fun ItemCard(
             verticalAlignment = CenterVertically,
             modifier = Modifier.height(IntrinsicSize.Max)
         ) {
+            border?.let {
+                Box(
+                    modifier = Modifier
+                        .width(6.dp)
+                        .fillMaxHeight()
+                        .background(it)
+                )
+            }
             image()
             content()
         }

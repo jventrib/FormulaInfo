@@ -14,7 +14,7 @@ import com.jventrib.formulainfo.ui.common.composable.DataPoint
 import com.jventrib.formulainfo.ui.common.composable.Serie
 import com.jventrib.formulainfo.ui.common.composable.YOrientation
 import com.jventrib.formulainfo.ui.race.getLapsWithStart
-import com.jventrib.formulainfo.ui.theme.teamColor
+import com.jventrib.formulainfo.ui.theme.color
 
 @Composable
 fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
@@ -51,7 +51,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
                     )
                 )
             },
-            teamColor.getValue(entry.key.constructor.id),
+            entry.key.constructor.color,
             entry.key.driver.code ?: entry.key.driver.driverId.take(3)
         )
     }

@@ -11,18 +11,10 @@ import com.jventrib.formulainfo.ui.common.composable.DataPoint
 import com.jventrib.formulainfo.ui.common.composable.Serie
 import com.jventrib.formulainfo.ui.common.composable.YOrientation
 import com.jventrib.formulainfo.ui.race.getLapsWithStart
-import com.jventrib.formulainfo.ui.theme.teamColor
+import com.jventrib.formulainfo.ui.theme.color
 
 @Composable
 fun LapPositionChart(lapsByResult: Map<Result, List<Lap>>) {
-//    val scaffoldState = rememberScaffoldState()
-//    val scope = rememberCoroutineScope()
-//    val selectState = remember(lapsByResult) {
-//        mutableStateMapOf<String, Boolean>().apply {
-//            putAll(lapsByResult.keys.map { it.driver.driverId to true })
-//        }
-//    }
-
     val lapsWithStart = getLapsWithStart(lapsByResult)
 
     val series = lapsWithStart.map { entry ->
@@ -36,7 +28,7 @@ fun LapPositionChart(lapsByResult: Map<Result, List<Lap>>) {
                     )
                 )
             },
-            teamColor.getValue(entry.key.constructor.id),
+            entry.key.constructor.color,
             entry.key.driver.code ?: entry.key.driver.driverId.take(3)
         )
     }

@@ -1,6 +1,7 @@
 package com.jventrib.formulainfo.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import com.jventrib.formulainfo.model.db.Constructor
 
 val Red = Color(0xFFBD0D01)
 val RedDark = Color(0xFF812019)
@@ -8,7 +9,7 @@ val Purple = Color(0xFF3F51B5)
 val LightLightGrey = Color(0xFFEEEEEE)
 val DarkDarkGrey = Color(0xFF111111)
 
-val teamColor = mapOf(
+private val teamColor = mapOf(
     "mercedes" to Color(0xFF00D2BE),
     "ferrari" to Color(0xFFDC0000),
     "mclaren" to Color(0xFFFF8700),
@@ -20,3 +21,5 @@ val teamColor = mapOf(
     "red_bull" to Color(0xFF0600EF),
     "haas" to Color(0xFF787878)
 ).withDefault { Color.Gray }
+
+val Constructor.color get() = teamColor.getValue(this.id)

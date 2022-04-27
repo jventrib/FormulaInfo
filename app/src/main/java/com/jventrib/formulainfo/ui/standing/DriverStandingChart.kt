@@ -26,7 +26,7 @@ import com.jventrib.formulainfo.ui.common.composable.YOrientation
 import com.jventrib.formulainfo.ui.drivers.DriverSelector
 import com.jventrib.formulainfo.ui.drivers.customShape
 import com.jventrib.formulainfo.ui.drivers.driverSelectionSaver
-import com.jventrib.formulainfo.ui.theme.teamColor
+import com.jventrib.formulainfo.ui.theme.color
 import logcat.logcat
 
 @Composable
@@ -91,7 +91,7 @@ fun DriverStandingChart(
                             )
                         )
                     },
-                    teamColor.getValue(entry.value.first().constructor.id),
+                    entry.value.first().constructor.color,
                     entry.key.code ?: entry.key.driverId.take(3)
                 )
             }

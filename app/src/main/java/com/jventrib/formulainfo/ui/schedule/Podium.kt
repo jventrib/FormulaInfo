@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.race.getResultSample
-import com.jventrib.formulainfo.ui.theme.teamColor
+import com.jventrib.formulainfo.ui.theme.color
 
 @Composable
 fun Podium(results: List<Result>, modifier: Modifier = Modifier) {
@@ -98,7 +98,7 @@ private fun Driver(
         modifier = Modifier
             .width(w)
             .clip(RoundedCornerShape(4.dp))
-            .background(teamColor.getValue(result.constructor.id)),
+            .background(result.constructor.color),
         color = Color.White,
         fontSize = 8.sp,
         textAlign = TextAlign.Center,
