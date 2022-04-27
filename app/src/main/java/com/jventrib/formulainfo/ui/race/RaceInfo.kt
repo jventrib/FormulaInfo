@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +33,7 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.common.composable.ItemCard
 import com.jventrib.formulainfo.ui.common.formatDateTime
+import com.jventrib.formulainfo.ui.common.raceCountDownFormat
 import com.jventrib.formulainfo.ui.race.getResultSample
 import com.jventrib.formulainfo.utils.countDownFlow
 import com.jventrib.formulainfo.utils.now
@@ -151,9 +153,10 @@ fun CountDown(to: Instant) {
     countDown
         .toComponents { days, hours, minutes, seconds, _ ->
             Text(
-                text = "$days days $hours:${
-                minutes.toString().padStart(2, '0')
-                }:${seconds.toString().padStart(2, '0')}",
+                text = raceCountDownFormat(
+                    LocalContext.current.resources,
+                    days, hours, minutes, seconds
+                ),
                 style = MaterialTheme.typography.h5,
                 fontWeight = FontWeight.Bold
             )

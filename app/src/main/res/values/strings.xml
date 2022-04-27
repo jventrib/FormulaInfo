@@ -3,4 +3,10 @@
     <string name="app_version">0.0.1</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="database">f1_database</string>
+
+    <!-- countdown -->
+    <plurals name="race_countdown_format">
+        <item quantity="one">%1$d day %2$s</item>
+        <item quantity="other">%1$d days %2$s</item>
+    </plurals>
 </resources>
