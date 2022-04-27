@@ -36,10 +36,8 @@ fun DriverStandingChart(
     onStandingClicked: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
-    // val pairs = standings.keys.map { it.driverId to true }.toMutableStateMap()
 
     val selectedDrivers = rememberSaveable(standings, key = "standingDrivers", saver = driverSelectionSaver) {
-        // val selectedDrivers = remember(pairs) {
         logcat("Standing") { "Init standings: ${standings.count()}" }
         standings.keys.map { it.driverId to true }.toMutableStateMap()
     }
@@ -75,7 +73,6 @@ fun DriverStandingChart(
 
     ) {
 
-// ) {
         val series = standings
             .filter {
                 selectedDrivers[it.key.driverId] ?: false
@@ -101,9 +98,3 @@ fun DriverStandingChart(
         )
     }
 }
-
-// @Preview(showSystemUi = false)
-// @Composable
-// fun SeasonChartPreview() {
-//    SeasonChart(race = null, lapsByResult = lapsWithStart)
-// }
