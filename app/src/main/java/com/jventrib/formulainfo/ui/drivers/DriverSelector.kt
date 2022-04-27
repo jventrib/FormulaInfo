@@ -20,6 +20,7 @@ import androidx.compose.material.TriStateCheckbox
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.snapshots.SnapshotStateMap
@@ -44,15 +45,16 @@ import com.jventrib.formulainfo.model.aggregate.DriverAndConstructor
 import com.jventrib.formulainfo.ui.theme.teamColor
 
 @Composable
-fun DriverSelector(drivers: List<DriverAndConstructor>, selectState: MutableMap<String, Boolean>) {
+fun DriverSelector(
+    drivers: List<DriverAndConstructor>,
+    selectState: MutableMap<String, Boolean>
+) {
     rememberDrawerState(DrawerValue.Open)
     val scrollState = rememberScrollState()
-    val allState = remember(*selectState.values.toTypedArray()) {
-        when {
-            selectState.values.all { it } -> ToggleableState.On
-            selectState.values.none { it } -> ToggleableState.Off
-            else -> ToggleableState.Indeterminate
-        }
+    val allState = when {
+        selectState.values.all { it } -> ToggleableState.On
+        selectState.values.none { it } -> ToggleableState.Off
+        else -> ToggleableState.Indeterminate
     }
 
     val onAllClick = {
@@ -148,7 +150,7 @@ fun DriverSelectorPreview() {
             DriverSelector(
                 drivers = ResultSample.get202101Results()
                     .map { DriverAndConstructor(it.driver, it.constructor) },
-                mutableMapOf()
+                remember { mutableStateMapOf() }
             )
         },
     ) {

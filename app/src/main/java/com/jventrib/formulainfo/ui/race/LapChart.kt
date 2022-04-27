@@ -6,10 +6,10 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.aggregate.DriverAndConstructor
@@ -27,9 +27,8 @@ import com.jventrib.formulainfo.ui.race.chart.LeaderIntervalChart
 fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
     val scaffoldState = rememberScaffoldState()
     var selectedChart by rememberSaveable { mutableStateOf(Charts.values().first()) }
-    val pairs = lapsByResult.keys.map { it.driver.driverId to true }.toTypedArray()
     val selectedDrivers = rememberSaveable(lapsByResult, saver = driverSelectionSaver) {
-        mutableStateMapOf(*pairs)
+        lapsByResult.keys.map { it.driver.driverId to true }.toMutableStateMap()
     }
 
     Scaffold(
