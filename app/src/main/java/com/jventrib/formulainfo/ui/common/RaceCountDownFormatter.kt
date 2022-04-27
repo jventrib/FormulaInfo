@@ -12,7 +12,7 @@ fun raceCountDownFormat(
 ): String {
 
     val time = "$hours:${minutes.toString().padStart(2, '0')}" +
-            ":${seconds.toString().padStart(2, '0')}"
+        ":${seconds.toString().padStart(2, '0')}"
 
     return if (days.toInt() == 0) time else resources.getQuantityString(
         R.plurals.race_countdown_format,
@@ -21,4 +21,3 @@ fun raceCountDownFormat(
         time
     )
 }
-
