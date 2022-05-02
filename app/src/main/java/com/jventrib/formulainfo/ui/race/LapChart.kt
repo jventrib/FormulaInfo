@@ -5,17 +5,24 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.aggregate.DriverAndConstructor
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.ui.common.composable.collectAsStateWithLifecycle
 import com.jventrib.formulainfo.ui.drivers.DriverSelector
 import com.jventrib.formulainfo.ui.drivers.customShape
 import com.jventrib.formulainfo.ui.drivers.driverSelectionSaver
@@ -23,8 +30,35 @@ import com.jventrib.formulainfo.ui.race.chart.LapPositionChart
 import com.jventrib.formulainfo.ui.race.chart.LapTimeChart
 import com.jventrib.formulainfo.ui.race.chart.LeaderIntervalChart
 
+fun NavGraphBuilder.lapChart() {
+    composable(
+        "resultsGraph/{season}/{round}",
+        listOf(
+            navArgument("season") { type = NavType.IntType },
+            navArgument("round") { type = NavType.IntType }
+        )
+    ) { navBackStackEntry ->
+        val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
+
+        val season = navBackStackEntry.arguments?.get("season") as Int
+        val round = navBackStackEntry.arguments?.get("round") as Int
+
+        LaunchedEffect(season, round) {
+            viewModel.setSeason(season)
+            viewModel.setRound(round)
+        }
+
+        val race by viewModel.race.collectAsStateWithLifecycle(null)
+        val resultsWithLaps by viewModel.resultsWithLaps.collectAsStateWithLifecycle(mapOf())
+
+        if (resultsWithLaps.isNotEmpty()) {
+            LapChart(race, lapsByResult = resultsWithLaps)
+        }
+    }
+}
+
 @Composable
-fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
+private fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
     val scaffoldState = rememberScaffoldState()
     var selectedChart by rememberSaveable { mutableStateOf(Charts.values().first()) }
     val selectedDrivers = rememberSaveable(lapsByResult, saver = driverSelectionSaver) {

@@ -14,6 +14,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.jventrib.formulainfo.notification.calcNotifyBefore
 import com.jventrib.formulainfo.ui.common.toDurationString
 import de.schnettler.datastore.compose.material.PreferenceScreen
@@ -24,9 +26,13 @@ import logcat.logcat
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
+fun NavGraphBuilder.preference() {
+    composable("preference") { PreferencesScreen() }
+}
+
 @OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
-fun PreferencesScreen() {
+private fun PreferencesScreen() {
 
     val preferencesViewModel: PreferencesViewModel = hiltViewModel()
 
