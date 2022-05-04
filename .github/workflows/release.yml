@@ -20,7 +20,7 @@ jobs:
           kotlin.parallel.tasks.in.project=true
         gradle-distribution-sha-256-sum-warning: false
     - name: Upload Test Reports
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: test-reports
         path: 'app/build/reports/tests/'
@@ -46,7 +46,7 @@ jobs:
           kotlin.parallel.tasks.in.project=true
         gradle-distribution-sha-256-sum-warning: false
     - name: Upload Lint Reports
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: lint-reports
         path: 'app/build/reports/lint-results-*'
@@ -155,7 +155,7 @@ jobs:
         keyPassword: ${{ secrets.KEY_PASSWORD }}
 
     - name: Upload Released Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: Signed apk & aab
         path: |
