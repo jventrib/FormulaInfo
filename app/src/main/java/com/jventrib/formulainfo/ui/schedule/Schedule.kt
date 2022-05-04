@@ -48,7 +48,6 @@ fun NavGraphBuilder.schedule(navController: NavHostController) {
         ScheduleScreen(
             raceList = raceList,
             onRaceClicked = { race ->
-                //                        navController.navigate("resultsGraph/${race.raceInfo.season}/${race.raceInfo.round}")
                 navController.navigate(
                     "race/${race.raceInfo.season}/${race.raceInfo.round}"
                 )

@@ -24,14 +24,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.ui.race.RaceViewModel
 import com.jventrib.formulainfo.ui.schedule.getRaceSample
 
-@ExperimentalCoilApi
 fun NavGraphBuilder.driverStanding(navController: NavHostController) {
     composable(
         "standing/{season}/{round}",
@@ -67,7 +65,6 @@ fun NavGraphBuilder.driverStanding(navController: NavHostController) {
     }
 }
 
-@ExperimentalCoilApi
 @Composable
 private fun DriverStandingScreen(
     season: Int,
@@ -107,7 +104,6 @@ private fun DriverStandingScreen(
     }
 }
 
-@ExperimentalCoilApi
 @Preview
 @Composable
 fun DriverStandingScreenPreview() {

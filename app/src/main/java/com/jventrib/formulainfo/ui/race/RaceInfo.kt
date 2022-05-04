@@ -27,7 +27,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
-import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.composable.Image
@@ -41,7 +40,6 @@ import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toKotlinDuration
 
-@ExperimentalCoilApi
 @Composable
 fun RaceInfo(
     race: Race,
@@ -163,7 +161,6 @@ fun CountDown(to: Instant) {
         }
 }
 
-@ExperimentalCoilApi
 @Preview(showBackground = true)
 @Composable
 fun RaceItemPreview() {
@@ -178,7 +175,6 @@ fun RaceItemPreview() {
     ) {}
 }
 
-@ExperimentalCoilApi
 @Preview(showBackground = true)
 @Composable
 fun RaceItemExpandedPreview() {
@@ -193,7 +189,6 @@ fun RaceItemExpandedPreview() {
     ) {}
 }
 
-@ExperimentalCoilApi
 @Preview(showBackground = true)
 @Composable
 fun RaceItemMaxiPreview() {

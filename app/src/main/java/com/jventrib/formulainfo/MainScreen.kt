@@ -3,7 +3,6 @@ package com.jventrib.formulainfo
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.ui.about.about
 import com.jventrib.formulainfo.ui.laps.laps
 import com.jventrib.formulainfo.ui.preferences.preference
@@ -14,7 +13,6 @@ import com.jventrib.formulainfo.ui.standing.driverStanding
 import com.jventrib.formulainfo.ui.standing.driverStandingChart
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 
-@ExperimentalCoilApi
 @Composable
 fun MainScreen() {
     FormulaInfoTheme {

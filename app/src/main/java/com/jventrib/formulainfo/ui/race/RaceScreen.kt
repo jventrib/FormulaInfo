@@ -45,7 +45,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import coil.annotation.ExperimentalCoilApi
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
@@ -59,7 +58,6 @@ import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import com.jventrib.formulainfo.utils.now
 import kotlin.math.roundToInt
 
-@ExperimentalCoilApi
 fun NavGraphBuilder.race(navController: NavHostController) {
     composable(
         "race/{season}/{round}",
@@ -104,7 +102,6 @@ fun NavGraphBuilder.race(navController: NavHostController) {
     }
 }
 
-@ExperimentalCoilApi
 @Composable
 private fun RaceScreen(
     race: Race,
@@ -235,7 +232,6 @@ fun ResultsList(
     }
 }
 
-@ExperimentalCoilApi
 @Preview
 @Composable
 fun RaceDetailPreview() {
@@ -251,7 +247,6 @@ fun RaceDetailPreview() {
     )
 }
 
-@ExperimentalCoilApi
 @Preview
 @Composable
 fun RaceDetailDarkPreview() {
