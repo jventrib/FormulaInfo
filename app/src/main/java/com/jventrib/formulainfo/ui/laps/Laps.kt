@@ -14,23 +14,59 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.ui.common.composable.collectAsStateWithLifecycle
 import com.jventrib.formulainfo.ui.common.toLapTimeString
 import com.jventrib.formulainfo.ui.race.DriverResult
 import com.jventrib.formulainfo.ui.race.getResultSample
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import kotlin.random.Random
 
+fun NavGraphBuilder.laps() {
+    composable(
+        "laps/{season}/{round}/{driver}",
+        listOf(
+            navArgument("season") { type = NavType.IntType },
+            navArgument("round") { type = NavType.IntType },
+            navArgument("driver") { type = NavType.StringType }
+        )
+    ) { navBackStackEntry ->
+        val viewModel: LapsViewModel = hiltViewModel(navBackStackEntry)
+
+        val season = navBackStackEntry.arguments?.get("season") as Int
+        val round = navBackStackEntry.arguments?.get("round") as Int
+        val driverId = navBackStackEntry.arguments?.get("driver") as String
+
+        LaunchedEffect(season, round, driverId) {
+            viewModel.setSeason(season)
+            viewModel.setRound(round)
+            viewModel.setDriverId(driverId)
+        }
+
+        val race by viewModel.race.collectAsStateWithLifecycle(null)
+        val result by viewModel.result.collectAsStateWithLifecycle(null)
+        val lapTimes by viewModel.laps.collectAsStateWithLifecycle(listOf())
+        result?.let { Laps(race, it, lapTimes) }
+    }
+}
+
 @Composable
-fun Laps(race: Race?, result: Result, laps: List<Lap>) {
+private fun Laps(race: Race?, result: Result, laps: List<Lap>) {
     Scaffold(
         topBar = {
             TopAppBar(

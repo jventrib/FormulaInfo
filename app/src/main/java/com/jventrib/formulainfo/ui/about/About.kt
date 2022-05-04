@@ -18,11 +18,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import coil.compose.rememberImagePainter
 import com.jventrib.formulainfo.BuildConfig
 import com.jventrib.formulainfo.R
 import com.jventrib.formulainfo.ui.common.composable.Link
 import com.jventrib.formulainfo.ui.common.composable.LinkText
+
+fun NavGraphBuilder.about() {
+    composable("about") { About() }
+}
 
 @Composable
 fun About() {

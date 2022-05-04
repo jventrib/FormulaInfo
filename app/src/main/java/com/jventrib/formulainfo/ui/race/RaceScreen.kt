@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.MultilineChart
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,12 +39,18 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.annotation.ExperimentalCoilApi
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.ui.common.composable.Image
+import com.jventrib.formulainfo.ui.common.composable.collectAsStateWithLifecycle
 import com.jventrib.formulainfo.ui.schedule.RaceInfo
 import com.jventrib.formulainfo.ui.schedule.RaceInfoMode
 import com.jventrib.formulainfo.ui.schedule.getRaceSample
@@ -51,9 +58,52 @@ import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import com.jventrib.formulainfo.utils.now
 import kotlin.math.roundToInt
 
-@ExperimentalCoilApi
+fun NavGraphBuilder.race(navController: NavHostController) {
+    composable(
+        "race/{season}/{round}",
+        listOf(
+            navArgument("season") { type = NavType.IntType },
+            navArgument("round") { type = NavType.IntType }
+        )
+    ) { navBackStackEntry ->
+        val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
+
+        val season = navBackStackEntry.arguments?.get("season") as Int
+        val round = navBackStackEntry.arguments?.get("round") as Int
+
+        LaunchedEffect(season, round) {
+            viewModel.setSeason(season)
+            viewModel.setRound(round)
+        }
+
+        val race by viewModel.race.collectAsStateWithLifecycle(null)
+        val results by viewModel.results.collectAsStateWithLifecycle(listOf())
+        val session = viewModel.session.collectAsStateWithLifecycle(Session.RACE)
+        val sessionState = SessionState(results, session.value, viewModel::setSession)
+
+        race?.let {
+            RaceScreen(
+                race = it,
+                sessionState = sessionState,
+                onDriverSelected = { driver ->
+                    if (sessionState.session == Session.RACE) {
+                        navController.navigate("laps/$season/$round/${driver.driverId}")
+                    }
+                },
+                onRaceImageSelected = {},
+                onChartClicked = {
+                    navController.navigate("resultsGraph/${it.raceInfo.season}/${it.raceInfo.round}")
+                },
+                onStandingClicked = {
+                    navController.navigate("standing/${it.raceInfo.season}/${it.raceInfo.round}")
+                }
+            )
+        }
+    }
+}
+
 @Composable
-fun RaceScreen(
+private fun RaceScreen(
     race: Race,
     sessionState: SessionState,
     onDriverSelected: (driver: Driver) -> Unit,
@@ -182,7 +232,6 @@ fun ResultsList(
     }
 }
 
-@ExperimentalCoilApi
 @Preview
 @Composable
 fun RaceDetailPreview() {
@@ -198,7 +247,6 @@ fun RaceDetailPreview() {
     )
 }
 
-@ExperimentalCoilApi
 @Preview
 @Composable
 fun RaceDetailDarkPreview() {

@@ -11,19 +11,62 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MultilineChart
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import coil.annotation.ExperimentalCoilApi
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
 import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.ui.race.RaceViewModel
 import com.jventrib.formulainfo.ui.schedule.getRaceSample
 
-@ExperimentalCoilApi
+fun NavGraphBuilder.driverStanding(navController: NavHostController) {
+    composable(
+        "standing/{season}/{round}",
+        listOf(
+            navArgument("season") { type = NavType.IntType },
+            navArgument("round") { type = NavType.IntType }
+        )
+    ) { navBackStackEntry ->
+        val viewModel: RaceViewModel = hiltViewModel(navBackStackEntry)
+
+        val season = navBackStackEntry.arguments?.get("season") as Int
+        val round = (navBackStackEntry.arguments?.get("round") as Int)
+            .let { if (it == 0) null else it }
+
+        LaunchedEffect(season, round) {
+            viewModel.setSeason(season)
+            viewModel.setRound(round)
+        }
+
+        val race by viewModel.race.collectAsState(null)
+        val standings by viewModel.standings.collectAsState(null)
+        standings?.let { st ->
+            DriverStandingScreen(
+                season = season,
+                race = race,
+                standings = st,
+                onDriverSelected = {}
+            ) {
+                navController.popBackStack()
+                navController.navigate("standing/$season/chart")
+            }
+        }
+    }
+}
+
 @Composable
-fun DriverStandingScreen(
+private fun DriverStandingScreen(
     season: Int,
     race: Race?,
     standings: List<DriverStanding>,
@@ -61,7 +104,6 @@ fun DriverStandingScreen(
     }
 }
 
-@ExperimentalCoilApi
 @Preview
 @Composable
 fun DriverStandingScreenPreview() {

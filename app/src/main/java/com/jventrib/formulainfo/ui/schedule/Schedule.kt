@@ -25,14 +25,57 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
 import com.jventrib.formulainfo.model.db.Race
+import com.jventrib.formulainfo.ui.common.composable.collectAsStateWithLifecycle
+import com.jventrib.formulainfo.utils.currentYear
 import kotlinx.coroutines.delay
 
+fun NavGraphBuilder.schedule(navController: NavHostController) {
+    composable("races") {
+        val viewModel: SeasonViewModel = hiltViewModel()
+
+        val seasonList = viewModel.seasonList
+        val selectedSeason by viewModel.season.collectAsStateWithLifecycle(currentYear())
+        val raceList by viewModel.racesWithResults.collectAsStateWithLifecycle(listOf())
+
+        ScheduleScreen(
+            raceList = raceList,
+            onRaceClicked = { race ->
+                navController.navigate(
+                    "race/${race.raceInfo.season}/${race.raceInfo.round}"
+                )
+            },
+            seasonList = seasonList,
+            selectedSeason = selectedSeason,
+            onSeasonSelected = {
+                viewModel.setSeason(it)
+            },
+            onAboutClicked = { navController.navigate("about") },
+            onPreferenceClicked = { navController.navigate("preference") },
+            onRefreshClicked = { viewModel.refresh() },
+            onStandingClicked = {
+                navController.navigate(
+                    "standing/$selectedSeason/0"
+                )
+            },
+            onStandingChartClicked = {
+                navController.navigate(
+                    "standing/$selectedSeason/chart"
+                )
+            }
+        )
+    }
+}
+
 @Composable
-fun ScheduleScreen(
+private fun ScheduleScreen(
     raceList: List<RaceWithResults>,
     onRaceClicked: (Race) -> Unit,
     seasonList: List<Int>,

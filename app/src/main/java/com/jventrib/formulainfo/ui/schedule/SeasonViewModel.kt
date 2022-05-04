@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class SeasonViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {
@@ -29,8 +30,10 @@ class SeasonViewModel @Inject constructor(private val repository: RaceRepository
             .flatMapLatest { repository.getRacesWithResults(it, false, true) }
             .toSharedFlow(viewModelScope)
 
-    suspend fun refresh() {
-        repository.refresh()
-        _season.tryEmit(season.first())
+    fun refresh() {
+        viewModelScope.launch {
+            repository.refresh()
+            _season.emit(season.first())
+        }
     }
 }
