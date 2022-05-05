@@ -1,6 +1,5 @@
 name: Build
-concurrency: 
-  group: staging_environment
+concurrency: staging_environment
 
 on:
   push:
