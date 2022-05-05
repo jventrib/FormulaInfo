@@ -29,11 +29,11 @@ jobs:
       with:
         name: test-reports
         path: 'app/build/reports/tests/'
-    - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      if: always()
-      with:
-        files: app/build/test-results/**/*.xml
+#    - name: Publish Unit Test Results
+#      uses: EnricoMi/publish-unit-test-result-action@v1
+#      if: always()
+#      with:
+#        files: app/build/test-results/**/*.xml
     - uses: burrunan/gradle-cache-action@v1
       name: Run Kotlin Linter
       with:
