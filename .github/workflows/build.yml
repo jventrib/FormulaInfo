@@ -1,5 +1,7 @@
 name: Build
-concurrency: staging_environment
+concurrency: 
+  group: staging_environment
+  cancel-in-progress: true
 
 on:
   push:
