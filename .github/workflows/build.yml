@@ -1,6 +1,5 @@
 name: Build
-concurrency: 
-  group: staging_environment
+concurrency: staging_environment
 
 on:
   push:
@@ -94,7 +93,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-29f
+          key: avd-29g
 
       - name: create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
@@ -103,7 +102,7 @@ jobs:
           api-level: 29
           heap-size: 1024M
           ram-size: 4096M
-          profile: Nexus 6
+          profile: Pixel 5
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
@@ -115,8 +114,8 @@ jobs:
           api-level: 29
           heap-size: 1024M
           ram-size: 4096M
-          profile: Nexus 6
+          profile: Pixel 5
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew connectedCheck
+          script: ./gradlew connectedDebugAndroidTest
