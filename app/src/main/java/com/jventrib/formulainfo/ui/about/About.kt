@@ -42,6 +42,7 @@ fun About() {
         Column(
             Modifier
                 .fillMaxWidth()
+                .padding(it)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

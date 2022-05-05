@@ -2,6 +2,8 @@ package com.jventrib.formulainfo.ui.schedule
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -143,7 +145,9 @@ private fun ScheduleScreen(
             )
         }
     ) {
-        RaceList(raceList, onRaceClicked, listState, onRefreshClicked)
+        Box(modifier = Modifier.padding(it)) {
+            RaceList(raceList, onRaceClicked, listState, onRefreshClicked)
+        }
     }
 }
 
