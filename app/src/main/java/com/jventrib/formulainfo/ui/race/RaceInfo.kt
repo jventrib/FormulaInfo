@@ -2,13 +2,18 @@ package com.jventrib.formulainfo.ui.schedule
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.SportsScore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,7 +36,9 @@ import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.common.composable.ItemCard
+import com.jventrib.formulainfo.ui.common.formatDateRange
 import com.jventrib.formulainfo.ui.common.formatDateTime
+import com.jventrib.formulainfo.ui.common.formatTime
 import com.jventrib.formulainfo.ui.common.raceCountDownFormat
 import com.jventrib.formulainfo.ui.race.getResultSample
 import com.jventrib.formulainfo.utils.countDownFlow
@@ -104,7 +111,7 @@ fun RaceInfo(
                         MaterialTheme.typography.body1
                     )
                 } else {
-                    SessionDateText(race.raceInfo.sessions.race)
+                    SessionDateRangeText(race.raceInfo.sessions.fp1, race.raceInfo.sessions.race)
                 }
                 if (mode == RaceInfoMode.Maxi) {
                     CountDown(to = race.raceInfo.sessions.race)
@@ -140,6 +147,38 @@ private fun SessionDateText(
         style = textStyle,
         fontWeight = if (it.isAfter(now())) FontWeight.Bold else FontWeight.Normal
     )
+}
+
+@Composable
+private fun SessionDateRangeText(
+    from: Instant?,
+    to: Instant,
+    textStyle: TextStyle = MaterialTheme.typography.body2
+) {
+    Row(
+        verticalAlignment = CenterVertically
+
+    ) {
+        Text(
+            text = formatDateRange(from, to),
+            style = textStyle,
+            fontWeight = if (to.isAfter(now())) FontWeight.Bold else FontWeight.Normal
+        )
+        if (to.isAfter(now())) {
+            Spacer(Modifier.width(10.0.dp))
+            Icon(
+                Icons.Outlined.SportsScore,
+                contentDescription = "Race start time",
+                modifier = Modifier.size(width = 14.dp, height = 14.dp)
+            )
+            Text(
+                text = to.formatTime(),
+                style = textStyle,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+
 }
 
 @Composable
