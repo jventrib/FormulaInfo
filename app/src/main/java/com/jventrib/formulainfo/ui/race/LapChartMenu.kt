@@ -70,19 +70,18 @@ private fun ChartItem(
     }
 }
 
-@Preview
-@Composable
-fun LapChartMenuPreview() {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Formula Info") },
-                actions = {
-                    LapChartMenu("Chart1") {}
-                }
-            )
-        },
-    ) {
-        Box(modifier = Modifier.padding(it))
+    @Preview
+    @Composable
+    fun LapChartMenuPreview() {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Formula Info") },
+                    actions = {
+                        LapChartMenu("Chart1") {}
+                    }
+                )
+            },
+        ) {
+        }
     }
-}
