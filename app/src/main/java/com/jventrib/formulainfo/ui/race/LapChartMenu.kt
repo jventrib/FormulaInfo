@@ -84,5 +84,6 @@ fun LapChartMenuPreview() {
             )
         },
     ) {
+        Box(modifier = Modifier.padding(it))
     }
 }
