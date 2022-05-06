@@ -68,7 +68,7 @@ private fun ChartItem(
     }, modifier = Modifier.sizeIn(maxWidth = 170.dp)) {
         Text(chart.label)
     }
-}
+    }
 
     @Preview
     @Composable
