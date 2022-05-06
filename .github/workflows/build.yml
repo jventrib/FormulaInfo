@@ -93,7 +93,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-29l
+          key: pixel4-x86-avd-29
 
       - name: create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
