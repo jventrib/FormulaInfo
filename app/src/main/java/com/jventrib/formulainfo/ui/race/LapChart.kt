@@ -1,5 +1,7 @@
 package com.jventrib.formulainfo.ui.race
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -11,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateMap
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
@@ -87,11 +90,13 @@ private fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
         },
 
     ) {
-        selectedChart.compose(
-            lapsByResult.filter {
-                selectedDrivers[it.key.driver.driverId] ?: false
-            }
-        )
+        Box(modifier = Modifier.padding(it)) {
+            selectedChart.compose(
+                lapsByResult.filter {
+                    selectedDrivers[it.key.driver.driverId] ?: false
+                }
+            )
+        }
     }
 }
 

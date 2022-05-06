@@ -157,6 +157,7 @@ fun DriverSelectorPreview() {
         Box(
             Modifier
                 .fillMaxSize()
+                .padding(it)
                 .background(Color.LightGray)
         ) {
             Text("Test")

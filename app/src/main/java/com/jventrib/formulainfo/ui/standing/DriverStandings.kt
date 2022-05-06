@@ -1,6 +1,7 @@
 package com.jventrib.formulainfo.ui.standing
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
@@ -93,7 +94,7 @@ private fun DriverStandingScreen(
             )
         }
     ) {
-        LazyColumn {
+        LazyColumn(Modifier.padding(it)) {
             items(items = standings) { driverStanding ->
                 DriverStanding(
                     driverStanding,

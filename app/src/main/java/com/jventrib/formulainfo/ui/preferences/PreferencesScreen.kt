@@ -1,6 +1,7 @@
 package com.jventrib.formulainfo.ui.preferences
 
 import android.content.Context
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -8,6 +9,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.datastore.core.DataStore
@@ -89,7 +91,8 @@ private fun PreferencesScreen() {
                 )
             ),
             dataStore = dataStore,
-            statusBarPadding = false
+            statusBarPadding = false,
+            modifier = Modifier.padding(it)
         )
     }
 }

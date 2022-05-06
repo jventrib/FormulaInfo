@@ -63,26 +63,27 @@ private fun ChartItem(
     onChartSelect: (Charts) -> Unit,
     chart: Charts
 ) {
-    DropdownMenuItem(onClick = {
-        onChartSelect(chart)
-    }, modifier = Modifier.sizeIn(maxWidth = 170.dp)) {
+    DropdownMenuItem(
+        onClick = { onChartSelect(chart) },
+        modifier = Modifier.sizeIn(maxWidth = 170.dp)
+    ) {
         Text(chart.label)
     }
-    }
+}
 
-    @Preview
-    @Composable
-    fun LapChartMenuPreview() {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Formula Info") },
-                    actions = {
-                        LapChartMenu("Chart1") {}
-                    }
-                )
-            },
-        ) {
-        }
+@Preview
+@Composable
+fun LapChartMenuPreview() {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Formula Info") },
+                actions = {
+                    LapChartMenu("Chart1") {}
+                }
+            )
+        },
+    ) {
+        Box(modifier = Modifier.padding(it))
     }
-    
+}

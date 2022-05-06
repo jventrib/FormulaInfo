@@ -1,6 +1,7 @@
 package com.jventrib.formulainfo.ui.standing
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
@@ -132,7 +133,10 @@ private fun DriverStandingChart(
             }
 
         Chart(
-            series = series, yOrientation = YOrientation.Up, gridStep = Offset(5f, 10f),
+            series = series,
+            modifier = Modifier.padding(it),
+            yOrientation = YOrientation.Up,
+            gridStep = Offset(5f, 10f),
         )
     }
 }

@@ -1,5 +1,7 @@
 package com.jventrib.formulainfo.ui.schedule
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
@@ -86,6 +88,8 @@ fun SeasonMenuPreview() {
                     }
                 )
             }
-        ) {}
+        ) {
+            Box(modifier = Modifier.padding(it))
+        }
     }
 }
