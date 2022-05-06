@@ -78,7 +78,7 @@ private fun Laps(race: Race?, result: Result, laps: List<Lap>) {
             )
         }
     ) {
-        Column {
+        Column(Modifier.padding(it)) {
             DriverResult(result = result, onResultSelected = {})
             LazyColumn {
                 stickyHeader {
