@@ -2,10 +2,10 @@ package com.jventrib.formulainfo.data.remote
 
 import com.jventrib.formulainfo.util.JULLogger
 import dagger.hilt.android.testing.HiltAndroidRule
-import java.util.logging.Level
 import logcat.LogcatLogger
 import org.junit.Before
 import org.junit.Rule
+import java.util.logging.Level
 
 open class RoboTest {
     @get:Rule

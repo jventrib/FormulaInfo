@@ -6,12 +6,12 @@ import com.jventrib.formulainfo.data.RaceRepository
 import com.jventrib.formulainfo.ui.common.composable.toSharedFlow
 import com.jventrib.formulainfo.utils.currentYear
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class SeasonViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {

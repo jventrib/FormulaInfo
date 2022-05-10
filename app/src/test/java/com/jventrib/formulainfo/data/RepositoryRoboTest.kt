@@ -4,7 +4,6 @@ import com.google.common.truth.Truth
 import com.jventrib.formulainfo.data.remote.RoboTest
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.HiltTestApplication
-import javax.inject.Inject
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flattenConcat
@@ -15,6 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import javax.inject.Inject
 
 @RunWith(RobolectricTestRunner::class)
 @HiltAndroidTest
