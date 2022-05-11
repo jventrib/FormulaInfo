@@ -60,10 +60,13 @@ fun Instant.formatTime(): String =
     this.zonedDateTime().format(customTimeHourMinFormatter)
 
 fun formatDateRange(from: Instant?, to: Instant): String {
-    val zonedFrom = from?.zonedDateTime()
     val zonedTo = to.zonedDateTime()
-    return if (zonedFrom?.monthValue == zonedTo.monthValue) "${zonedFrom.dayOfMonth}-${zonedTo.format(simpleDayMonthFormatter)}"
-    else "${zonedFrom?.format(simpleDayMonthFormatter)}-${zonedTo.format(simpleDayMonthFormatter)}"
+    val formattedZonedTo = zonedTo.format(simpleDayMonthFormatter)
+    if (from == null) return formattedZonedTo
+
+    val zonedFrom = from.zonedDateTime()
+    return if (zonedFrom.monthValue == zonedTo.monthValue) "${zonedFrom.dayOfMonth}-$formattedZonedTo"
+    else "${zonedFrom.format(simpleDayMonthFormatter)}-$formattedZonedTo"
 }
 
 // manually code maps to ensure correct data always used
