@@ -32,6 +32,7 @@ class MainScreenTest {
     @Test
     fun testMainScreen() {
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("TAG")
+        Thread.sleep(5000)
         waitForNode("Bahrain Grand Prix").performTouchInput {
             swipeDown(300f, 1600f, 500L)
         }
