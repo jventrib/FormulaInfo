@@ -79,7 +79,7 @@ class MainScreenTest {
 
     private fun waitForNode(text: String, substring: Boolean = true): SemanticsNodeInteraction {
         composeTestRule.waitForIdle()
-        Thread.sleep(1000)
+        Thread.sleep(3000)
         composeTestRule.waitForIdle()
         return composeTestRule.onNodeWithText(text, substring = substring)
     }
@@ -89,7 +89,7 @@ class MainScreenTest {
         substring: Boolean = true
     ): SemanticsNodeInteraction {
         composeTestRule.waitForIdle()
-        Thread.sleep(1000)
+        Thread.sleep(3000)
         composeTestRule.waitForIdle()
         return composeTestRule.onNodeWithTag(tag)
     }
