@@ -2,8 +2,6 @@ package com.jventrib.formulainfo.ui
 
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
@@ -37,7 +35,7 @@ class MainScreenTest {
         waitForNode("Bahrain Grand Prix").performTouchInput {
             swipeDown(300f, 1600f, 500L)
         }
-        Thread.sleep(5000)
+        // Thread.sleep(5000)
         waitForNode("Bahrain Grand Prix").performClick()
 
         // In Bahrain 2022 result page
@@ -47,7 +45,7 @@ class MainScreenTest {
         // Back to schedule
         waitForNode("2022", false).performClick()
         composeTestRule.onNodeWithText("2021").assertExists().performClick()
-        Thread.sleep(2000)
+        // Thread.sleep(2000)
         // Select year 2021
         waitForNode("Bahrain Grand Prix").performClick()
         waitForNode("Bahrain Grand Prix").performTouchInput {
@@ -80,18 +78,19 @@ class MainScreenTest {
     }
 
     private fun waitForNode(text: String, substring: Boolean = true): SemanticsNodeInteraction {
-        composeTestRule.waitUntil(10000) {
-            composeTestRule.onAllNodesWithText(text, substring = substring)
-                .fetchSemanticsNodes(false).isNotEmpty()
-        }
-        return composeTestRule.onNodeWithText(text, substring = substring).assertExists()
+        composeTestRule.waitForIdle()
+        Thread.sleep(1000)
+        composeTestRule.waitForIdle()
+        return composeTestRule.onNodeWithText(text, substring = substring)
     }
 
-    private fun waitForNodeFromTag(tag: String, substring: Boolean = true): SemanticsNodeInteraction {
-        composeTestRule.waitUntil(10000) {
-            composeTestRule.onAllNodesWithTag(tag)
-                .fetchSemanticsNodes(false).isNotEmpty()
-        }
-        return composeTestRule.onNodeWithTag(tag).assertExists()
+    private fun waitForNodeFromTag(
+        tag: String,
+        substring: Boolean = true
+    ): SemanticsNodeInteraction {
+        composeTestRule.waitForIdle()
+        Thread.sleep(1000)
+        composeTestRule.waitForIdle()
+        return composeTestRule.onNodeWithTag(tag)
     }
 }
