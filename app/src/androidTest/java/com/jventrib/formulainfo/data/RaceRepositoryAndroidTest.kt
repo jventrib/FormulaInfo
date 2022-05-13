@@ -49,7 +49,6 @@ class RaceRepositoryAndroidTest {
     lateinit var raceRepository: RaceRepository
 
     @Test
-    @Ignore("Fix OOM")
     fun refresh() {
         runBlocking {
             raceRepository.refresh()
@@ -57,7 +56,6 @@ class RaceRepositoryAndroidTest {
     }
 
     @Test
-    @Ignore("Fix OOM")
     fun testRaceResultsWithoutFlagsAndDriverImages() {
         runBlocking {
             raceRepository.refresh()
@@ -87,7 +85,6 @@ class RaceRepositoryAndroidTest {
     }
 
     @Test
-    @Ignore("Fix OOM")
     fun testRaceResultsWithFlagsAndWithoutDriverImages() {
         runBlocking {
             raceRepository.refresh()
@@ -116,7 +113,6 @@ class RaceRepositoryAndroidTest {
     }
 
     @Test
-    @Ignore("Fix OOM")
     fun allSeasonsRacesWithResults() {
         runBlocking {
             val l = (2022 downTo 1950).asFlow().map {
