@@ -144,7 +144,7 @@ dependencies {
     implementation "com.google.android.material:material:$materialVersion"
 
     //Accompanist
-    implementation 'com.google.accompanist:accompanist-swiperefresh:0.24.7-alpha'
+    implementation 'com.google.accompanist:accompanist-swiperefresh:0.24.8-beta'
 
     //Preference
     implementation "androidx.datastore:datastore-preferences:1.0.0"
