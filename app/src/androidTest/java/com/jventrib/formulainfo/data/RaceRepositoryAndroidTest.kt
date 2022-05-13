@@ -76,7 +76,7 @@ class RaceRepositoryAndroidTest {
                     .onEach { println(it) }
                     .toList()
             println(racesEmits.size)
-            assertThat(racesEmits).hasSize(27)
+            assertThat(racesEmits).hasSize(26)
             val lastEmit = racesEmits.last()
             lastEmit.forEach {
                 assertThat(it.race.circuit.location.flag).isNotNull()
