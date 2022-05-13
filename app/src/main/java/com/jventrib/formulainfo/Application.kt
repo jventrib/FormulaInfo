@@ -3,7 +3,6 @@ package com.jventrib.formulainfo
 import android.app.Application
 import com.jventrib.formulainfo.notification.SessionNotificationManager
 import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.MainScope
@@ -11,6 +10,7 @@ import kotlinx.coroutines.launch
 import logcat.AndroidLogcatLogger
 import logcat.LogPriority
 import logcat.logcat
+import javax.inject.Inject
 
 // import leakcanary.LeakCanary
 

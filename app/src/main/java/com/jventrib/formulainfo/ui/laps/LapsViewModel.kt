@@ -7,7 +7,6 @@ import com.jventrib.formulainfo.ui.common.composable.toSharedFlow
 import com.jventrib.formulainfo.ui.race.RaceViewModel
 import com.jventrib.formulainfo.utils.currentYear
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -15,6 +14,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import javax.inject.Inject
 
 @HiltViewModel
 class LapsViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {

@@ -37,7 +37,6 @@ import com.jventrib.formulainfo.utils.concat
 import com.jventrib.formulainfo.utils.currentYear
 import com.jventrib.formulainfo.utils.now
 import com.jventrib.formulainfo.utils.testNow
-import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.asFlow
@@ -62,6 +61,7 @@ import kotlinx.coroutines.flow.transformWhile
 import logcat.LogPriority
 import logcat.asLog
 import logcat.logcat
+import java.time.temporal.ChronoUnit
 
 class RaceRepository(
     private val roomDb: AppRoomDatabase,

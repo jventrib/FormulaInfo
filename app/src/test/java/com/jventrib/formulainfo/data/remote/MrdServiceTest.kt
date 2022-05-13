@@ -2,7 +2,6 @@ package com.jventrib.formulainfo.data.remote
 
 import com.google.common.truth.Truth.assertThat
 import com.jventrib.formulainfo.di.RemoteModule
-import java.net.HttpURLConnection
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -10,6 +9,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
+import java.net.HttpURLConnection
 
 class MrdServiceTest {
     private var mockWebServer = MockWebServer()
