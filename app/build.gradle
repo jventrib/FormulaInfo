@@ -173,7 +173,3 @@ dependencies {
 
 
 }
-
-task wrapper(type: Wrapper){
-    gradleVersion = '7.2'
-}
