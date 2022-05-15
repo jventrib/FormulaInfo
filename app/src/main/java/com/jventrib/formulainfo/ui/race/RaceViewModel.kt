@@ -9,7 +9,6 @@ import com.jventrib.formulainfo.utils.currentYear
 import com.jventrib.formulainfo.utils.mutableSharedFlow
 import com.jventrib.formulainfo.utils.now
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.flattenConcat
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import logcat.logcat
+import javax.inject.Inject
 
 @HiltViewModel
 class RaceViewModel @Inject constructor(private val repository: RaceRepository) : ViewModel() {

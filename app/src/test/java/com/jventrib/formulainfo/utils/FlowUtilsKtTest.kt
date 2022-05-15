@@ -1,12 +1,12 @@
 package com.jventrib.formulainfo.utils
 
 import com.google.common.truth.Truth
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import kotlin.time.Duration.Companion.seconds
 
 class FlowUtilsKtTest {
 

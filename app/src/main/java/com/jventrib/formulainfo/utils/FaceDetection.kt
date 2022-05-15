@@ -7,11 +7,11 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
+import kotlinx.coroutines.suspendCancellableCoroutine
+import logcat.logcat
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.math.hypot
-import kotlinx.coroutines.suspendCancellableCoroutine
-import logcat.logcat
 
 object FaceDetection {
 

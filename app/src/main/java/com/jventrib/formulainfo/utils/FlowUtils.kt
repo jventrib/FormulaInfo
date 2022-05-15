@@ -1,9 +1,5 @@
 package com.jventrib.formulainfo.utils
 
-import java.time.Duration.between
-import java.time.Instant
-import kotlin.time.Duration
-import kotlin.time.toKotlinDuration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -12,6 +8,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import logcat.LogPriority
 import logcat.logcat
+import java.time.Duration.between
+import java.time.Instant
+import kotlin.time.Duration
+import kotlin.time.toKotlinDuration
 
 fun <T> Flow<T>.concat(other: Flow<T>) = this.onCompletion { if (it == null) this.emitAll(other) }
 

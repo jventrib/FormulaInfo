@@ -1,11 +1,11 @@
 package com.jventrib.formulainfo.util
 
+import logcat.LogPriority
+import logcat.LogcatLogger
 import java.util.logging.ConsoleHandler
 import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.logging.SimpleFormatter
-import logcat.LogPriority
-import logcat.LogcatLogger
 
 object JULLogger : LogcatLogger {
     private var handler = ConsoleHandler().also {
