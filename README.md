@@ -1,3 +1,5 @@
+[![Build](https://github.com/jventrib/FormulaInfo/actions/workflows/build.yml/badge.svg)](https://github.com/jventrib/FormulaInfo/actions/workflows/build.yml)
+
 # Formula Info
 ![Formula Info](https://play-lh.googleusercontent.com/_uCswjBOWgxz8h_VExW2biO0IHNrQZrIf4dftGtEPYpFy49sxWYU-gMjRp5hftEPMp0=w720-h310-rw)
 ![Formula Info](https://play-lh.googleusercontent.com/wzCfTrWAJNzuTHj32F712KNHwknyFkOiMN5NReeJwG4ga5fok8fYbO8AEWwgHzGM9pau=w720-h310-rw)
