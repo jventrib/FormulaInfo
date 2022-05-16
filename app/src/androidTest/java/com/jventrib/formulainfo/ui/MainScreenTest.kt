@@ -15,6 +15,7 @@ import androidx.compose.ui.test.swipeUp
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jventrib.formulainfo.MainActivity
+import com.karumi.shot.ScreenshotTest
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
@@ -23,7 +24,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
-class MainScreenTest {
+class MainScreenTest : ScreenshotTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
@@ -38,6 +39,7 @@ class MainScreenTest {
             swipeDown(300f, 1600f, 500L)
         }
         Thread.sleep(5000)
+        compareScreenshot(composeTestRule, "schedule")
         waitForNode("Bahrain Grand Prix").performClick()
 
         // In Bahrain 2022 result page
@@ -55,6 +57,8 @@ class MainScreenTest {
         }
         // In Bahrain 2021 result page
         waitForNode("2:Max Verstappen").performClick()
+        compareScreenshot(composeTestRule, "laps")
+
         // In verstappen Bahrain 2021 result page
         Espresso.pressBack()
 
@@ -62,9 +66,12 @@ class MainScreenTest {
         waitForNode("Bahrain Grand Prix")
         composeTestRule.onNodeWithTag("standing").assertExists().performClick()
         waitForNode("25 pts")
+        compareScreenshot(composeTestRule, "race standing")
         Espresso.pressBack()
 
         waitForNodeFromTag("resultChart").performClick()
+        compareScreenshot(composeTestRule, "leader interval")
+
         waitForNode("Leader Interval").performClick()
         composeTestRule.onNodeWithText("Position by lap").assertExists().performClick()
         composeTestRule.onNodeWithText("Position by lap").assertExists().performClick()
@@ -75,6 +82,7 @@ class MainScreenTest {
         // In 2021 schedule
         waitForNodeFromTag("standing").performClick()
         waitForNodeFromTag("standingChart").performClick()
+        compareScreenshot(composeTestRule, "standingchart")
         waitForNodeFromTag("standing").performClick()
         waitForNode("395,5")
     }
