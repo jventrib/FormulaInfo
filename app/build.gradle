@@ -87,6 +87,7 @@ android {
     }
     shot {
         applicationId = "com.jventrib.formulainfo"
+        tolerance =  5
     }
 }
 
