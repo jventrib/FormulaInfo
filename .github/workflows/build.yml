@@ -69,8 +69,7 @@ jobs:
       - name: Setup java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          java-version: '11'
 
       - name: Gradle cache
         uses: actions/cache@v3
