@@ -8,10 +8,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
-import androidx.compose.ui.test.swipeDown
-import androidx.compose.ui.test.swipeUp
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jventrib.formulainfo.MainActivity
@@ -35,9 +32,9 @@ class MainScreenTest : ScreenshotTest {
     @Test
     fun testMainScreen() {
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("TAG")
-        waitForNode("Bahrain Grand Prix").performTouchInput {
-            swipeDown(300f, 1600f, 500L)
-        }
+        // waitForNode("Bahrain Grand Prix").performTouchInput {
+        //     swipeDown(300f, 1600f, 500L)
+        // }
         waitForNode("Bahrain Grand Prix").performClick()
 
         // In Bahrain 2022 result page
@@ -52,9 +49,9 @@ class MainScreenTest : ScreenshotTest {
 
         // Select year 2021
         waitForNode("Bahrain Grand Prix").performClick()
-        waitForNode("Bahrain Grand Prix").performTouchInput {
-            swipeUp(1600f, 900f, 1500L)
-        }
+        // waitForNode("Bahrain Grand Prix").performTouchInput {
+        //     swipeUp(1600f, 900f, 1500L)
+        // }
         // In Bahrain 2021 result page
         waitForNode("2:Max Verstappen").performClick()
         screenshot("laps")
