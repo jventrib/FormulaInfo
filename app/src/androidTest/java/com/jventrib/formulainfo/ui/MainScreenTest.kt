@@ -38,8 +38,6 @@ class MainScreenTest : ScreenshotTest {
         waitForNode("Bahrain Grand Prix").performTouchInput {
             swipeDown(300f, 1600f, 500L)
         }
-        Thread.sleep(5000)
-        compareScreenshot(composeTestRule, "schedule")
         waitForNode("Bahrain Grand Prix").performClick()
 
         // In Bahrain 2022 result page
@@ -49,7 +47,9 @@ class MainScreenTest : ScreenshotTest {
         // Back to schedule
         waitForNode("2022", false).performClick()
         composeTestRule.onNodeWithText("2021").assertExists().performClick()
-        Thread.sleep(2000)
+        val name = "schedule"
+        screenshot(name)
+
         // Select year 2021
         waitForNode("Bahrain Grand Prix").performClick()
         waitForNode("Bahrain Grand Prix").performTouchInput {
@@ -57,7 +57,7 @@ class MainScreenTest : ScreenshotTest {
         }
         // In Bahrain 2021 result page
         waitForNode("2:Max Verstappen").performClick()
-        compareScreenshot(composeTestRule, "laps")
+        screenshot("laps")
 
         // In verstappen Bahrain 2021 result page
         Espresso.pressBack()
@@ -66,11 +66,11 @@ class MainScreenTest : ScreenshotTest {
         waitForNode("Bahrain Grand Prix")
         composeTestRule.onNodeWithTag("standing").assertExists().performClick()
         waitForNode("25 pts")
-        compareScreenshot(composeTestRule, "race standing")
+        screenshot("race standing")
         Espresso.pressBack()
 
         waitForNodeFromTag("resultChart").performClick()
-        compareScreenshot(composeTestRule, "leader interval")
+        screenshot("leader interval")
 
         waitForNode("Leader Interval").performClick()
         composeTestRule.onNodeWithText("Position by lap").assertExists().performClick()
@@ -82,9 +82,13 @@ class MainScreenTest : ScreenshotTest {
         // In 2021 schedule
         waitForNodeFromTag("standing").performClick()
         waitForNodeFromTag("standingChart").performClick()
-        compareScreenshot(composeTestRule, "standingchart")
+        screenshot("standingchart")
         waitForNodeFromTag("standing").performClick()
         waitForNode("395,5")
+    }
+
+    private fun screenshot(name: String) {
+        compareScreenshot(composeTestRule, name)
     }
 
     private fun waitForNode(text: String, substring: Boolean = true): SemanticsNodeInteraction {
