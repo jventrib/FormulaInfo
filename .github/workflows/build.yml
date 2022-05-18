@@ -81,6 +81,11 @@ jobs:
             ~/.gradle/caches/build-cache-*
           key: gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
 
+      - name: Set Timezone
+        uses: szenius/set-timezone@v1.0
+        with:
+          timezoneMacos: "Europe/Paris"
+
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -90,9 +95,9 @@ jobs:
           arch: x86_64
           profile: pixel_4
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -timezone Europe/Paris
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew executeScreenshotTests --stacktrace
+          script: ./gradlew executeScreenshotTests
 
       - name: Upload test reports
         if: always()
