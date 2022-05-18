@@ -2,10 +2,10 @@ package com.jventrib.formulainfo.di
 
 import android.app.Application
 import android.content.Context
-import androidx.test.runner.AndroidJUnitRunner
+import com.karumi.shot.ShotTestRunner
 import dagger.hilt.android.testing.HiltTestApplication
 
-class HiltTestRunner : AndroidJUnitRunner() {
+class HiltTestRunner : ShotTestRunner() {
     override fun newApplication(
         cl: ClassLoader,
         appName: String,
