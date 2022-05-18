@@ -90,7 +90,7 @@ jobs:
           arch: x86_64
           profile: pixel_4
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none -timezone Europe/Paris
           disable-animations: true
           script: ./gradlew executeScreenshotTests --stacktrace
 
