@@ -10,42 +10,16 @@ import java.time.temporal.ChronoField
 
 val customDateTimeFormatter: DateTimeFormatter?
     get() {
-        // manually code maps to ensure correct data always used
-        // (locale data can be changed by application code)
-        val dow: MutableMap<Long, String> = HashMap()
-        dow[1L] = "Mon"
-        dow[2L] = "Tue"
-        dow[3L] = "Wed"
-        dow[4L] = "Thu"
-        dow[5L] = "Fri"
-        dow[6L] = "Sat"
-        dow[7L] = "Sun"
-        val moy: MutableMap<Long, String> = HashMap()
-        moy[1L] = "Jan"
-        moy[2L] = "Feb"
-        moy[3L] = "Mar"
-        moy[4L] = "Apr"
-        moy[5L] = "May"
-        moy[6L] = "Jun"
-        moy[7L] = "Jul"
-        moy[8L] = "Aug"
-        moy[9L] = "Sep"
-        moy[10L] = "Oct"
-        moy[11L] = "Nov"
-        moy[12L] = "Dec"
-
         return DateTimeFormatterBuilder()
             .parseCaseInsensitive()
             .parseLenient()
             .optionalStart()
-            .appendText(ChronoField.DAY_OF_WEEK, dow)
+            .appendText(ChronoField.DAY_OF_WEEK, getDayOfMonth())
             .appendLiteral(", ")
             .optionalEnd()
             .appendValue(ChronoField.DAY_OF_MONTH, 1, 2, SignStyle.NOT_NEGATIVE)
             .appendLiteral(' ')
-            .appendText(ChronoField.MONTH_OF_YEAR, moy)
-            .appendLiteral(' ')
-            .appendValue(ChronoField.YEAR, 4) // 2 digit year not handled
+            .appendText(ChronoField.MONTH_OF_YEAR, getMonthOfYear())
             .appendLiteral(' ')
             .appendValue(ChronoField.HOUR_OF_DAY, 2)
             .appendLiteral(':')
@@ -54,8 +28,16 @@ val customDateTimeFormatter: DateTimeFormatter?
             .toFormatter()
     }
 
-fun Instant.formatDateTime(): String =
-    ZonedDateTime.ofInstant(this, ZoneId.systemDefault()).format(customDateTimeFormatter)
+val simpleDayMonthFormatter: DateTimeFormatter?
+    get() {
+        return DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .parseLenient()
+            .appendValue(ChronoField.DAY_OF_MONTH, 1, 2, SignStyle.NOT_NEGATIVE)
+            .appendLiteral(' ')
+            .appendText(ChronoField.MONTH_OF_YEAR, getMonthOfYear())
+            .toFormatter()
+    }
 
 val customTimeHourMinFormatter: DateTimeFormatter?
     get() {
@@ -68,5 +50,52 @@ val customTimeHourMinFormatter: DateTimeFormatter?
             .toFormatter()
     }
 
+fun Instant.zonedDateTime(): ZonedDateTime =
+    ZonedDateTime.ofInstant(this, ZoneId.systemDefault())
+
+fun Instant.formatDateTime(): String =
+    this.zonedDateTime().format(customDateTimeFormatter)
+
 fun Instant.formatTime(): String =
-    ZonedDateTime.ofInstant(this, ZoneId.systemDefault()).format(customTimeHourMinFormatter)
+    this.zonedDateTime().format(customTimeHourMinFormatter)
+
+fun formatDateRange(from: Instant?, to: Instant): String {
+    val zonedTo = to.zonedDateTime()
+    val formattedZonedTo = zonedTo.format(simpleDayMonthFormatter)
+    if (from == null) return formattedZonedTo
+
+    val zonedFrom = from.zonedDateTime()
+    return if (zonedFrom.monthValue == zonedTo.monthValue) "${zonedFrom.dayOfMonth}-$formattedZonedTo"
+    else "${zonedFrom.format(simpleDayMonthFormatter)}-$formattedZonedTo"
+}
+
+// manually code maps to ensure correct data always used
+// (locale data can be changed by application code)
+fun getDayOfMonth(): Map<Long, String> {
+    val dow: MutableMap<Long, String> = HashMap()
+    dow[1L] = "Mon"
+    dow[2L] = "Tue"
+    dow[3L] = "Wed"
+    dow[4L] = "Thu"
+    dow[5L] = "Fri"
+    dow[6L] = "Sat"
+    dow[7L] = "Sun"
+    return dow
+}
+
+fun getMonthOfYear(): Map<Long, String> {
+    val moy: MutableMap<Long, String> = HashMap()
+    moy[1L] = "Jan"
+    moy[2L] = "Feb"
+    moy[3L] = "Mar"
+    moy[4L] = "Apr"
+    moy[5L] = "May"
+    moy[6L] = "Jun"
+    moy[7L] = "Jul"
+    moy[8L] = "Aug"
+    moy[9L] = "Sep"
+    moy[10L] = "Oct"
+    moy[11L] = "Nov"
+    moy[12L] = "Dec"
+    return moy
+}
