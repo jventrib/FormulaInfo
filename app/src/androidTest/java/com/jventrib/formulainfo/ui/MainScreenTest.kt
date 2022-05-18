@@ -8,13 +8,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
-import androidx.compose.ui.test.swipeDown
-import androidx.compose.ui.test.swipeUp
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.jventrib.formulainfo.MainActivity
+import com.karumi.shot.ScreenshotTest
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
@@ -23,7 +21,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
-class MainScreenTest {
+class MainScreenTest : ScreenshotTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
@@ -34,10 +32,9 @@ class MainScreenTest {
     @Test
     fun testMainScreen() {
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("TAG")
-        waitForNode("Bahrain Grand Prix").performTouchInput {
-            swipeDown(300f, 1600f, 500L)
-        }
-        Thread.sleep(5000)
+        // waitForNode("Bahrain Grand Prix").performTouchInput {
+        //     swipeDown(300f, 1600f, 500L)
+        // }
         waitForNode("Bahrain Grand Prix").performClick()
 
         // In Bahrain 2022 result page
@@ -47,14 +44,18 @@ class MainScreenTest {
         // Back to schedule
         waitForNode("2022", false).performClick()
         composeTestRule.onNodeWithText("2021").assertExists().performClick()
-        Thread.sleep(2000)
+        val name = "schedule"
+        screenshot(name)
+
         // Select year 2021
         waitForNode("Bahrain Grand Prix").performClick()
-        waitForNode("Bahrain Grand Prix").performTouchInput {
-            swipeUp(1600f, 900f, 1500L)
-        }
+        // waitForNode("Bahrain Grand Prix").performTouchInput {
+        //     swipeUp(1600f, 900f, 1500L)
+        // }
         // In Bahrain 2021 result page
         waitForNode("2:Max Verstappen").performClick()
+        screenshot("laps")
+
         // In verstappen Bahrain 2021 result page
         Espresso.pressBack()
 
@@ -62,9 +63,12 @@ class MainScreenTest {
         waitForNode("Bahrain Grand Prix")
         composeTestRule.onNodeWithTag("standing").assertExists().performClick()
         waitForNode("25 pts")
+        screenshot("race standing")
         Espresso.pressBack()
 
         waitForNodeFromTag("resultChart").performClick()
+        screenshot("leader interval")
+
         waitForNode("Leader Interval").performClick()
         composeTestRule.onNodeWithText("Position by lap").assertExists().performClick()
         composeTestRule.onNodeWithText("Position by lap").assertExists().performClick()
@@ -75,8 +79,13 @@ class MainScreenTest {
         // In 2021 schedule
         waitForNodeFromTag("standing").performClick()
         waitForNodeFromTag("standingChart").performClick()
+        screenshot("standingchart")
         waitForNodeFromTag("standing").performClick()
         waitForNode("395,5")
+    }
+
+    private fun screenshot(name: String) {
+        compareScreenshot(composeTestRule, name)
     }
 
     private fun waitForNode(text: String, substring: Boolean = true): SemanticsNodeInteraction {

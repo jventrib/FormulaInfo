@@ -54,7 +54,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
             entry.key.constructor.color,
             entry.key.driver.code ?: entry.key.driver.driverId.take(3)
         )
-    }
+    }.sortedBy { it.seriePoints.first().element?.position }
 
     Chart(
         series = series,

@@ -1,4 +1,4 @@
-package com.jventrib.formulainfo.ui.schedule
+package com.jventrib.formulainfo.ui.race
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,7 +40,8 @@ import com.jventrib.formulainfo.ui.common.formatDateRange
 import com.jventrib.formulainfo.ui.common.formatDateTime
 import com.jventrib.formulainfo.ui.common.formatTime
 import com.jventrib.formulainfo.ui.common.raceCountDownFormat
-import com.jventrib.formulainfo.ui.race.getResultSample
+import com.jventrib.formulainfo.ui.schedule.Podium
+import com.jventrib.formulainfo.ui.schedule.getRaceSample
 import com.jventrib.formulainfo.utils.countDownFlow
 import com.jventrib.formulainfo.utils.now
 import java.time.Instant

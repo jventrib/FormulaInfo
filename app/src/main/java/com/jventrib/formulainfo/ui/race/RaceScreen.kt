@@ -52,8 +52,6 @@ import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.ui.common.composable.Image
 import com.jventrib.formulainfo.ui.common.composable.collectAsStateWithLifecycle
-import com.jventrib.formulainfo.ui.schedule.RaceInfo
-import com.jventrib.formulainfo.ui.schedule.RaceInfoMode
 import com.jventrib.formulainfo.ui.schedule.getRaceSample
 import com.jventrib.formulainfo.ui.theme.FormulaInfoTheme
 import com.jventrib.formulainfo.utils.now
