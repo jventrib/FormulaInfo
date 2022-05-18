@@ -24,6 +24,7 @@ F1Calendar API is serving the sessions information for the ongoing season
 # Screenshot tests #
 
 This project use  [Shot](https://github.com/pedrovgs/Shot) to do screenshot tests.
+
 Reference screenshots are generated using emulator with Pixel4 device, API-31 and swiftshader_indirect gpu mode.
 
 The AVD can be created with:
