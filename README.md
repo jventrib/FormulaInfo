@@ -37,5 +37,5 @@ emulator -avd test -no-snapshot-save -no-window -gpu swiftshader_indirect -noaud
 ```
 
 To use the emulator from the AVD manager, the device must be configured with:
-```hw.gpu.mode = swiftshader_indirect``` in config.ini
+```hw.gpu.mode = swiftshader_indirect``` in AVD [config.ini](https://github.com/jventrib/FormulaInfo/blob/2b320a6594290289bf742c0b71a50812d2ec97bc/publish/config.ini#L66)
 
