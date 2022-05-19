@@ -102,57 +102,51 @@ private fun ScheduleScreen(
             listState.animateScrollToItem(index = raceList.indexOfFirst { it.race.nextRace })
             alreadyScrolled = true
             Toast.makeText(
-                context, """Auto scrolled to next race
+                context,
+                """Auto scrolled to next race
                 |Scroll up  for previous races
-            """.trimMargin(), Toast.LENGTH_SHORT
+                """.trimMargin(),
+                Toast.LENGTH_SHORT
             ).show()
         }
     }
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Formula Info",
-                        modifier = Modifier.clickable(onClick = onAboutClicked)
-                    )
-                },
-                actions = {
-                    if (raceList.any { it.results.isNotEmpty() }) {
-                        IconButton(
-                            onClick = onStandingClicked,
-                            modifier = Modifier.semantics { testTag = "standing" }
-                        ) {
-                            Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
-                        }
-                        IconButton(
-                            onClick = onStandingChartClicked,
-                            modifier = Modifier.semantics { testTag = "standingChart" }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.MultilineChart,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                    IconButton(
-                        onClick = onPreferenceClicked,
-                        modifier = Modifier.semantics { testTag = "preference" }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = null
-                        )
-                    }
-                    SeasonMenu(
-                        seasonList = seasonList,
-                        selectedSeason = selectedSeason,
-                        onSeasonSelect = onSeasonSelected
+    Scaffold(topBar = {
+        TopAppBar(title = {
+            Text(
+                "Formula Info", modifier = Modifier.clickable(onClick = onAboutClicked)
+            )
+        }, actions = {
+            if (raceList.any { it.results.isNotEmpty() }) {
+                IconButton(
+                    onClick = onStandingClicked,
+                    modifier = Modifier.semantics { testTag = "standing" }
+                ) {
+                    Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
+                }
+                IconButton(
+                    onClick = onStandingChartClicked,
+                    modifier = Modifier.semantics { testTag = "standingChart" }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.MultilineChart, contentDescription = null
                     )
                 }
+            }
+            IconButton(
+                onClick = onPreferenceClicked,
+                modifier = Modifier.semantics { testTag = "preference" }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Settings, contentDescription = null
+                )
+            }
+            SeasonMenu(
+                seasonList = seasonList,
+                selectedSeason = selectedSeason,
+                onSeasonSelect = onSeasonSelected
             )
-        }
-    ) {
+        })
+    }) {
         Box(modifier = Modifier.padding(it)) {
             RaceList(raceList, onRaceClicked, listState, onRefreshClicked)
         }
