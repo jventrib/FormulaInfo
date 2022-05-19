@@ -80,7 +80,7 @@ class MainScreenTest : ScreenshotTest {
         // In 2021 schedule
         waitForNodeFromTag("standing").performClick()
         waitForNodeFromTag("standingChart").performClick()
-        waitUI()
+        waitUI(5000)
         screenshot("standingchart")
         waitForNodeFromTag("standing").performClick()
         waitForNode("395,5")
