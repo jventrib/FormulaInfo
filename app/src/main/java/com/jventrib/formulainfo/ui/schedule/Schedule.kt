@@ -116,36 +116,36 @@ private fun ScheduleScreen(
                 "Formula Info", modifier = Modifier.clickable(onClick = onAboutClicked)
             )
         }, actions = {
-            if (raceList.any { it.results.isNotEmpty() }) {
-                IconButton(
-                    onClick = onStandingClicked,
-                    modifier = Modifier.semantics { testTag = "standing" }
-                ) {
-                    Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
+                if (raceList.any { it.results.isNotEmpty() }) {
+                    IconButton(
+                        onClick = onStandingClicked,
+                        modifier = Modifier.semantics { testTag = "standing" }
+                    ) {
+                        Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
+                    }
+                    IconButton(
+                        onClick = onStandingChartClicked,
+                        modifier = Modifier.semantics { testTag = "standingChart" }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.MultilineChart, contentDescription = null
+                        )
+                    }
                 }
                 IconButton(
-                    onClick = onStandingChartClicked,
-                    modifier = Modifier.semantics { testTag = "standingChart" }
+                    onClick = onPreferenceClicked,
+                    modifier = Modifier.semantics { testTag = "preference" }
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.MultilineChart, contentDescription = null
+                        imageVector = Icons.Filled.Settings, contentDescription = null
                     )
                 }
-            }
-            IconButton(
-                onClick = onPreferenceClicked,
-                modifier = Modifier.semantics { testTag = "preference" }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Settings, contentDescription = null
+                SeasonMenu(
+                    seasonList = seasonList,
+                    selectedSeason = selectedSeason,
+                    onSeasonSelect = onSeasonSelected
                 )
-            }
-            SeasonMenu(
-                seasonList = seasonList,
-                selectedSeason = selectedSeason,
-                onSeasonSelect = onSeasonSelected
-            )
-        })
+            })
     }) {
         Box(modifier = Modifier.padding(it)) {
             RaceList(raceList, onRaceClicked, listState, onRefreshClicked)
