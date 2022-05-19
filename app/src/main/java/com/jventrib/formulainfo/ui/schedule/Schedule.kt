@@ -40,6 +40,7 @@ import com.jventrib.formulainfo.ui.race.RaceInfo
 import com.jventrib.formulainfo.ui.race.RaceInfoMode
 import com.jventrib.formulainfo.utils.currentYear
 import kotlinx.coroutines.delay
+import logcat.logcat
 
 fun NavGraphBuilder.schedule(navController: NavHostController) {
     composable("races") {
@@ -94,12 +95,15 @@ private fun ScheduleScreen(
     val listState = rememberLazyListState()
     var alreadyScrolled by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
-    LaunchedEffect(alreadyScrolled) {
+    LaunchedEffect(raceList, alreadyScrolled) {
+        logcat { "autoscroll: " + (raceList.any { it.race.nextRace }) }
         if (raceList.any { it.race.nextRace } && !alreadyScrolled) {
-            delay(300)
+            delay(500)
             listState.animateScrollToItem(index = raceList.indexOfFirst { it.race.nextRace })
             alreadyScrolled = true
-            Toast.makeText(context, "Auto scrolled to next race", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, """Auto scrolled to next race
+                |Scroll up  for previous races
+            """.trimMargin(), Toast.LENGTH_SHORT).show()
         }
     }
     Scaffold(
