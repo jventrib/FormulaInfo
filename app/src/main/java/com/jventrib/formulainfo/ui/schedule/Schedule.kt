@@ -101,9 +101,11 @@ private fun ScheduleScreen(
             delay(500)
             listState.animateScrollToItem(index = raceList.indexOfFirst { it.race.nextRace })
             alreadyScrolled = true
-            Toast.makeText(context, """Auto scrolled to next race
+            Toast.makeText(
+                context, """Auto scrolled to next race
                 |Scroll up  for previous races
-            """.trimMargin(), Toast.LENGTH_SHORT).show()
+            """.trimMargin(), Toast.LENGTH_SHORT
+            ).show()
         }
     }
     Scaffold(
@@ -169,7 +171,7 @@ fun RaceList(
         onRefresh = onRefresh,
         modifier = Modifier.semantics { testTag = "raceListSwipe" }
     ) {
-        LazyColumn(state = listState) {
+        LazyColumn(state = listState, modifier = Modifier.semantics { testTag = "raceList" }) {
             items(raceList) {
                 RaceInfo(
                     race = it.race,

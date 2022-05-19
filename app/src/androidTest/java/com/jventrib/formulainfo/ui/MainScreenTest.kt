@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.ui
 
+import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -8,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -32,9 +34,8 @@ class MainScreenTest : ScreenshotTest {
     @Test
     fun testMainScreen() {
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("TAG")
-        // waitForNode("Bahrain Grand Prix").performTouchInput {
-        //     swipeDown(300f, 1600f, 500L)
-        // }
+        waitUI(10000)
+        waitForNodeFromTag("raceList").performScrollToIndex(0)
         waitForNode("Bahrain Grand Prix").performClick()
 
         // In Bahrain 2022 result page
@@ -79,9 +80,17 @@ class MainScreenTest : ScreenshotTest {
         // In 2021 schedule
         waitForNodeFromTag("standing").performClick()
         waitForNodeFromTag("standingChart").performClick()
+        waitUI()
         screenshot("standingchart")
         waitForNodeFromTag("standing").performClick()
         waitForNode("395,5")
+    }
+
+    private fun waitUI(timeoutMillis: Long = 1000) {
+        try {
+            composeTestRule.waitUntil(timeoutMillis) { false }
+        } catch (_: ComposeTimeoutException) {
+        }
     }
 
     private fun screenshot(name: String) {
@@ -96,7 +105,10 @@ class MainScreenTest : ScreenshotTest {
         return composeTestRule.onNodeWithText(text, substring = substring).assertExists()
     }
 
-    private fun waitForNodeFromTag(tag: String, substring: Boolean = true): SemanticsNodeInteraction {
+    private fun waitForNodeFromTag(
+        tag: String,
+        substring: Boolean = true
+    ): SemanticsNodeInteraction {
         composeTestRule.waitUntil(10000) {
             composeTestRule.onAllNodesWithTag(tag)
                 .fetchSemanticsNodes(false).isNotEmpty()
