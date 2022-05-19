@@ -40,6 +40,7 @@ import com.jventrib.formulainfo.ui.race.RaceInfo
 import com.jventrib.formulainfo.ui.race.RaceInfoMode
 import com.jventrib.formulainfo.utils.currentYear
 import kotlinx.coroutines.delay
+import logcat.logcat
 
 fun NavGraphBuilder.schedule(navController: NavHostController) {
     composable("races") {
@@ -94,59 +95,58 @@ private fun ScheduleScreen(
     val listState = rememberLazyListState()
     var alreadyScrolled by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
-    LaunchedEffect(alreadyScrolled) {
+    LaunchedEffect(raceList, alreadyScrolled) {
+        logcat { "autoscroll: " + (raceList.any { it.race.nextRace }) }
         if (raceList.any { it.race.nextRace } && !alreadyScrolled) {
-            delay(300)
+            delay(500)
             listState.animateScrollToItem(index = raceList.indexOfFirst { it.race.nextRace })
             alreadyScrolled = true
-            Toast.makeText(context, "Auto scrolled to next race", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                """Auto scrolled to next race
+                |Scroll up  for previous races
+                """.trimMargin(),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Formula Info",
-                        modifier = Modifier.clickable(onClick = onAboutClicked)
-                    )
-                },
-                actions = {
-                    if (raceList.any { it.results.isNotEmpty() }) {
-                        IconButton(
-                            onClick = onStandingClicked,
-                            modifier = Modifier.semantics { testTag = "standing" }
-                        ) {
-                            Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
-                        }
-                        IconButton(
-                            onClick = onStandingChartClicked,
-                            modifier = Modifier.semantics { testTag = "standingChart" }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.MultilineChart,
-                                contentDescription = null
-                            )
-                        }
+    Scaffold(topBar = {
+        TopAppBar(title = {
+            Text(
+                "Formula Info", modifier = Modifier.clickable(onClick = onAboutClicked)
+            )
+        }, actions = {
+                if (raceList.any { it.results.isNotEmpty() }) {
+                    IconButton(
+                        onClick = onStandingClicked,
+                        modifier = Modifier.semantics { testTag = "standing" }
+                    ) {
+                        Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
                     }
                     IconButton(
-                        onClick = onPreferenceClicked,
-                        modifier = Modifier.semantics { testTag = "preference" }
+                        onClick = onStandingChartClicked,
+                        modifier = Modifier.semantics { testTag = "standingChart" }
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = null
+                            imageVector = Icons.Filled.MultilineChart, contentDescription = null
                         )
                     }
-                    SeasonMenu(
-                        seasonList = seasonList,
-                        selectedSeason = selectedSeason,
-                        onSeasonSelect = onSeasonSelected
+                }
+                IconButton(
+                    onClick = onPreferenceClicked,
+                    modifier = Modifier.semantics { testTag = "preference" }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings, contentDescription = null
                     )
                 }
-            )
-        }
-    ) {
+                SeasonMenu(
+                    seasonList = seasonList,
+                    selectedSeason = selectedSeason,
+                    onSeasonSelect = onSeasonSelected
+                )
+            })
+    }) {
         Box(modifier = Modifier.padding(it)) {
             RaceList(raceList, onRaceClicked, listState, onRefreshClicked)
         }
@@ -165,7 +165,7 @@ fun RaceList(
         onRefresh = onRefresh,
         modifier = Modifier.semantics { testTag = "raceListSwipe" }
     ) {
-        LazyColumn(state = listState) {
+        LazyColumn(state = listState, modifier = Modifier.semantics { testTag = "raceList" }) {
             items(raceList) {
                 RaceInfo(
                     race = it.race,
