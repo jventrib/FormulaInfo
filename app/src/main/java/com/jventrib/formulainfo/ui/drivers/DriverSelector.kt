@@ -67,6 +67,7 @@ fun DriverSelector(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
+            .padding(top = 56.dp)
             .width(IntrinsicSize.Max)
             .verticalScroll(scrollState)
     ) {
@@ -174,7 +175,7 @@ fun customShape() = object : Shape {
         return Outline.Rectangle(
             Rect(
                 0f,
-                0f,
+                with(density) { 56.dp.toPx() },
                 with(density) { 100.dp.toPx() } /* width */,
                 size.height /* height */
             )

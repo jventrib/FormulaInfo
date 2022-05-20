@@ -1,20 +1,36 @@
 package com.jventrib.formulainfo.ui.race
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateMap
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -26,12 +42,15 @@ import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.composable.collectAsStateWithLifecycle
+import com.jventrib.formulainfo.ui.common.toGP
 import com.jventrib.formulainfo.ui.drivers.DriverSelector
 import com.jventrib.formulainfo.ui.drivers.customShape
 import com.jventrib.formulainfo.ui.drivers.driverSelectionSaver
 import com.jventrib.formulainfo.ui.race.chart.LapPositionChart
 import com.jventrib.formulainfo.ui.race.chart.LapTimeChart
 import com.jventrib.formulainfo.ui.race.chart.LeaderIntervalChart
+import com.jventrib.formulainfo.ui.schedule.getRaceSample
+import kotlinx.coroutines.launch
 
 fun NavGraphBuilder.lapChart() {
     composable(
@@ -63,6 +82,7 @@ fun NavGraphBuilder.lapChart() {
 @Composable
 private fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
     val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
     var selectedChart by rememberSaveable { mutableStateOf(Charts.values().first()) }
     val selectedDrivers = rememberSaveable(lapsByResult, saver = driverSelectionSaver) {
         lapsByResult.keys.map { it.driver.driverId to true }.toMutableStateMap()
@@ -71,14 +91,61 @@ private fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(race?.raceInfo?.let { "${it.raceName} ${it.season}" } ?: "Formula Info")
-                },
-                actions = {
-                    LapChartMenu(selectedChart.label) { selectedChart = it }
+            TopAppBar() {
+                Row(
+                    Modifier
+                        .fillMaxHeight()
+                        .width(28.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CompositionLocalProvider(
+                        LocalContentAlpha provides ContentAlpha.high,
+                        content = {
+                            Icon(
+                                Icons.Default.Menu,
+                                "menu",
+                                modifier = Modifier.clickable(onClick = {
+                                    scope.launch {
+                                        scaffoldState.drawerState.apply {
+                                            if (isClosed) open() else close()
+                                        }
+                                    }
+                                })
+                            )
+                        }
+                    )
                 }
-            )
+
+                Row(
+                    Modifier
+                        .fillMaxHeight()
+                        .weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ProvideTextStyle(value = MaterialTheme.typography.h6) {
+                        CompositionLocalProvider(
+                            LocalContentAlpha provides ContentAlpha.high,
+                            content = {
+                                Text(
+                                    race?.raceInfo?.let { "${it.raceName.toGP()} ${it.season}" }
+                                        ?: "Formula Info"
+                                )
+                            }
+                        )
+                    }
+                }
+
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Row(
+                        Modifier.fillMaxHeight(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                        content = {
+                            LapChartMenu(selectedChart.label) { selectedChart = it }
+                        }
+                    )
+                }
+            }
         },
         drawerShape = customShape(),
         drawerContent = {
@@ -133,5 +200,5 @@ internal fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result,
 @Composable
 fun LapChartPreview() {
     val lapsWithStart = getLapsWithStart(ResultSample.getLapsPerResults())
-    LapChart(race = null, lapsByResult = lapsWithStart)
+    LapChart(race = getRaceSample(1, "Barhain Grand Prix"), lapsByResult = lapsWithStart)
 }

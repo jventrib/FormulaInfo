@@ -63,3 +63,5 @@ fun String.toDuration(): Long {
             .plus(millis.milliseconds.inWholeMilliseconds)
     }
 }
+
+fun String.toGP() = replace("Grand Prix", "GP")
