@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Slider
@@ -23,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -34,12 +32,14 @@ import androidx.compose.ui.unit.lerp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.jventrib.formulainfo.notification.calcNotifyBefore
 import com.jventrib.formulainfo.ui.common.toDurationString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import logcat.logcat
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -51,17 +51,18 @@ fun NavGraphBuilder.preference() {
 @Composable
 private fun PreferencesScreen() {
 
-    // val preferencesViewModel: PreferencesViewModel = hiltViewModel()
+    val preferencesViewModel: PreferencesViewModel = hiltViewModel()
 
     // val dataStore = LocalContext.current.dataStore
     // val dataStoreManager = remember { DataStoreManager(dataStore) }
-    val datastore = StorePreference(LocalContext.current)
+    val dataStore = LocalContext.current.dataStore
+    val datastore = StorePreference(dataStore)
 
     LaunchedEffect(Unit) {
-        // dataStoreManager.preferenceFlow.collect {
-        //     preferencesViewModel.sessionNotificationManager.notifyNextRaces()
-        //     logcat { "Rescheduling notifications" }
-        // }
+        datastore.dataStore.data.collect {
+            preferencesViewModel.sessionNotificationManager.notifyNextRaces()
+            logcat { "Rescheduling notifications" }
+        }
     }
 
 
@@ -123,7 +124,7 @@ private fun PreferencesScreen(datastore: IStorePreference) {
 
 @Composable
 private fun PreferenceSwitch(
-    datastore2: IStorePreference,
+    datastore: IStorePreference,
     scope: CoroutineScope,
     text: String,
     key: Preferences.Key<Boolean>
@@ -136,13 +137,13 @@ private fun PreferenceSwitch(
         )
         Spacer(modifier = Modifier.weight(1f))
         Switch(
-            checked = datastore2.getPreferenceItem(
+            checked = datastore.getPreferenceItem(
                 key,
                 false,
             ).collectAsState(false).value,
             onCheckedChange = { value ->
                 scope.launch {
-                    datastore2.savePreferenceItem(
+                    datastore.savePreferenceItem(
                         key,
                         value
                     )

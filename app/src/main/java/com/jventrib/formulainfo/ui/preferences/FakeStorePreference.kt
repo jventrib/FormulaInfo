@@ -1,7 +1,6 @@
 package com.jventrib.formulainfo.ui.preferences
 
 import androidx.datastore.preferences.core.Preferences
-import de.schnettler.datastore.compose.material.model.Preference
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 

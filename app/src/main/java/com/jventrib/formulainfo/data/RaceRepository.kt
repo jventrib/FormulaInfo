@@ -162,7 +162,7 @@ class RaceRepository(
                     .firstOrNull { it.raceInfo.sessions.race.isAfter(now()) }
                     ?.let { it.nextRace = true }
             }
-            // .mockDate()
+            .mockDate()
             .transformWhile { list ->
                 emit(list)
                 list.isNotEmpty() && list.any { it.circuit.location.flag == null }

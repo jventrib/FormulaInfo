@@ -154,7 +154,6 @@ dependencies {
 
     //Preference
     implementation "androidx.datastore:datastore-preferences:1.0.0"
-    implementation("com.github.Sh4dowSoul.ComposePreferences:preferences-material:0.1.4")
 
     // Testing
     testImplementation 'junit:junit:4.13.2'

@@ -39,7 +39,7 @@ fun Long.toLapTimeString(pattern: String = "mm:ss.SSS"): String {
 
 fun Long.toDurationString(): String {
     return this.minutes.toComponents { hours, minutes, _, _ ->
-        "${hours}h${minutes.toString().padStart(2, '0')}m"
+        (if (hours > 0) "${hours}h" else "") + "${minutes.toString().padStart(2, '0')}m"
     }
 }
 

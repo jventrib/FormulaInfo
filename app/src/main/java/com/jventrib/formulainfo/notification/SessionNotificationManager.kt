@@ -14,12 +14,11 @@ import com.jventrib.formulainfo.model.db.Session.QUAL
 import com.jventrib.formulainfo.model.db.Session.RACE
 import com.jventrib.formulainfo.model.db.Session.SPRINT
 import com.jventrib.formulainfo.ui.common.formatDateTime
-import com.jventrib.formulainfo.ui.preferences.PreferencesKeys
+import com.jventrib.formulainfo.ui.preferences.StorePreference
 import com.jventrib.formulainfo.ui.preferences.dataStore
 import com.jventrib.formulainfo.utils.currentYear
 import com.jventrib.formulainfo.utils.now
 import dagger.hilt.android.qualifiers.ApplicationContext
-import de.schnettler.datastore.manager.DataStoreManager
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -33,14 +32,12 @@ class SessionNotificationManager @Inject constructor(
     private val repository: RaceRepository
 ) {
     suspend fun notifyNextRaces() {
-        //TODO remove ComposePreferences
-        val dataStoreManager = DataStoreManager(context.dataStore)
+        val dataStore = context.dataStore.data.first()
 
-        val notifyFP = dataStoreManager.getPreference(PreferencesKeys.notifyFP)
-        val notifyQual = dataStoreManager.getPreference(PreferencesKeys.notifyQual)
-        val notifyRace = dataStoreManager.getPreference(PreferencesKeys.notifyRace)
-        val notifyBefore =
-            dataStoreManager.getPreference(PreferencesKeys.notifyBefore).calcNotifyBefore()
+        val notifyFP = dataStore[StorePreference.NOTIFY_PRACTICE] ?: false
+        val notifyQual = dataStore[StorePreference.NOTIFY_QUAL] ?: false
+        val notifyRace = dataStore[StorePreference.NOTIFY_RACE] ?: false
+        val notifyBefore = dataStore[StorePreference.NOTIFY_BEFORE]?.calcNotifyBefore() ?: 10
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val nextRace = repository.getRaces(currentYear(), false).first()
