@@ -18,13 +18,13 @@ class StorePreference(val dataStore: DataStore<Preferences>) : IStorePreference 
         val NOTIFY_BEFORE = floatPreferencesKey("notify_before")
     }
 
-    //get the saved email
+    // get the saved email
     override fun <T> getPreferenceItem(key: Preferences.Key<T>, default: T): Flow<T> = dataStore.data
         .map { preferences ->
             preferences[key] ?: default
         }
 
-    //save email into datastore
+    // save email into datastore
     override suspend fun <T> savePreferenceItem(key: Preferences.Key<T>, name: T) {
         dataStore.edit { preferences ->
             preferences[key] = name

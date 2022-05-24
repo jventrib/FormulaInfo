@@ -95,7 +95,8 @@ private fun PreferencesScreen(datastore: IStorePreference) {
             Text(text = "Notify before")
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = tempValue.calcNotifyBefore().toDurationString(), modifier = Modifier.offset(
+                text = tempValue.calcNotifyBefore().toDurationString(),
+                modifier = Modifier.offset(
                     lerp(
                         24.dp,
                         LocalConfiguration.current.screenWidthDp.dp - 24.dp,
@@ -117,7 +118,6 @@ private fun PreferencesScreen(datastore: IStorePreference) {
                     }
                 }
             )
-
         }
     }
 }
@@ -159,4 +159,3 @@ private fun PreferenceSwitch(
 fun PreferencesScreenPreview() {
     PreferencesScreen(FakeStorePreference())
 }
-

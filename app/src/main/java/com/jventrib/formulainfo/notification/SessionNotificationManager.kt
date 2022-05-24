@@ -19,12 +19,12 @@ import com.jventrib.formulainfo.ui.preferences.dataStore
 import com.jventrib.formulainfo.utils.currentYear
 import com.jventrib.formulainfo.utils.now
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
+import logcat.logcat
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.flow.first
-import logcat.logcat
 
 @Singleton
 class SessionNotificationManager @Inject constructor(
