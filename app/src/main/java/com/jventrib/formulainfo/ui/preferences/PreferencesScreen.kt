@@ -1,30 +1,45 @@
 package com.jventrib.formulainfo.ui.preferences
 
 import android.content.Context
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Slider
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.jventrib.formulainfo.notification.calcNotifyBefore
 import com.jventrib.formulainfo.ui.common.toDurationString
-import de.schnettler.datastore.compose.material.PreferenceScreen
-import de.schnettler.datastore.compose.material.model.Preference
-import de.schnettler.datastore.manager.DataStoreManager
-import kotlinx.coroutines.flow.collect
-import logcat.logcat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -36,63 +51,103 @@ fun NavGraphBuilder.preference() {
 @Composable
 private fun PreferencesScreen() {
 
-    val preferencesViewModel: PreferencesViewModel = hiltViewModel()
+    // val preferencesViewModel: PreferencesViewModel = hiltViewModel()
 
-    val dataStore = LocalContext.current.dataStore
-    val dataStoreManager = remember { DataStoreManager(dataStore) }
+    // val dataStore = LocalContext.current.dataStore
+    // val dataStoreManager = remember { DataStoreManager(dataStore) }
+    val datastore = StorePreference(LocalContext.current)
 
     LaunchedEffect(Unit) {
-        dataStoreManager.preferenceFlow.collect {
-            preferencesViewModel.sessionNotificationManager.notifyNextRaces()
-            logcat { "Rescheduling notifications" }
-        }
+        // dataStoreManager.preferenceFlow.collect {
+        //     preferencesViewModel.sessionNotificationManager.notifyNextRaces()
+        //     logcat { "Rescheduling notifications" }
+        // }
     }
 
+
+
+    PreferencesScreen(datastore)
+}
+
+@Composable
+private fun PreferencesScreen(datastore: IStorePreference) {
+    val scope = rememberCoroutineScope()
     Scaffold(
         topBar = { TopAppBar(title = { Text("Preferences") }) }
     ) {
-        PreferenceScreen(
-            items = listOf(
-                Preference.PreferenceGroup(
-                    title = "Notifications", true,
-                    listOf(
-                        Preference.PreferenceItem.SwitchPreference(
-                            PreferencesKeys.notifyFP,
-                            "Free Practice",
-                            summary = "",
-                            singleLineTitle = true,
-                            icon = {}
-                        ),
-                        Preference.PreferenceItem.SwitchPreference(
-                            PreferencesKeys.notifyQual,
-                            "Qualification",
-                            summary = "",
-                            singleLineTitle = true,
-                            icon = {}
-                        ),
-                        Preference.PreferenceItem.SwitchPreference(
-                            PreferencesKeys.notifyRace,
-                            "Race",
-                            summary = "",
-                            singleLineTitle = true,
-                            icon = {}
-                        ),
-                        Preference.PreferenceItem.SeekBarPreference(
-                            PreferencesKeys.notifyBefore,
-                            "Notify Before",
-                            summary = "",
-                            singleLineTitle = true,
-                            icon = {},
-                            valueRange = 0f..24f,
-                            steps = 24,
-                            valueRepresentation = { it.calcNotifyBefore().toDurationString() }
-                        ),
-                    )
+        Column(
+            Modifier
+                .padding(it)
+                .padding(16.dp)
+        ) {
+            PreferenceSwitch(datastore, scope, "Free practice", StorePreference.NOTIFY_PRACTICE)
+            PreferenceSwitch(datastore, scope, "Qualification", StorePreference.NOTIFY_QUAL)
+            PreferenceSwitch(datastore, scope, "Race", StorePreference.NOTIFY_RACE)
+            Spacer(modifier = Modifier.height(32.dp))
+
+            val notifyBeforePref =
+                datastore.getPreferenceItem(StorePreference.NOTIFY_BEFORE, 10f)
+                    .collectAsState(initial = 10f).value
+            var tempValue by remember(notifyBeforePref) {
+                mutableStateOf(notifyBeforePref)
+            }
+            Text(text = "Notify before")
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = tempValue.calcNotifyBefore().toDurationString(), modifier = Modifier.offset(
+                    lerp(
+                        24.dp,
+                        LocalConfiguration.current.screenWidthDp.dp - 24.dp,
+                        tempValue / 24f
+                    ) - 36.dp
                 )
-            ),
-            dataStore = dataStore,
-            statusBarPadding = false,
-            modifier = Modifier.padding(it)
+            )
+            Slider(
+                value = tempValue,
+                onValueChange = { tempValue = it },
+                valueRange = 0f..24f,
+                steps = 24,
+                onValueChangeFinished = {
+                    scope.launch {
+                        datastore.savePreferenceItem(
+                            StorePreference.NOTIFY_BEFORE,
+                            tempValue
+                        )
+                    }
+                }
+            )
+
+        }
+    }
+}
+
+@Composable
+private fun PreferenceSwitch(
+    datastore2: IStorePreference,
+    scope: CoroutineScope,
+    text: String,
+    key: Preferences.Key<Boolean>
+) {
+    Row(Modifier.fillMaxWidth()) {
+        Text(
+            text,
+            Modifier
+                .align(CenterVertically)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Switch(
+            checked = datastore2.getPreferenceItem(
+                key,
+                false,
+            ).collectAsState(false).value,
+            onCheckedChange = { value ->
+                scope.launch {
+                    datastore2.savePreferenceItem(
+                        key,
+                        value
+                    )
+                }
+            },
         )
     }
 }
@@ -100,5 +155,6 @@ private fun PreferencesScreen() {
 @Preview
 @Composable
 fun PreferencesScreenPreview() {
-    PreferencesScreen()
+    PreferencesScreen(FakeStorePreference())
 }
+
