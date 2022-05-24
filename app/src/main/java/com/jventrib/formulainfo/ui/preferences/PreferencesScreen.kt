@@ -75,9 +75,15 @@ private fun PreferencesScreen(datastore: IStorePreference) {
                 .padding(it)
                 .padding(16.dp)
         ) {
-            PreferenceSwitch(datastore, scope, "Free practice", StorePreference.NOTIFY_PRACTICE)
-            PreferenceSwitch(datastore, scope, "Qualification", StorePreference.NOTIFY_QUAL)
-            PreferenceSwitch(datastore, scope, "Race", StorePreference.NOTIFY_RACE)
+            PreferenceSwitch(
+                datastore,
+                scope,
+                "Free practice",
+                StorePreference.NOTIFY_PRACTICE,
+                false
+            )
+            PreferenceSwitch(datastore, scope, "Qualification", StorePreference.NOTIFY_QUAL, false)
+            PreferenceSwitch(datastore, scope, "Race", StorePreference.NOTIFY_RACE, true)
             Spacer(modifier = Modifier.height(32.dp))
 
             val notifyBeforePref =
@@ -121,7 +127,8 @@ private fun PreferenceSwitch(
     datastore: IStorePreference,
     scope: CoroutineScope,
     text: String,
-    key: Preferences.Key<Boolean>
+    key: Preferences.Key<Boolean>,
+    default: Boolean
 ) {
     Row(Modifier.fillMaxWidth()) {
         Text(
@@ -133,8 +140,8 @@ private fun PreferenceSwitch(
         Switch(
             checked = datastore.getPreferenceItem(
                 key,
-                false,
-            ).collectAsState(false).value,
+                default,
+            ).collectAsState(default).value,
             onCheckedChange = { value ->
                 scope.launch {
                     datastore.savePreferenceItem(
