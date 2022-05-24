@@ -50,11 +50,7 @@ fun NavGraphBuilder.preference() {
 @OptIn(ExperimentalMaterialApi::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 private fun PreferencesScreen() {
-
     val preferencesViewModel: PreferencesViewModel = hiltViewModel()
-
-    // val dataStore = LocalContext.current.dataStore
-    // val dataStoreManager = remember { DataStoreManager(dataStore) }
     val dataStore = LocalContext.current.dataStore
     val datastore = StorePreference(dataStore)
 
@@ -64,8 +60,6 @@ private fun PreferencesScreen() {
             logcat { "Rescheduling notifications" }
         }
     }
-
-
 
     PreferencesScreen(datastore)
 }

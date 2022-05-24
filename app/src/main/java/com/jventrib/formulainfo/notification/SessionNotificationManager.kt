@@ -36,7 +36,7 @@ class SessionNotificationManager @Inject constructor(
 
         val notifyFP = dataStore[StorePreference.NOTIFY_PRACTICE] ?: false
         val notifyQual = dataStore[StorePreference.NOTIFY_QUAL] ?: false
-        val notifyRace = dataStore[StorePreference.NOTIFY_RACE] ?: false
+        val notifyRace = dataStore[StorePreference.NOTIFY_RACE] ?: true
         val notifyBefore = dataStore[StorePreference.NOTIFY_BEFORE]?.calcNotifyBefore() ?: 10
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
