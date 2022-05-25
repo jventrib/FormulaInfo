@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Slider
 import androidx.compose.material.Switch
@@ -75,6 +76,7 @@ private fun PreferencesScreen(datastore: IStorePreference) {
                 .padding(it)
                 .padding(16.dp)
         ) {
+            Text("Notifications", style = MaterialTheme.typography.h6)
             PreferenceSwitch(
                 datastore,
                 scope,
@@ -84,7 +86,7 @@ private fun PreferencesScreen(datastore: IStorePreference) {
             )
             PreferenceSwitch(datastore, scope, "Qualification", StorePreference.NOTIFY_QUAL, false)
             PreferenceSwitch(datastore, scope, "Race", StorePreference.NOTIFY_RACE, true)
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             val notifyBeforePref =
                 datastore.getPreferenceItem(StorePreference.NOTIFY_BEFORE, 10f)
@@ -92,8 +94,8 @@ private fun PreferencesScreen(datastore: IStorePreference) {
             var tempValue by remember(notifyBeforePref) {
                 mutableStateOf(notifyBeforePref)
             }
-            Text(text = "Notify before")
-            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Notify before:")
+            Spacer(modifier = Modifier.height(0.dp))
             Text(
                 text = tempValue.calcNotifyBefore().toDurationString(),
                 modifier = Modifier.offset(
