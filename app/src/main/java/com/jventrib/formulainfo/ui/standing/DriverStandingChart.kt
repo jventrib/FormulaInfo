@@ -6,7 +6,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.rememberScaffoldState
@@ -31,6 +30,7 @@ import com.jventrib.formulainfo.model.db.Driver
 import com.jventrib.formulainfo.ui.common.composable.Chart
 import com.jventrib.formulainfo.ui.common.composable.DataPoint
 import com.jventrib.formulainfo.ui.common.composable.Serie
+import com.jventrib.formulainfo.ui.common.composable.TopAppBarMenu
 import com.jventrib.formulainfo.ui.common.composable.YOrientation
 import com.jventrib.formulainfo.ui.common.composable.collectAsStateWithLifecycle
 import com.jventrib.formulainfo.ui.drivers.DriverSelector
@@ -74,7 +74,6 @@ private fun DriverStandingChart(
     onStandingClicked: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
-
     val selectedDrivers =
         rememberSaveable(standings, key = "standingDrivers", saver = driverSelectionSaver) {
             logcat("Standing") { "Init standings: ${standings.count()}" }
@@ -84,7 +83,7 @@ private fun DriverStandingChart(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            TopAppBar(
+            TopAppBarMenu(
                 title = {
                     Text(
                         "$season standing",
@@ -98,7 +97,8 @@ private fun DriverStandingChart(
                     ) {
                         Icon(imageVector = Icons.Filled.EmojiEvents, contentDescription = null)
                     }
-                }
+                },
+                scaffoldState = scaffoldState
             )
         },
         drawerShape = customShape(),

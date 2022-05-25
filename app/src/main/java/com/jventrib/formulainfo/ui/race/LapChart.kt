@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,13 +24,16 @@ import com.jventrib.formulainfo.model.aggregate.DriverAndConstructor
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.ui.common.composable.TopAppBarMenu
 import com.jventrib.formulainfo.ui.common.composable.collectAsStateWithLifecycle
+import com.jventrib.formulainfo.ui.common.toGP
 import com.jventrib.formulainfo.ui.drivers.DriverSelector
 import com.jventrib.formulainfo.ui.drivers.customShape
 import com.jventrib.formulainfo.ui.drivers.driverSelectionSaver
 import com.jventrib.formulainfo.ui.race.chart.LapPositionChart
 import com.jventrib.formulainfo.ui.race.chart.LapTimeChart
 import com.jventrib.formulainfo.ui.race.chart.LeaderIntervalChart
+import com.jventrib.formulainfo.ui.schedule.getRaceSample
 
 fun NavGraphBuilder.lapChart() {
     composable(
@@ -71,13 +73,17 @@ private fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            TopAppBar(
+            TopAppBarMenu(
                 title = {
-                    Text(race?.raceInfo?.let { "${it.raceName} ${it.season}" } ?: "Formula Info")
+                    Text(
+                        race?.raceInfo?.let { "${it.raceName.toGP()} ${it.season}" }
+                            ?: "Formula Info"
+                    )
                 },
                 actions = {
                     LapChartMenu(selectedChart.label) { selectedChart = it }
-                }
+                },
+                scaffoldState = scaffoldState
             )
         },
         drawerShape = customShape(),
@@ -133,5 +139,5 @@ internal fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result,
 @Composable
 fun LapChartPreview() {
     val lapsWithStart = getLapsWithStart(ResultSample.getLapsPerResults())
-    LapChart(race = null, lapsByResult = lapsWithStart)
+    LapChart(race = getRaceSample(1, "Barhain Grand Prix"), lapsByResult = lapsWithStart)
 }
