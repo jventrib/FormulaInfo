@@ -113,7 +113,10 @@ private fun ScheduleScreen(
     Scaffold(topBar = {
         TopAppBar(title = {
             Text(
-                "Formula Info", modifier = Modifier.clickable(onClick = onAboutClicked)
+                "Formula Info",
+                modifier = Modifier
+                    .clickable(onClick = onAboutClicked)
+                    .semantics { testTag = "about" }
             )
         }, actions = {
                 if (raceList.any { it.results.isNotEmpty() }) {

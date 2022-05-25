@@ -35,6 +35,13 @@ class MainScreenTest : ScreenshotTest {
     fun testMainScreen() {
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("TAG")
         waitUI(10000)
+        waitForNodeFromTag("about").performClick()
+        Espresso.pressBack()
+
+        waitForNodeFromTag("preference").performClick()
+        screenshot("preference")
+        Espresso.pressBack()
+
         waitForNodeFromTag("raceList").performScrollToIndex(0)
         waitForNode("Bahrain Grand Prix").performClick()
 
@@ -45,8 +52,7 @@ class MainScreenTest : ScreenshotTest {
         // Back to schedule
         waitForNode("2022", false).performClick()
         composeTestRule.onNodeWithText("2021").assertExists().performClick()
-        val name = "schedule"
-        screenshot(name)
+        screenshot("schedule")
 
         // Select year 2021
         waitForNode("Bahrain Grand Prix").performClick()

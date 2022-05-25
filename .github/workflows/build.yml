@@ -86,6 +86,9 @@ jobs:
         with:
           timezoneMacos: "Europe/Paris"
 
+      - name: generate version
+        run: ./gradlew app:generateAppVersionInfoForDebug
+
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
