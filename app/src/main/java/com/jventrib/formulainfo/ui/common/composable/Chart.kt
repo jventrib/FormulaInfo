@@ -97,7 +97,8 @@ fun <E> Chart(
                 it.x.coerceIn(
                     -screenCenterX + screenCenterX / scale.x,
                     screenCenterX - screenCenterX / scale.x
-                ), it.y.coerceIn(
+                ),
+                it.y.coerceIn(
                     -screenCenterY + screenCenterY / scale.y,
                     screenCenterY - screenCenterY / scale.y
                 )
@@ -125,12 +126,14 @@ fun <E> Chart(
 
         Row {
             YAxis(onScreenSeries)
-            Canvas(modifier = modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(vertical = 16.dp, horizontal = 4.dp)
-                .pointerInput(Unit) { detectTransformGesturesXY(onGesture = onGesture) }
-                .onGloballyPositioned(onGloballyPositioned)) {
+            Canvas(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(vertical = 16.dp, horizontal = 4.dp)
+                    .pointerInput(Unit) { detectTransformGesturesXY(onGesture = onGesture) }
+                    .onGloballyPositioned(onGloballyPositioned)
+            ) {
                 // Draw Grid
                 drawGrid(state)
 
@@ -169,7 +172,8 @@ private fun <E> YAxis(seriesPoints: List<Serie<E>>) {
             val yOrigin = serie.yOrigin
             if (yOrigin != null && !yOrigin.y.isNaN()) {
                 Text(
-                    text = serie.label, color = Color.White, modifier = Modifier
+                    text = serie.label, color = Color.White,
+                    modifier = Modifier
                         .offset(offset = {
                             IntOffset(0, yOrigin.y.roundToInt() - 12.dp.roundToPx())
                         })
@@ -339,7 +343,8 @@ private fun <E> getOnScreenPoint(offset: Offset, state: ChartState<E>): Offset {
 }
 
 private fun <E> getBoundaries(
-    boundaries: Boundaries?, series: List<Serie<E>>
+    boundaries: Boundaries?,
+    series: List<Serie<E>>
 ): ActualBoundaries {
     val minX = min(boundaries, series, { it?.minX }, Offset::x)
     val maxX = max(boundaries, series, { it?.maxX }, Offset::x)
@@ -408,7 +413,10 @@ data class Boundaries(
 )
 
 data class ActualBoundaries(
-    val minX: Float, val maxX: Float, val minY: Float, val maxY: Float
+    val minX: Float,
+    val maxX: Float,
+    val minY: Float,
+    val maxY: Float
 )
 
 data class ChartState<E>(
@@ -429,7 +437,8 @@ fun ChartPreview() {
         Serie(
             (0..10).map {
                 DataPoint("TEST", Offset(it.toFloat(), Random.nextInt(20).toFloat()))
-            }, Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()), "TEST"
+            },
+            Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()), "TEST"
         )
     }
 
