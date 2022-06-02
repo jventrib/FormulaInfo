@@ -35,6 +35,7 @@ fun LapTimeChart(lapsByResult: Map<Result, List<Lap>>) {
     val average =
         if (series.isEmpty()) null else series.flatMap { it.seriePoints }
             .map { it.offset.y }.average().toFloat() * 1.2f
+
     Chart(
         series = series,
         yOrientation = YOrientation.Up,

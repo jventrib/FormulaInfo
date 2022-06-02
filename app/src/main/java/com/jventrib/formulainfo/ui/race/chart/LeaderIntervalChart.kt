@@ -9,6 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.jventrib.formulainfo.data.sample.ResultSample
 import com.jventrib.formulainfo.model.db.Lap
 import com.jventrib.formulainfo.model.db.Result
+import com.jventrib.formulainfo.ui.common.composable.Boundaries
 import com.jventrib.formulainfo.ui.common.composable.Chart
 import com.jventrib.formulainfo.ui.common.composable.DataPoint
 import com.jventrib.formulainfo.ui.common.composable.Serie
@@ -54,7 +55,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
             entry.key.constructor.color,
             entry.key.driver.code ?: entry.key.driver.driverId.take(3)
         )
-    }.sortedBy { it.seriePoints.first().element?.position }
+    }.sortedBy { it.seriePoints.firstOrNull()?.element?.position }
 
     Chart(
         series = series,
@@ -63,6 +64,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
         },
         yOrientation = YOrientation.Down,
         gridStep = Offset(5f, 5f),
+        boundaries = Boundaries(maxY = 300.0f, adjust = true)
     )
 }
 
