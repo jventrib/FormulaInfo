@@ -28,6 +28,7 @@ fun LapTimeChart(lapsByResult: Map<Result, List<Lap>>) {
                 )
             },
             entry.key.constructor.color,
+            null,
             entry.key.driver.code ?: entry.key.driver.driverId.take(3)
         )
     }

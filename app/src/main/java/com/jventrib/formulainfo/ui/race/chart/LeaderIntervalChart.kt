@@ -3,6 +3,7 @@ package com.jventrib.formulainfo.ui.race.chart
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +28,9 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
 //        }
 //    }
 
+    val driverIndices = lapsByResult.keys.groupBy { it.constructor }.values.mapIndexed {  index, results ->
+        results.first().driver.driverId to index
+    }.toMap()
     val lapsWithStart = getLapsWithStart(lapsByResult)
 
     val anteLastLap = (lapsWithStart.keys.maxOf { it.resultInfo.laps } - 2).coerceAtLeast(0)
@@ -52,6 +56,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
                 )
             },
             entry.key.constructor.color,
+            if (driverIndices[entry.key.driver.driverId] == 1) Color.Yellow else null,
             entry.key.driver.code ?: entry.key.driver.driverId.take(3)
         )
     }.sortedBy { it.seriePoints.first().element?.position }

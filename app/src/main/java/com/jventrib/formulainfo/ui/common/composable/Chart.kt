@@ -141,7 +141,7 @@ fun <E> Chart(
 
                 // Series
                 onScreenSeries.forEach { serieScreen ->
-                    drawSerie(serieScreen.seriePoints, serieScreen.color, pointAlpha)
+                    drawSerie(serieScreen.seriePoints, serieScreen.color, serieScreen.alternateColor, pointAlpha)
                 }
 
                 drawAxisLabels(
@@ -299,6 +299,7 @@ private fun <E> DrawScope.drawAxisLabels(
 fun <E> DrawScope.drawSerie(
     points: List<DataPoint<E>>,
     color: Color,
+    alternateColor: Color?,
     alpha: Float,
 ) {
     drawPoints(
@@ -392,6 +393,7 @@ enum class YOrientation {
 data class Serie<E>(
     val seriePoints: List<DataPoint<E>>,
     val color: Color,
+    val alternateColor: Color? = null,
     val label: String,
     val yOrigin: Offset? = null
 )
@@ -432,6 +434,7 @@ fun ChartPreview() {
                 DataPoint("TEST", Offset(it.toFloat(), Random.nextInt(20).toFloat()))
             },
             Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()),
+            null,
             "TEST"
         )
     }

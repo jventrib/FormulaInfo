@@ -128,6 +128,7 @@ private fun DriverStandingChart(
                         )
                     },
                     entry.value.first().constructor.color,
+                    null,
                     entry.key.code ?: entry.key.driverId.take(3)
                 )
             }
