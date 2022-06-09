@@ -70,7 +70,6 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
     )
 }
 
-
 @Preview(showSystemUi = false)
 @Composable
 fun LeaderIntervalChartPreview() {

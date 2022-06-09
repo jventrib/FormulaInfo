@@ -27,9 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.jventrib.formulainfo.model.aggregate.DriverAndConstructor
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
-import com.jventrib.formulainfo.model.db.Constructor
 import com.jventrib.formulainfo.model.db.Driver
-import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.composable.Chart
 import com.jventrib.formulainfo.ui.common.composable.DataPoint
 import com.jventrib.formulainfo.ui.common.composable.Serie

@@ -52,7 +52,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
-import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.abs
 import com.jventrib.formulainfo.ui.common.coerceAtMost
 import com.jventrib.formulainfo.ui.common.coerceIn
@@ -64,7 +63,6 @@ import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
-import logcat.logcat
 
 @Composable
 fun <E> Chart(
@@ -495,7 +493,7 @@ private fun createDashShaderX(color: Color, offset: Float) =
     createDashShader(color, 40, 1, 40F, 0f, -offset)
 
 private fun createDashShaderY(color: Color, offset: Float) =
-    createDashShader(color, 1, 40, 0F, 40f,  -offset)
+    createDashShader(color, 1, 40, 0F, 40f, -offset)
 
 private fun createDashShader(
     color: Color,
@@ -509,8 +507,8 @@ private fun createDashShader(
     p.style = PaintingStyle.Fill
     p.strokeWidth = 3F
     p.color = color
-    p.pathEffect = PathEffect.dashPathEffect(floatArrayOf(30f, 10f), (offset) % 40 )
-    val mask = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+    p.pathEffect = PathEffect.dashPathEffect(floatArrayOf(30f, 10f), (offset) % 40)
+    val mask = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(mask)
     canvas.drawLine(
         0F,

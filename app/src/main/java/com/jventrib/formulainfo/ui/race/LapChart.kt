@@ -95,7 +95,7 @@ private fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
             )
         },
 
-        ) {
+    ) {
         Box(modifier = Modifier.padding(it)) {
             selectedChart.compose(
                 lapsByResult.filter {
