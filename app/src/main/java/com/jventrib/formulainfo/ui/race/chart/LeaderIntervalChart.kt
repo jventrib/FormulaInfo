@@ -14,6 +14,7 @@ import com.jventrib.formulainfo.ui.common.composable.Chart
 import com.jventrib.formulainfo.ui.common.composable.DataPoint
 import com.jventrib.formulainfo.ui.common.composable.Serie
 import com.jventrib.formulainfo.ui.common.composable.YOrientation
+import com.jventrib.formulainfo.ui.race.getDriversIndices
 import com.jventrib.formulainfo.ui.race.getLapsWithStart
 import com.jventrib.formulainfo.ui.theme.color
 
@@ -28,9 +29,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
 //        }
 //    }
 
-    val driverIndices = lapsByResult.keys.groupBy { it.constructor }.values.mapIndexed {  index, results ->
-        results.first().driver.driverId to index
-    }.toMap()
+    val driverIndices = getDriversIndices(lapsByResult.keys)
     val lapsWithStart = getLapsWithStart(lapsByResult)
 
     val anteLastLap = (lapsWithStart.keys.maxOf { it.resultInfo.laps } - 2).coerceAtLeast(0)
@@ -46,7 +45,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
 
     val series = lapsWithStart.map { entry ->
         Serie(
-            entry.value.mapIndexed { index, lap ->
+            seriePoints = entry.value.mapIndexed { index, lap ->
                 DataPoint(
                     lap,
                     Offset(
@@ -55,11 +54,11 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
                     )
                 )
             },
-            entry.key.constructor.color,
-            if (driverIndices[entry.key.driver.driverId] == 1) Color.Yellow else null,
-            entry.key.driver.code ?: entry.key.driver.driverId.take(3)
+            color = entry.key.constructor.color,
+            alternateColor = if (driverIndices[entry.key.driver.driverId] == 1) Color.Yellow else null,
+            label = entry.key.driver.code ?: entry.key.driver.driverId.take(3)
         )
-    }.sortedBy { it.seriePoints.first().element?.position }
+    }.sortedBy { it.seriePoints.firstOrNull()?.element?.position }
 
     Chart(
         series = series,
@@ -70,6 +69,7 @@ fun LeaderIntervalChart(lapsByResult: Map<Result, List<Lap>>) {
         gridStep = Offset(5f, 5f),
     )
 }
+
 
 @Preview(showSystemUi = false)
 @Composable

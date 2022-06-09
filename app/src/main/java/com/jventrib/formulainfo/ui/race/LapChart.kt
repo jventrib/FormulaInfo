@@ -95,7 +95,7 @@ private fun LapChart(race: Race?, lapsByResult: Map<Result, List<Lap>>) {
             )
         },
 
-    ) {
+        ) {
         Box(modifier = Modifier.padding(it)) {
             selectedChart.compose(
                 lapsByResult.filter {
@@ -134,6 +134,13 @@ internal fun getLapsWithStart(lapsByResult: Map<Result, List<Lap>>): Map<Result,
                     }
                 }
         }
+
+fun getDriversIndices(keys: Set<Result>) =
+    keys.groupBy { it.constructor }.values.flatMap { results ->
+        results.sortedBy { it.driver.driverId }.withIndex()
+    }.associate {
+        it.value.driver.driverId to it.index
+    }
 
 @Preview(showSystemUi = false)
 @Composable

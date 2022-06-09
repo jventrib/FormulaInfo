@@ -16,6 +16,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,7 +27,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.jventrib.formulainfo.model.aggregate.DriverAndConstructor
 import com.jventrib.formulainfo.model.aggregate.DriverStanding
+import com.jventrib.formulainfo.model.db.Constructor
 import com.jventrib.formulainfo.model.db.Driver
+import com.jventrib.formulainfo.model.db.Result
 import com.jventrib.formulainfo.ui.common.composable.Chart
 import com.jventrib.formulainfo.ui.common.composable.DataPoint
 import com.jventrib.formulainfo.ui.common.composable.Serie
@@ -73,6 +76,13 @@ private fun DriverStandingChart(
     standings: Map<Driver, List<DriverStanding>>,
     onStandingClicked: () -> Unit
 ) {
+    val driverIndices = standings.values.map { it.first() }
+        .groupBy { it.constructor }.values.flatMap { results ->
+            results.sortedBy { it.driver.driverId }.withIndex()
+        }.associate {
+            it.value.driver.driverId to it.index
+        }
+
     val scaffoldState = rememberScaffoldState()
     val selectedDrivers =
         rememberSaveable(standings, key = "standingDrivers", saver = driverSelectionSaver) {
@@ -111,14 +121,13 @@ private fun DriverStandingChart(
         }
 
     ) {
-
         val series = standings
             .filter {
                 selectedDrivers[it.key.driverId] ?: false
             }
             .map { entry ->
                 Serie(
-                    entry.value.map { round ->
+                    seriePoints = entry.value.map { round ->
                         DataPoint(
                             round,
                             Offset(
@@ -127,9 +136,9 @@ private fun DriverStandingChart(
                             )
                         )
                     },
-                    entry.value.first().constructor.color,
-                    null,
-                    entry.key.code ?: entry.key.driverId.take(3)
+                    color = entry.value.first().constructor.color,
+                    alternateColor = if (driverIndices[entry.key.driverId] == 1) Color.Yellow else null,
+                    label = entry.key.code ?: entry.key.driverId.take(3)
                 )
             }
 
