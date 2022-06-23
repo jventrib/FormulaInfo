@@ -41,7 +41,6 @@ import com.jventrib.formulainfo.ui.common.formatDecimal
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
-import logcat.logcat
 
 @Composable
 fun <E> Chart(
@@ -56,7 +55,6 @@ fun <E> Chart(
 ) {
     if (series.isEmpty()) return
 
-
     Row {
         // YAxis(onScreenSeries)
         BoxWithConstraints(
@@ -65,7 +63,7 @@ fun <E> Chart(
                 .fillMaxSize()
         ) {
             val chartState = rememberChartState(this, boundaries, series, yOrientation)
-            Text(chartState.matrix.toString(), Modifier.offset(0.dp, 40.dp))
+            // Text(chartState.matrix.toString(), Modifier.offset(0.dp, 0.dp))
             ChartStateless(modifier, chartState)
         }
     }
@@ -251,13 +249,15 @@ fun <E> DrawScope.drawSerie(
     serie: Serie<E>,
     chartState: ChartState<E>,
 ) {
-    chartState.matrix.mapPoints(serie.mappedPoints, serie.points)
     drawIntoCanvas { canvas ->
         val nativeCanvas = canvas.nativeCanvas
-        nativeCanvas.drawLines(serie.mappedPoints, android.graphics.Paint().apply {
-            this.color = serie.color.toArgb()
-            strokeWidth = 3.dp.toPx()
-        })
+        nativeCanvas.drawLines(
+            serie.mappedPoints,
+            android.graphics.Paint().apply {
+                this.color = serie.color.toArgb()
+                strokeWidth = 3.dp.toPx()
+            }
+        )
         nativeCanvas.drawLines(
             serie.mappedPoints,
             2,
@@ -265,7 +265,8 @@ fun <E> DrawScope.drawSerie(
             android.graphics.Paint().apply {
                 this.color = serie.color.toArgb()
                 strokeWidth = 3.dp.toPx()
-            })
+            }
+        )
     }
 
     // drawPoints(
