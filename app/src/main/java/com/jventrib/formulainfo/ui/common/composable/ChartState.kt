@@ -79,22 +79,29 @@ fun <E> rememberChartState(
 ) = remember(series) {
     ChartState(
         seriesState.apply { value = series },
-        matrixState.apply {
-            value.apply {
-                val size = Size(box.constraints.maxWidth.toFloat(), box.constraints.maxHeight.toFloat())
-                val actualBoundaries = getBoundaries(boundaries, series)
-                val xFraction = actualBoundaries.run { size.width / (maxX - minX) }
-                val yFraction = actualBoundaries.run { size.height / (maxY - minY) }
-                reset()
-                if (orientation == YOrientation.Up) {
-                    postScale(xFraction, -yFraction)
-                    postTranslate(0f, size.height)
-                } else {
-                    postScale(xFraction, yFraction)
-                }
-            }
-        }
+        matrixState.init(box, boundaries, series, orientation)
     )
+}
+
+private fun <E> MutableState<Matrix>.init(
+    box: BoxWithConstraintsScope,
+    boundaries: Boundaries?,
+    series: List<Serie<E>>,
+    orientation: YOrientation
+) = apply {
+    value.apply {
+        val size = Size(box.constraints.maxWidth.toFloat(), box.constraints.maxHeight.toFloat())
+        val actualBoundaries = getBoundaries(boundaries, series)
+        val xFraction = actualBoundaries.run { size.width / (maxX - minX) }
+        val yFraction = actualBoundaries.run { size.height / (maxY - minY) }
+        reset()
+        if (orientation == YOrientation.Up) {
+            postScale(xFraction, -yFraction)
+            postTranslate(0f, size.height)
+        } else {
+            postScale(xFraction, yFraction)
+        }
+    }
 }
 
 enum class YOrientation {
