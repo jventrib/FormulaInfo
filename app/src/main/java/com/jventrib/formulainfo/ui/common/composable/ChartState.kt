@@ -19,26 +19,24 @@ import com.jventrib.formulainfo.ui.common.times
 import logcat.logcat
 
 class ChartState<E>(
-    box: BoxWithConstraintsScope,
     val series: List<Serie<E>>,
     matrixState: MutableState<Matrix>
 ) {
-
-    var matrix by matrixState
-
     private var scrollOffset = Offset.Zero
     private var scale by mutableStateOf(Offset(1f, 1f))
     private val allSeriesSize = series.maxOfOrNull { it.seriePoints.size } ?: 1
-    val pointAlpha = (10 * (scale.getDistance() - 1) / allSeriesSize).coerceIn(0f, 1f)
 
+    var matrix by matrixState
+    val pointAlpha = (10 * (scale.getDistance() - 1) / allSeriesSize).coerceIn(0f, 1f)
     val onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit =
         { _, offsetChange, zoomChange, rotationChange ->
             scale =
-                abs(scale * zoomChange.coerceAtMost(Offset(2f, 2f))).coerceIn(
+                abs(Offset(1f, 1f) * zoomChange.coerceAtMost(Offset(2f, 2f))).coerceIn(
                     Offset(1f, 1f), Offset(50f, 25f)
                 )
             scrollOffset = offsetChange / scale
             matrix.postTranslate(scrollOffset.x, scrollOffset.y)
+            matrix.postScale(scale.x, scale.y)
             matrix = matrix
             logcat { "matrix: $matrix" }
         }
@@ -63,7 +61,7 @@ fun <E> rememberChartState(
     orientation: YOrientation,
     matrixState: MutableState<Matrix> = remember { mutableStateOf(Matrix(), neverEqualPolicy()) }
 ) = remember(series) {
-    ChartState(box, series, matrixState.apply {
+    ChartState(series, matrixState.apply {
         value.apply {
             val size = Size(box.constraints.maxWidth.toFloat(), box.constraints.maxHeight.toFloat())
             val actualBoundaries = getBoundaries(boundaries, series)

@@ -66,8 +66,7 @@ fun <E> Chart(
         ) {
             val chartState = rememberChartState(this, boundaries, series, yOrientation)
             Text(chartState.matrix.toString(), Modifier.offset(0.dp, 40.dp))
-
-            ChartStateless(modifier, chartState, chartState.onGesture)
+            ChartStateless(modifier, chartState)
         }
     }
 }
@@ -75,18 +74,15 @@ fun <E> Chart(
 @Composable
 private fun <E> ChartStateless(
     modifier: Modifier,
-    chartState: ChartState<E>,
-    onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit
+    chartState: ChartState<E>
 ) {
-    logcat("ChartStaless") { "in method m: ${chartState.matrix}" }
-
     Box {
         Canvas(
             modifier = modifier
                 // .padding(vertical = 16.dp, horizontal = 40.dp)
                 .fillMaxSize()
                 .pointerInput(Unit) {
-                    detectTransformGesturesXY(onGesture = onGesture)
+                    detectTransformGesturesXY(onGesture = chartState.onGesture)
                 }
             // .onGloballyPositioned(chartState.onGloballyPositioned)
         ) {
