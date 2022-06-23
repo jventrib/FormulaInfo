@@ -10,14 +10,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     apply plugin: 'com.diffplug.spotless'
     apply plugin: 'shot'
 
     defaultConfig {
         applicationId "com.jventrib.formulainfo"
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 33
         testInstrumentationRunner "com.jventrib.formulainfo.di.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary true

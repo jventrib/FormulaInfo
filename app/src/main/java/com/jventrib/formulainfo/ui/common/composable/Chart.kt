@@ -16,10 +16,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,31 +26,22 @@ import androidx.compose.ui.geometry.lerp
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.PointMode
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.LayoutCoordinates
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import com.google.android.material.math.MathUtils.lerp
-import com.jventrib.formulainfo.ui.common.abs
-import com.jventrib.formulainfo.ui.common.coerceAtMost
-import com.jventrib.formulainfo.ui.common.coerceIn
 import com.jventrib.formulainfo.ui.common.detectTransformGesturesXY
-import com.jventrib.formulainfo.ui.common.div
 import com.jventrib.formulainfo.ui.common.formatDecimal
-import com.jventrib.formulainfo.ui.common.times
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
+import logcat.logcat
 
 @Composable
 fun <E> Chart(
@@ -68,93 +55,61 @@ fun <E> Chart(
     yLabelTransform: (Float) -> String = { it.formatDecimal(false) }
 ) {
     if (series.isEmpty()) return
-    val axisColor = colors.onBackground
-    val backgroundColor = colors.background
-    var scrollOffset by remember { mutableStateOf(Offset(1f, 1f)) }
-    var scale by remember { mutableStateOf(Offset(1f, 1f)) }
-    var rotation by remember { mutableStateOf(0f) }
-    val onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit =
-        { _, offsetChange, zoomChange, rotationChange ->
-            scale =
-                abs(scale * zoomChange.coerceAtMost(Offset(2f, 2f))).coerceIn(
-                    Offset(1f, 1f), Offset(50f, 25f)
-                )
-            rotation += rotationChange
-            scrollOffset += offsetChange / scale
+
+
+    Row {
+        // YAxis(onScreenSeries)
+        BoxWithConstraints(
+            Modifier
+                .padding(vertical = 16.dp, horizontal = 4.dp)
+                .fillMaxSize()
+        ) {
+            val chartState = rememberChartState(this, boundaries, series, yOrientation)
+            Text(chartState.matrix.toString(), Modifier.offset(0.dp, 40.dp))
+
+            ChartStateless(modifier, chartState, chartState.onGesture)
         }
+    }
+}
 
-    BoxWithConstraints(
-        modifier
-            .fillMaxSize()
-    ) {
-        val constraintSize = Size(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
-        var size by remember { mutableStateOf(constraintSize) }
-        val screenCenterX = size.width / 2f
-        val screenCenterY = size.height / 2f
-        val onGloballyPositioned: (LayoutCoordinates) -> Unit = { size = it.size.toSize() }
+@Composable
+private fun <E> ChartStateless(
+    modifier: Modifier,
+    chartState: ChartState<E>,
+    onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit
+) {
+    logcat("ChartStaless") { "in method m: ${chartState.matrix}" }
 
-        // Coerce scrollOffset at each recomposition, so zoom out always keep inside boundaries
-        scrollOffset = scrollOffset.let {
-            Offset(
-                it.x.coerceIn(
-                    -screenCenterX + screenCenterX / scale.x,
-                    screenCenterX - screenCenterX / scale.x
-                ),
-                it.y.coerceIn(
-                    -screenCenterY + screenCenterY / scale.y,
-                    screenCenterY - screenCenterY / scale.y
-                )
-            )
-        }
-        val actualBoundaries = getBoundaries(boundaries, series)
-
-        val allSeriesSize = series.maxOfOrNull { it.seriePoints.size } ?: 1
-        val pointAlpha = (10 * (scale.getDistance() - 1) / allSeriesSize).coerceIn(0f, 1f)
-
-        val state = ChartState(
-            series,
-            size,
-            actualBoundaries,
-            scrollOffset,
-            scale,
-            yOrientation,
-            gridStep,
-            allSeriesSize
-        )
-
-        val onScreenSeries = series.map { serie ->
-            getSeriePoints(serie, state)
-        }
-
-        Row {
-            YAxis(onScreenSeries)
-            Canvas(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(vertical = 16.dp, horizontal = 4.dp)
-                    .pointerInput(Unit) { detectTransformGesturesXY(onGesture = onGesture) }
-                    .onGloballyPositioned(onGloballyPositioned)
-            ) {
+    Box {
+        Canvas(
+            modifier = modifier
+                // .padding(vertical = 16.dp, horizontal = 40.dp)
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTransformGesturesXY(onGesture = onGesture)
+                }
+            // .onGloballyPositioned(chartState.onGloballyPositioned)
+        ) {
+            drawIntoCanvas {
                 // Draw Grid
-                drawGrid(state)
+                // drawGrid(state)
 
                 // Series
-                onScreenSeries.forEach { serieScreen ->
-                    drawSerie(serieScreen.seriePoints, serieScreen.color, pointAlpha)
+                chartState.series.forEach { serie ->
+                    drawSerie(serie, chartState)
                 }
-
-                drawAxisLabels(
-                    axisColor = axisColor,
-                    backgroundColor = backgroundColor,
-                    state = state,
-                    xLabelTransform,
-                    yLabelTransform
-                )
-
-                // custom
-                customDraw(onScreenSeries)
             }
+
+            // drawAxisLabels(
+            //     axisColor = axisColor,
+            //     backgroundColor = backgroundColor,
+            //     state = state,
+            //     xLabelTransform,
+            //     yLabelTransform
+            // )
+            //
+            // // custom
+            // customDraw(onScreenSeries)
         }
     }
 }
@@ -188,7 +143,7 @@ private fun <E> YAxis(seriesPoints: List<Serie<E>>) {
     }
 }
 
-private fun <E> DrawScope.drawGrid(state: ChartState<E>) {
+private fun <E> DrawScope.drawGrid(state: ChartStateOld<E>) {
     // Compute grid coord
     if (state.series.isNotEmpty() && state.gridStep != null) {
 
@@ -234,7 +189,7 @@ private fun <E> DrawScope.drawGrid(state: ChartState<E>) {
 private fun <E> DrawScope.drawAxisLabels(
     axisColor: Color,
     backgroundColor: Color,
-    state: ChartState<E>,
+    state: ChartStateOld<E>,
     xLabelTransform: (Float) -> String,
     yLabelTransform: (Float) -> String
 ) {
@@ -297,21 +252,37 @@ private fun <E> DrawScope.drawAxisLabels(
 }
 
 fun <E> DrawScope.drawSerie(
-    points: List<DataPoint<E>>,
-    color: Color,
-    alpha: Float,
+    serie: Serie<E>,
+    chartState: ChartState<E>,
 ) {
-    drawPoints(
-        points.map { it.offset },
-        PointMode.Polygon,
-        color,
-        3.dp.toPx(),
-        StrokeCap.Round,
-    )
-    points.forEach { drawCircle(color = color, 4.dp.toPx(), it.offset, alpha) }
+    chartState.matrix.mapPoints(serie.mappedPoints, serie.points)
+    drawIntoCanvas { canvas ->
+        val nativeCanvas = canvas.nativeCanvas
+        nativeCanvas.drawLines(serie.mappedPoints, android.graphics.Paint().apply {
+            this.color = serie.color.toArgb()
+            strokeWidth = 3.dp.toPx()
+        })
+        nativeCanvas.drawLines(
+            serie.mappedPoints,
+            2,
+            serie.mappedPoints.size - 2,
+            android.graphics.Paint().apply {
+                this.color = serie.color.toArgb()
+                strokeWidth = 3.dp.toPx()
+            })
+    }
+
+    // drawPoints(
+    //     serie.seriePoints.map { it.offset },
+    //     PointMode.Polygon,
+    //     color,
+    //     3.dp.toPx(),
+    //     StrokeCap.Round,
+    // )
+    // points.forEach { drawCircle(color = color, 4.dp.toPx(), it.offset, alpha) }
 }
 
-private fun <E> getSeriePoints(serie: Serie<E>, state: ChartState<E>): Serie<E> {
+private fun <E> getSeriePoints(serie: Serie<E>, state: ChartStateOld<E>): Serie<E> {
     val points = serie.seriePoints
         .map {
             it.copy(
@@ -340,7 +311,7 @@ private fun <E> getSeriePoints(serie: Serie<E>, state: ChartState<E>): Serie<E> 
     return serie.copy(yOrigin = yOrigin, seriePoints = points)
 }
 
-private fun <E> getOnScreenPoint(offset: Offset, state: ChartState<E>): Offset {
+private fun <E> getOnScreenPoint(offset: Offset, state: ChartStateOld<E>): Offset {
     return state.run {
         val xFraction = boundaries.run { (offset.x - minX) / (maxX - minX) }
         val yFraction = boundaries.run { (offset.y - minY) / (maxY - minY) }
@@ -357,36 +328,8 @@ private fun <E> getOnScreenPoint(offset: Offset, state: ChartState<E>): Offset {
     }
 }
 
-private fun <E> getBoundaries(
-    boundaries: Boundaries?,
-    series: List<Serie<E>>
-): ActualBoundaries {
-    val minX =
-        boundaries?.minX ?: series.filterNot { it.seriePoints.isEmpty() }.minOfOrNull { serie ->
-            serie.seriePoints.minOfOrNull { it.offset.x } ?: 0f
-        } ?: 0f
-    val maxX =
-        boundaries?.maxX ?: series.filterNot { it.seriePoints.isEmpty() }.maxOfOrNull { serie ->
-            serie.seriePoints.maxOfOrNull { it.offset.x } ?: 0f
-        } ?: 0f
-    val minY =
-        boundaries?.minY ?: series.filterNot { it.seriePoints.isEmpty() }.minOfOrNull { serie ->
-            serie.seriePoints.minOfOrNull { it.offset.y } ?: 0f
-        } ?: 0f
-    val maxY =
-        boundaries?.maxY ?: series.filterNot { it.seriePoints.isEmpty() }.maxOfOrNull { serie ->
-            serie.seriePoints.maxOfOrNull { it.offset.y } ?: 0f
-        } ?: 0f
-
-    return ActualBoundaries(minX, maxX, minY, maxY)
-}
-
 private fun range(from: Float, to: Float, step: Float): Sequence<Float> {
     return generateSequence(from) { it + step }.takeWhile { it <= to }
-}
-
-enum class YOrientation {
-    Up, Down
 }
 
 data class Serie<E>(
@@ -394,7 +337,10 @@ data class Serie<E>(
     val color: Color,
     val label: String,
     val yOrigin: Offset? = null
-)
+) {
+    val points = FloatArray(seriePoints.size * 2)
+    val mappedPoints = FloatArray(seriePoints.size * 2)
+}
 
 data class DataPoint<E>(val element: E?, val offset: Offset = Offset.Unspecified)
 
@@ -412,7 +358,7 @@ data class ActualBoundaries(
     val maxY: Float
 )
 
-data class ChartState<E>(
+data class ChartStateOld<E>(
     val series: List<Serie<E>>,
     val size: Size,
     val boundaries: ActualBoundaries,
