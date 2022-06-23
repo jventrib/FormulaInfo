@@ -19,7 +19,7 @@ import com.jventrib.formulainfo.ui.common.times
 import logcat.logcat
 
 class ChartState<E>(
-    val seriesState: MutableState<List<Serie<E>>>,
+    seriesState: MutableState<List<Serie<E>>>,
     matrixState: MutableState<Matrix>
 ) {
     var series by seriesState
