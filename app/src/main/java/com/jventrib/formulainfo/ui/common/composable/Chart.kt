@@ -16,6 +16,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,48 +63,40 @@ fun <E> Chart(
                 .padding(vertical = 16.dp, horizontal = 4.dp)
                 .fillMaxSize()
         ) {
-            val chartState = rememberChartState(this, boundaries, series, yOrientation)
-            // Text(chartState.matrix.toString(), Modifier.offset(0.dp, 0.dp))
-            ChartStateless(modifier, chartState)
-        }
-    }
-}
+            val chartState = rememberChartState<E>()
+            LaunchedEffect(series) {
+                chartState.init(series, this@BoxWithConstraints, boundaries, yOrientation)
+            }
+            Box {
+                Canvas(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .pointerInput(Unit) {
+                            detectTransformGesturesXY(onGesture = chartState.onGesture)
+                        }
+                ) {
+                    drawIntoCanvas {
+                        // Draw Grid
+                        // drawGrid(state)
 
-@Composable
-private fun <E> ChartStateless(
-    modifier: Modifier,
-    chartState: ChartState<E>
-) {
-    Box {
-        Canvas(
-            modifier = modifier
-                // .padding(vertical = 16.dp, horizontal = 40.dp)
-                .fillMaxSize()
-                .pointerInput(Unit) {
-                    detectTransformGesturesXY(onGesture = chartState.onGesture)
-                }
-            // .onGloballyPositioned(chartState.onGloballyPositioned)
-        ) {
-            drawIntoCanvas {
-                // Draw Grid
-                // drawGrid(state)
+                        // Series
+                        chartState.series.forEach { serie ->
+                            drawSerie(serie)
+                        }
+                    }
 
-                // Series
-                chartState.series.forEach { serie ->
-                    drawSerie(serie, chartState)
+                    // drawAxisLabels(
+                    //     axisColor = axisColor,
+                    //     backgroundColor = backgroundColor,
+                    //     state = state,
+                    //     xLabelTransform,
+                    //     yLabelTransform
+                    // )
+                    //
+                    // // custom
+                    // customDraw(onScreenSeries)
                 }
             }
-
-            // drawAxisLabels(
-            //     axisColor = axisColor,
-            //     backgroundColor = backgroundColor,
-            //     state = state,
-            //     xLabelTransform,
-            //     yLabelTransform
-            // )
-            //
-            // // custom
-            // customDraw(onScreenSeries)
         }
     }
 }
@@ -247,7 +240,6 @@ private fun <E> DrawScope.drawAxisLabels(
 
 fun <E> DrawScope.drawSerie(
     serie: Serie<E>,
-    chartState: ChartState<E>,
 ) {
     drawIntoCanvas { canvas ->
         val nativeCanvas = canvas.nativeCanvas
