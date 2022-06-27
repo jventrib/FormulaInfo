@@ -10,8 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import com.jventrib.formulainfo.ui.common.div
-import com.jventrib.formulainfo.ui.common.times
 import logcat.LogPriority
 import logcat.logcat
 
@@ -21,20 +19,22 @@ class ChartState<E> {
     // private val allSeriesSize = series.maxOfOrNull { it.seriePoints.size } ?: 1
     // val pointAlpha = (10 * (scale.getDistance() - 1) / allSeriesSize).coerceIn(0f, 1f)
     val onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit =
-        { _, offsetChange, zoomChange, rotationChange ->
+        { centroid, offsetChange, zoomChange, rotationChange ->
             val scale = zoomChange
             // abs(Offset(1f, 1f) * zoomChange.coerceAtMost(Offset(2f, 2f))).coerceIn(
             //     Offset(1f, 1f), Offset(50f, 25f)
             // )
-            val scrollOffset = offsetChange / scale
+
+            matrix.postTranslate(-centroid.x, -centroid.y)
             matrix.postScale(scale.x, scale.y)
-            matrix.postTranslate(scrollOffset.x, scrollOffset.y)
-            logcat(LogPriority.VERBOSE) { "matrix: $matrix" }
+            matrix.postTranslate(centroid.x, centroid.y)
+            matrix.postTranslate(offsetChange.x, offsetChange.y)
+
             transformSeries()
         }
     private val matrix: Matrix = Matrix()
-
     private fun transformSeries() {
+        logcat(LogPriority.VERBOSE) { "matrix: $matrix" }
         series.forEach { matrix.mapPoints(it.mappedPoints, it.points) }
         series = series
     }
@@ -56,7 +56,7 @@ class ChartState<E> {
         }
 
         matrix.apply {
-            val size = Size(box.constraints.maxWidth.toFloat(), box.constraints.maxHeight.toFloat())
+            var size = Size(box.constraints.maxWidth.toFloat(), box.constraints.maxHeight.toFloat())
             val actualBoundaries = getBoundaries(boundaries, this@ChartState.series)
             val xFraction = actualBoundaries.run { size.width / (maxX - minX) }
             val yFraction = actualBoundaries.run { size.height / (maxY - minY) }
