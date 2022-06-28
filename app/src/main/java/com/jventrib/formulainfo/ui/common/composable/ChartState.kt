@@ -15,21 +15,48 @@ import logcat.logcat
 
 class ChartState<E> {
     var series by mutableStateOf<List<Serie<E>>>(listOf(), neverEqualPolicy())
+    private val initialValues = FloatArray(9)
+    private val currentValues = FloatArray(9)
+    private lateinit var yOrientation: YOrientation
+    private var size: Size = Size.Zero
+    private var bottomTranslateY: Float = 0.0f
+    private var topTranslateY: Float = 0.0f
+    private var leftTranslateX: Float = 0.0f
+    private var rightTranslateX: Float = 0.0f
 
     // private val allSeriesSize = series.maxOfOrNull { it.seriePoints.size } ?: 1
     // val pointAlpha = (10 * (scale.getDistance() - 1) / allSeriesSize).coerceIn(0f, 1f)
     val onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit =
         { centroid, offsetChange, zoomChange, rotationChange ->
-            val scale = zoomChange
-            // abs(Offset(1f, 1f) * zoomChange.coerceAtMost(Offset(2f, 2f))).coerceIn(
-            //     Offset(1f, 1f), Offset(50f, 25f)
-            // )
+
+            // /!\ No memory allocation in this function
+
+            matrix.getValues(currentValues)
+            val minScaleX = initialValues[Matrix.MSCALE_X] / currentValues[Matrix.MSCALE_X]
+            val minScaleY = initialValues[Matrix.MSCALE_Y] / currentValues[Matrix.MSCALE_Y]
 
             matrix.postTranslate(-centroid.x, -centroid.y)
-            matrix.postScale(scale.x, scale.y)
+            matrix.postScale(
+                zoomChange.x.coerceAtLeast(minScaleX),
+                zoomChange.y.coerceAtLeast(minScaleY))
             matrix.postTranslate(centroid.x, centroid.y)
-            matrix.postTranslate(offsetChange.x, offsetChange.y)
 
+            rightTranslateX = -currentValues[Matrix.MTRANS_X]
+            leftTranslateX = rightTranslateX + size.width - size.width / minScaleX
+
+            bottomTranslateY = initialValues[Matrix.MTRANS_Y] - currentValues[Matrix.MTRANS_Y]
+            topTranslateY =
+                if (yOrientation == YOrientation.Up) bottomTranslateY - size.height + size.height / minScaleY
+                else bottomTranslateY + size.height - size.height / minScaleY
+
+
+            matrix.postTranslate(
+                offsetChange.x.coerceAtLeast(leftTranslateX).coerceAtMost(rightTranslateX),
+                if (yOrientation == YOrientation.Down)
+                    offsetChange.y.coerceAtLeast(topTranslateY).coerceAtMost(bottomTranslateY)
+                else
+                    offsetChange.y.coerceAtLeast(bottomTranslateY).coerceAtMost(topTranslateY)
+            )
             transformSeries()
         }
     private val matrix: Matrix = Matrix()
@@ -45,6 +72,7 @@ class ChartState<E> {
         boundaries: Boundaries?,
         yOrientation: YOrientation
     ) {
+        this.yOrientation = yOrientation
         this.series = series
         this.series.forEach {
             it.seriePoints.forEachIndexed { index, dataPoint ->
@@ -56,7 +84,7 @@ class ChartState<E> {
         }
 
         matrix.apply {
-            var size = Size(box.constraints.maxWidth.toFloat(), box.constraints.maxHeight.toFloat())
+            size = Size(box.constraints.maxWidth.toFloat(), box.constraints.maxHeight.toFloat())
             val actualBoundaries = getBoundaries(boundaries, this@ChartState.series)
             val xFraction = actualBoundaries.run { size.width / (maxX - minX) }
             val yFraction = actualBoundaries.run { size.height / (maxY - minY) }
@@ -68,6 +96,7 @@ class ChartState<E> {
                 postScale(xFraction, yFraction)
             }
         }
+        matrix.getValues(initialValues)
         transformSeries()
     }
 }
