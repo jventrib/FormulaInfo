@@ -93,7 +93,7 @@ android {
 
 dependencies {
     def roomVersion = '2.4.2'
-    def archLifecycleVersion = '2.4.1'
+    def archLifecycleVersion = '2.5.0'
     def coreTestingVersion = '2.1.0'
     def materialVersion = '1.6.1'
     def coroutines = '1.6.1-native-mt'
