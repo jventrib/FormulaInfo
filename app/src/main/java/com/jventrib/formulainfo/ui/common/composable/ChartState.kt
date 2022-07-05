@@ -24,13 +24,14 @@ class ChartState<E> {
     private var leftTranslateX: Float = 0.0f
     private var rightTranslateX: Float = 0.0f
 
+    private lateinit var actualBoundaries: ActualBoundaries
+
     // private val allSeriesSize = series.maxOfOrNull { it.seriePoints.size } ?: 1
     // val pointAlpha = (10 * (scale.getDistance() - 1) / allSeriesSize).coerceIn(0f, 1f)
     val onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit =
         { centroid, offsetChange, zoomChange, rotationChange ->
 
             // /!\ No memory allocation in this function
-
             matrix.getValues(currentValues)
             val minScaleX = initialValues[Matrix.MSCALE_X] / currentValues[Matrix.MSCALE_X]
             val minScaleY = initialValues[Matrix.MSCALE_Y] / currentValues[Matrix.MSCALE_Y]
@@ -38,17 +39,18 @@ class ChartState<E> {
             matrix.postTranslate(-centroid.x, -centroid.y)
             matrix.postScale(
                 zoomChange.x.coerceAtLeast(minScaleX),
-                zoomChange.y.coerceAtLeast(minScaleY))
+                zoomChange.y.coerceAtLeast(minScaleY)
+            )
             matrix.postTranslate(centroid.x, centroid.y)
 
             rightTranslateX = -currentValues[Matrix.MTRANS_X]
             leftTranslateX = rightTranslateX + size.width - size.width / minScaleX
 
             bottomTranslateY = initialValues[Matrix.MTRANS_Y] - currentValues[Matrix.MTRANS_Y]
+            logcat(LogPriority.VERBOSE) { "bottomTranslateY: $bottomTranslateY" }
             topTranslateY =
                 if (yOrientation == YOrientation.Up) bottomTranslateY - size.height + size.height / minScaleY
                 else bottomTranslateY + size.height - size.height / minScaleY
-
 
             matrix.postTranslate(
                 offsetChange.x.coerceAtLeast(leftTranslateX).coerceAtMost(rightTranslateX),
@@ -57,12 +59,16 @@ class ChartState<E> {
                 else
                     offsetChange.y.coerceAtLeast(bottomTranslateY).coerceAtMost(topTranslateY)
             )
+
             transformSeries()
         }
     private val matrix: Matrix = Matrix()
     private fun transformSeries() {
         logcat(LogPriority.VERBOSE) { "matrix: $matrix" }
-        series.forEach { matrix.mapPoints(it.mappedPoints, it.points) }
+        val m2 = Matrix(matrix) //FIXME pre allocate !
+        m2.preTranslate(-actualBoundaries.minX, -actualBoundaries.minY)
+
+        series.forEach { m2.mapPoints(it.mappedPoints, it.points) }
         series = series
     }
 
@@ -85,7 +91,7 @@ class ChartState<E> {
 
         matrix.apply {
             size = Size(box.constraints.maxWidth.toFloat(), box.constraints.maxHeight.toFloat())
-            val actualBoundaries = getBoundaries(boundaries, this@ChartState.series)
+            actualBoundaries = getBoundaries(boundaries, this@ChartState.series)
             val xFraction = actualBoundaries.run { size.width / (maxX - minX) }
             val yFraction = actualBoundaries.run { size.height / (maxY - minY) }
             reset()
