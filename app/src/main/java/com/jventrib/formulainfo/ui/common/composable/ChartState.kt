@@ -10,11 +10,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.setFrom
 import logcat.LogPriority
 import logcat.logcat
 
 class ChartState<E> {
     var series by mutableStateOf<List<Serie<E>>>(listOf(), neverEqualPolicy())
+    private val matrix: Matrix = Matrix()
+    private val offsetMatrix: Matrix = Matrix()
+
     private val initialValues = FloatArray(9)
     private val currentValues = FloatArray(9)
     private lateinit var yOrientation: YOrientation
@@ -49,8 +53,8 @@ class ChartState<E> {
             bottomTranslateY = initialValues[Matrix.MTRANS_Y] - currentValues[Matrix.MTRANS_Y]
             logcat(LogPriority.VERBOSE) { "bottomTranslateY: $bottomTranslateY" }
             topTranslateY =
-                if (yOrientation == YOrientation.Up) bottomTranslateY - size.height + size.height / minScaleY
-                else bottomTranslateY + size.height - size.height / minScaleY
+                if (yOrientation == YOrientation.Down) bottomTranslateY + size.height - size.height / minScaleY
+                else bottomTranslateY - size.height + size.height / minScaleY
 
             matrix.postTranslate(
                 offsetChange.x.coerceAtLeast(leftTranslateX).coerceAtMost(rightTranslateX),
@@ -62,13 +66,13 @@ class ChartState<E> {
 
             transformSeries()
         }
-    private val matrix: Matrix = Matrix()
+
     private fun transformSeries() {
         logcat(LogPriority.VERBOSE) { "matrix: $matrix" }
-        val m2 = Matrix(matrix) //FIXME pre allocate !
-        m2.preTranslate(-actualBoundaries.minX, -actualBoundaries.minY)
+        offsetMatrix.set(matrix)
+        offsetMatrix.preTranslate(-actualBoundaries.minX, -actualBoundaries.minY)
 
-        series.forEach { m2.mapPoints(it.mappedPoints, it.points) }
+        series.forEach { offsetMatrix.mapPoints(it.mappedPoints, it.points) }
         series = series
     }
 
