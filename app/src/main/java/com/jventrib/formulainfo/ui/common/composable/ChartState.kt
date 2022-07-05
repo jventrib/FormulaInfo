@@ -30,6 +30,40 @@ class ChartState<E> {
 
     private lateinit var actualBoundaries: ActualBoundaries
 
+    fun init(
+        series: List<Serie<E>>,
+        box: BoxWithConstraintsScope,
+        boundaries: Boundaries?,
+        yOrientation: YOrientation
+    ) {
+        this.yOrientation = yOrientation
+        this.series = series
+        this.series.forEach {
+            it.seriePoints.forEachIndexed { index, dataPoint ->
+                it.points[index * 2] = dataPoint.offset.x
+                it.points[index * 2 + 1] = dataPoint.offset.y
+            }
+        }.apply {
+            logcat("seriesState") { "Init Points done" }
+        }
+
+        matrix.apply {
+            size = Size(box.constraints.maxWidth.toFloat(), box.constraints.maxHeight.toFloat())
+            actualBoundaries = getBoundaries(boundaries, this@ChartState.series)
+            val xFraction = actualBoundaries.run { size.width / (maxX - minX) }
+            val yFraction = actualBoundaries.run { size.height / (maxY - minY) }
+            reset()
+            if (yOrientation == YOrientation.Up) {
+                postScale(xFraction, -yFraction)
+                postTranslate(0f, size.height)
+            } else {
+                postScale(xFraction, yFraction)
+            }
+        }
+        matrix.getValues(initialValues)
+        transformSeries()
+    }
+
     // private val allSeriesSize = series.maxOfOrNull { it.seriePoints.size } ?: 1
     // val pointAlpha = (10 * (scale.getDistance() - 1) / allSeriesSize).coerceIn(0f, 1f)
     val onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit =
@@ -76,39 +110,6 @@ class ChartState<E> {
         series = series
     }
 
-    fun init(
-        series: List<Serie<E>>,
-        box: BoxWithConstraintsScope,
-        boundaries: Boundaries?,
-        yOrientation: YOrientation
-    ) {
-        this.yOrientation = yOrientation
-        this.series = series
-        this.series.forEach {
-            it.seriePoints.forEachIndexed { index, dataPoint ->
-                it.points[index * 2] = dataPoint.offset.x
-                it.points[index * 2 + 1] = dataPoint.offset.y
-            }
-        }.apply {
-            logcat("seriesState") { "Init Points done" }
-        }
-
-        matrix.apply {
-            size = Size(box.constraints.maxWidth.toFloat(), box.constraints.maxHeight.toFloat())
-            actualBoundaries = getBoundaries(boundaries, this@ChartState.series)
-            val xFraction = actualBoundaries.run { size.width / (maxX - minX) }
-            val yFraction = actualBoundaries.run { size.height / (maxY - minY) }
-            reset()
-            if (yOrientation == YOrientation.Up) {
-                postScale(xFraction, -yFraction)
-                postTranslate(0f, size.height)
-            } else {
-                postScale(xFraction, yFraction)
-            }
-        }
-        matrix.getValues(initialValues)
-        transformSeries()
-    }
 }
 
 @Composable
