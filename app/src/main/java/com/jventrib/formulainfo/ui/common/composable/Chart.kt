@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.ui.common.composable
 
+import android.graphics.Paint.ANTI_ALIAS_FLAG
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +27,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.lerp
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.NativeCanvas
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
@@ -241,34 +243,39 @@ private fun <E> DrawScope.drawAxisLabels(
 fun <E> DrawScope.drawSerie(
     serie: Serie<E>,
 ) {
-    drawIntoCanvas { canvas ->
-        val nativeCanvas = canvas.nativeCanvas
-        nativeCanvas.drawLines(
-            serie.mappedPoints,
-            android.graphics.Paint().apply {
-                this.color = serie.color.toArgb()
-                strokeWidth = 3.dp.toPx()
-            }
-        )
-        nativeCanvas.drawLines(
-            serie.mappedPoints,
-            2,
-            serie.mappedPoints.size - 2,
-            android.graphics.Paint().apply {
-                this.color = serie.color.toArgb()
-                strokeWidth = 3.dp.toPx()
-            }
-        )
-    }
+    if (serie.mappedPoints.isNotEmpty()) {
+        drawIntoCanvas { canvas ->
+            val nativeCanvas = canvas.nativeCanvas
+            drawLines(nativeCanvas, serie, 0)
+            drawLines(nativeCanvas, serie, 2)
+        }
 
-    // drawPoints(
-    //     serie.seriePoints.map { it.offset },
-    //     PointMode.Polygon,
-    //     color,
-    //     3.dp.toPx(),
-    //     StrokeCap.Round,
-    // )
-    // points.forEach { drawCircle(color = color, 4.dp.toPx(), it.offset, alpha) }
+        // drawPoints(
+        //     serie.seriePoints.map { it.offset },
+        //     PointMode.Polygon,
+        //     color,
+        //     3.dp.toPx(),
+        //     StrokeCap.Round,
+        // )
+        // points.forEach { drawCircle(color = color, 4.dp.toPx(), it.offset, alpha) }
+    }
+}
+
+private fun <E> DrawScope.drawLines(
+    nativeCanvas: NativeCanvas,
+    serie: Serie<E>,
+    offset: Int
+) {
+    nativeCanvas.drawLines(
+        serie.mappedPoints,
+        offset,
+        serie.mappedPoints.size - offset,
+        android.graphics.Paint().apply {
+            color = serie.color.toArgb()
+            strokeWidth = 3.dp.toPx()
+            flags = ANTI_ALIAS_FLAG
+        }
+    )
 }
 
 private fun <E> getSeriePoints(serie: Serie<E>, state: ChartStateOld<E>): Serie<E> {
