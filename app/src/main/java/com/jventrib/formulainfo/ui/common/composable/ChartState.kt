@@ -1,6 +1,7 @@
 package com.jventrib.formulainfo.ui.common.composable
 
 import android.graphics.Matrix
+import android.graphics.Paint
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -10,12 +11,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.setFrom
 import logcat.LogPriority
 import logcat.logcat
 
 class ChartState<E> {
     var series by mutableStateOf<List<Serie<E>>>(listOf(), neverEqualPolicy())
+    val paint = Paint().apply { flags = Paint.ANTI_ALIAS_FLAG }
     private val matrix: Matrix = Matrix()
     private val offsetMatrix: Matrix = Matrix()
 
@@ -109,7 +110,6 @@ class ChartState<E> {
         series.forEach { offsetMatrix.mapPoints(it.mappedPoints, it.points) }
         series = series
     }
-
 }
 
 @Composable

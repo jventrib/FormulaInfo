@@ -1,5 +1,6 @@
 package com.jventrib.formulainfo.ui.common.composable
 
+import android.graphics.Paint
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -28,7 +29,6 @@ import androidx.compose.ui.geometry.lerp
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.NativeCanvas
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
@@ -77,14 +77,14 @@ fun <E> Chart(
                             detectTransformGesturesXY(onGesture = chartState.onGesture)
                         }
                 ) {
-                    drawIntoCanvas {
-                        // Draw Grid
-                        // drawGrid(state)
+                    chartState.paint.strokeWidth = 3.dp.toPx()
+                    // Draw Grid
+                    // drawGrid(state)
 
-                        // Series
-                        chartState.series.forEach { serie ->
-                            drawSerie(serie)
-                        }
+                    // Series
+                    chartState.series.forEach { serie ->
+                        chartState.paint.color = serie.color.toArgb()
+                        drawSerie(serie, chartState.paint)
                     }
 
                     // drawAxisLabels(
@@ -182,7 +182,7 @@ private fun <E> DrawScope.drawAxisLabels(
     xLabelTransform: (Float) -> String,
     yLabelTransform: (Float) -> String
 ) {
-    val axisLabelPaint = Paint().asFrameworkPaint().apply {
+    val axisLabelPaint = Paint().apply {
         textSize = 32f
         color = axisColor.toArgb()
     }
@@ -242,22 +242,23 @@ private fun <E> DrawScope.drawAxisLabels(
 
 fun <E> DrawScope.drawSerie(
     serie: Serie<E>,
+    paint: Paint,
 ) {
     if (serie.mappedPoints.isNotEmpty()) {
         drawIntoCanvas { canvas ->
             val nativeCanvas = canvas.nativeCanvas
             drawLines(nativeCanvas, serie, 0)
             drawLines(nativeCanvas, serie, 2)
-        }
 
-        // drawPoints(
-        //     serie.seriePoints.map { it.offset },
-        //     PointMode.Polygon,
-        //     color,
-        //     3.dp.toPx(),
-        //     StrokeCap.Round,
-        // )
-        // points.forEach { drawCircle(color = color, 4.dp.toPx(), it.offset, alpha) }
+            for (i in serie.mappedPoints.indices step 2) {
+                nativeCanvas.drawCircle(
+                    serie.mappedPoints[i],
+                    serie.mappedPoints[i + 1],
+                    4.dp.toPx(),
+                    paint
+                )
+            }
+        }
     }
 }
 
@@ -270,12 +271,23 @@ private fun <E> DrawScope.drawLines(
         serie.mappedPoints,
         offset,
         serie.mappedPoints.size - offset,
-        android.graphics.Paint().apply {
+        Paint().apply {
             color = serie.color.toArgb()
             strokeWidth = 3.dp.toPx()
             flags = ANTI_ALIAS_FLAG
         }
     )
+}
+
+private fun <E> DrawScope.getPaint(serie: Serie<E>) {
+    Paint().apply {
+        val shaderString = ""
+        // shader = RuntimeShader(shaderString)
+        color = serie.color.toArgb()
+        strokeWidth = 3.dp.toPx()
+        flags = ANTI_ALIAS_FLAG
+        // pathEffect = DashPathEffect(floatArrayOf(20f, 10f), 0f)
+    }
 }
 
 private fun <E> getSeriePoints(serie: Serie<E>, state: ChartStateOld<E>): Serie<E> {
@@ -369,6 +381,7 @@ data class ChartStateOld<E>(
 @Composable
 fun ChartPreview() {
     val series = (0..5).map {
+        val color = Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat())
         Serie(
             (0..10).map {
                 DataPoint("TEST", Offset(it.toFloat(), Random.nextInt(20).toFloat()))
