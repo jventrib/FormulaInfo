@@ -42,7 +42,9 @@ import com.google.android.material.math.MathUtils.lerp
 import com.jventrib.formulainfo.ui.common.detectTransformGesturesXY
 import com.jventrib.formulainfo.ui.common.formatDecimal
 import kotlin.math.absoluteValue
+import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 @Composable
@@ -83,8 +85,7 @@ fun <E> Chart(
 
                     // Series
                     chartState.series.forEach { serie ->
-                        chartState.paint.color = serie.color.toArgb()
-                        drawSerie(serie, chartState.paint)
+                        drawSerie(serie, chartState)
                     }
 
                     // drawAxisLabels(
@@ -242,20 +243,38 @@ private fun <E> DrawScope.drawAxisLabels(
 
 fun <E> DrawScope.drawSerie(
     serie: Serie<E>,
-    paint: Paint,
+    chartState: ChartState<E>,
 ) {
+    chartState.paint.color = serie.color.toArgb()
+
     if (serie.mappedPoints.isNotEmpty()) {
         drawIntoCanvas { canvas ->
             val nativeCanvas = canvas.nativeCanvas
             drawLines(nativeCanvas, serie, 0)
             drawLines(nativeCanvas, serie, 2)
 
+            // chartState.paint.alpha = chartState.alpha
             for (i in serie.mappedPoints.indices step 2) {
+                if (i >= 2 && i < serie.mappedPoints.size - 3) {
+                    val distPrev = sqrt(
+                        (serie.mappedPoints[i] - serie.mappedPoints[i - 2]).pow(2) +
+                            (serie.mappedPoints[i + 1] - serie.mappedPoints[i - 1]).pow(2)
+                    )
+                    val distNext = sqrt(
+                        (serie.mappedPoints[i] - serie.mappedPoints[i + 2]).pow(2) +
+                            (serie.mappedPoints[i + 1] - serie.mappedPoints[i + 3]).pow(2)
+                    )
+                    val alpha = distPrev + distNext - 50f
+                    chartState.paint.alpha = alpha.toInt().coerceIn(0, 255)
+                } else {
+                    chartState.paint.alpha = 255
+                }
+
                 nativeCanvas.drawCircle(
                     serie.mappedPoints[i],
                     serie.mappedPoints[i + 1],
                     4.dp.toPx(),
-                    paint
+                    chartState.paint
                 )
             }
         }
@@ -275,6 +294,7 @@ private fun <E> DrawScope.drawLines(
             color = serie.color.toArgb()
             strokeWidth = 3.dp.toPx()
             flags = ANTI_ALIAS_FLAG
+            alpha = 255
         }
     )
 }

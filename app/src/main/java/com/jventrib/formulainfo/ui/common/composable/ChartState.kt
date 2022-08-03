@@ -17,6 +17,7 @@ import logcat.logcat
 class ChartState<E> {
     var series by mutableStateOf<List<Serie<E>>>(listOf(), neverEqualPolicy())
     val paint = Paint().apply { flags = Paint.ANTI_ALIAS_FLAG }
+    var alpha = 0
     private val matrix: Matrix = Matrix()
     private val offsetMatrix: Matrix = Matrix()
 
@@ -28,7 +29,6 @@ class ChartState<E> {
     private var topTranslateY: Float = 0.0f
     private var leftTranslateX: Float = 0.0f
     private var rightTranslateX: Float = 0.0f
-
     private lateinit var actualBoundaries: ActualBoundaries
 
     fun init(
@@ -65,31 +65,30 @@ class ChartState<E> {
         transformSeries()
     }
 
-    // private val allSeriesSize = series.maxOfOrNull { it.seriePoints.size } ?: 1
-    // val pointAlpha = (10 * (scale.getDistance() - 1) / allSeriesSize).coerceIn(0f, 1f)
+    private val allSeriesSize = series.maxOfOrNull { it.seriePoints.size } ?: 1
     val onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit =
         { centroid, offsetChange, zoomChange, rotationChange ->
 
             // /!\ No memory allocation in this function
             matrix.getValues(currentValues)
-            val minScaleX = initialValues[Matrix.MSCALE_X] / currentValues[Matrix.MSCALE_X]
-            val minScaleY = initialValues[Matrix.MSCALE_Y] / currentValues[Matrix.MSCALE_Y]
+            val scaleX = initialValues[Matrix.MSCALE_X] / currentValues[Matrix.MSCALE_X]
+            val scaleY = initialValues[Matrix.MSCALE_Y] / currentValues[Matrix.MSCALE_Y]
 
             matrix.postTranslate(-centroid.x, -centroid.y)
             matrix.postScale(
-                zoomChange.x.coerceAtLeast(minScaleX),
-                zoomChange.y.coerceAtLeast(minScaleY)
+                zoomChange.x.coerceAtLeast(scaleX),
+                zoomChange.y.coerceAtLeast(scaleY)
             )
             matrix.postTranslate(centroid.x, centroid.y)
 
             rightTranslateX = -currentValues[Matrix.MTRANS_X]
-            leftTranslateX = rightTranslateX + size.width - size.width / minScaleX
+            leftTranslateX = rightTranslateX + size.width - size.width / scaleX
 
             bottomTranslateY = initialValues[Matrix.MTRANS_Y] - currentValues[Matrix.MTRANS_Y]
             logcat(LogPriority.VERBOSE) { "bottomTranslateY: $bottomTranslateY" }
             topTranslateY =
-                if (yOrientation == YOrientation.Down) bottomTranslateY + size.height - size.height / minScaleY
-                else bottomTranslateY - size.height + size.height / minScaleY
+                if (yOrientation == YOrientation.Down) bottomTranslateY + size.height - size.height / scaleY
+                else bottomTranslateY - size.height + size.height / scaleY
 
             matrix.postTranslate(
                 offsetChange.x.coerceAtLeast(leftTranslateX).coerceAtMost(rightTranslateX),
@@ -98,7 +97,9 @@ class ChartState<E> {
                 else
                     offsetChange.y.coerceAtLeast(bottomTranslateY).coerceAtMost(topTranslateY)
             )
-
+            val scale = Offset(1 / scaleX, 1 / scaleY).getDistance()
+            alpha = ((10 * (scale - 1) / allSeriesSize) * 2).coerceIn(0f, 255f).toInt()
+            logcat { "alpha: $alpha" }
             transformSeries()
         }
 
