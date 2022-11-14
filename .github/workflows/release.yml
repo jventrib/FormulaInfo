@@ -76,7 +76,7 @@ jobs:
           key: gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
 
       - name: Set Timezone
-        uses: szenius/set-timezone@v1.0
+        uses: szenius/set-timezone@v1.1
         with:
           timezoneMacos: "Europe/Paris"
 
