@@ -21,7 +21,7 @@ jobs:
           java-version: '17'
 
       - name: Gradle cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches/modules-*
@@ -67,7 +67,7 @@ jobs:
           java-version: '11'
 
       - name: Gradle cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches/modules-*
@@ -108,7 +108,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Gradle cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.gradle/caches/modules-*
