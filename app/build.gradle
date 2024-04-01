@@ -36,6 +36,7 @@ android {
             ndk {
                 debugSymbolLevel 'SYMBOL_TABLE'
             }
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {

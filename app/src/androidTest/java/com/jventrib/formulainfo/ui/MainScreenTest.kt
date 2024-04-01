@@ -17,6 +17,7 @@ import com.jventrib.formulainfo.MainActivity
 import com.karumi.shot.ScreenshotTest
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import java.time.LocalDate
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -50,7 +51,7 @@ class MainScreenTest : ScreenshotTest {
         Espresso.pressBack()
 
         // Back to schedule
-        waitForNode("2022", false).performClick()
+        waitForNode(LocalDate.now().year.toString(), false).performClick()
         composeTestRule.onNodeWithText("2021").assertExists().performClick()
         screenshot("schedule")
 
