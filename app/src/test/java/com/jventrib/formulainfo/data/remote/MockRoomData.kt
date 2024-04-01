@@ -40,12 +40,13 @@ class MockRoomData(
         return lapDao
     }
 
-    override fun createOpenHelper(config: DatabaseConfiguration?): SupportSQLiteOpenHelper {
-        TODO("Not yet implemented")
-    }
 
     override fun createInvalidationTracker(): InvalidationTracker {
         return mockk()
+    }
+
+    override fun createOpenHelper(config: DatabaseConfiguration): SupportSQLiteOpenHelper {
+        TODO("Not yet implemented")
     }
 
     override fun clearAllTables() {

@@ -5,6 +5,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings
+import androidx.core.content.ContextCompat.startActivity
 import com.jventrib.formulainfo.data.RaceRepository
 import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.model.db.Session.FP1
@@ -88,12 +90,17 @@ class SessionNotificationManager @Inject constructor(
                         PendingIntent.FLAG_CANCEL_CURRENT
                     }
                 )
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    alarmManager.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP,
-                        date,
-                        pendingIntent
-                    )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (alarmManager.canScheduleExactAlarms()) {
+                        alarmManager.setExact(
+                            AlarmManager.RTC_WAKEUP,
+                            date,
+                            pendingIntent
+                        )
+                    } else {
+                        startActivity(context, Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK), null)
+                    }
                 } else {
                     alarmManager.setExact(AlarmManager.RTC_WAKEUP, date, pendingIntent)
                 }
