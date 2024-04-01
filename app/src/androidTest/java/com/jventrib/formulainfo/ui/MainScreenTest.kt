@@ -35,13 +35,16 @@ class MainScreenTest : ScreenshotTest {
     @Test
     fun testMainScreen() {
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("TAG")
-        waitUI(10000)
+        waitUI(4000)
         waitForNodeFromTag("about").performClick()
         Espresso.pressBack()
 
-        waitForNodeFromTag("preference").performClick()
-        screenshot("preference")
-        Espresso.pressBack()
+        // waitForNodeFromTag("preference").performClick()
+        // waitUI(2000)
+        // Espresso.pressBack()
+        // waitUI(2000)
+        // Espresso.pressBack()
+        // screenshot("preference")
 
         waitForNodeFromTag("raceList").performScrollToIndex(0)
         waitForNode("Bahrain Grand Prix").performClick()
