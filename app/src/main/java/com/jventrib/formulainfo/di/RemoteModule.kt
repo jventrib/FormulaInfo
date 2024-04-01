@@ -2,7 +2,7 @@ package com.jventrib.formulainfo.di
 
 import android.content.Context
 import coil.ImageLoader
-import coil.util.CoilUtils
+import coil.disk.DiskCache
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.jventrib.formulainfo.R
@@ -15,14 +15,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -30,11 +30,11 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(@ApplicationContext context: Context): OkHttpClient {
+    fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
             .readTimeout(20, TimeUnit.SECONDS)
-            .cache(CoilUtils.createDefaultCache(context))
+            // .cache(CoilUtils.createDefaultCache(context))
             .build()
     }
 
@@ -46,6 +46,7 @@ object RemoteModule {
     ): ImageLoader {
         return ImageLoader.Builder(context)
             .okHttpClient { okHttpClient }
+            .diskCache{ DiskCache.Builder().directory(context.cacheDir.resolve("image_cache")).maxSizePercent(0.02).build()}
             .build()
     }
 

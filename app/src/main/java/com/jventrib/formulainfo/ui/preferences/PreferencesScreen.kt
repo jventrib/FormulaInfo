@@ -1,6 +1,11 @@
 package com.jventrib.formulainfo.ui.preferences
 
+import android.app.AlarmManager
 import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Slider
@@ -27,9 +34,11 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -71,12 +80,12 @@ private fun PreferencesScreen(datastore: IStorePreference) {
     Scaffold(
         topBar = { TopAppBar(title = { Text("Preferences") }) }
     ) {
+        val context = LocalContext.current
         Column(
             Modifier
                 .padding(it)
                 .padding(16.dp)
         ) {
-            Text("Notifications", style = MaterialTheme.typography.h6)
             PreferenceSwitch(
                 datastore,
                 scope,
@@ -120,6 +129,30 @@ private fun PreferencesScreen(datastore: IStorePreference) {
                     }
                 }
             )
+            Spacer(modifier = Modifier.height(30.dp))
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+
+                Text(text = "Alarms and Reminder not allowed. Please press button to allow")
+                Button(onClick = {
+                    Toast.makeText(
+                        context,
+                        "Please allow Formula Info to send Alarms and reminders to get notified about sessions",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    ContextCompat.startActivity(
+                        context,
+                        Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK
+                        ),
+                        null
+                    )
+
+                }) {
+                    Text(text = "Allow")
+                }
+            }
         }
     }
 }

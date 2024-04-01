@@ -5,6 +5,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings
+import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import com.jventrib.formulainfo.data.RaceRepository
 import com.jventrib.formulainfo.model.db.Session
 import com.jventrib.formulainfo.model.db.Session.FP1
@@ -32,8 +35,10 @@ class SessionNotificationManager @Inject constructor(
     private val repository: RaceRepository
 ) {
     suspend fun notifyNextRaces() {
+
         val dataStore = context.dataStore.data.first()
 
+        val notifyFirstRun = dataStore[StorePreference.NOTIFY_FIRST_RUN] ?: true
         val notifyFP = dataStore[StorePreference.NOTIFY_PRACTICE] ?: false
         val notifyQual = dataStore[StorePreference.NOTIFY_QUAL] ?: false
         val notifyRace = dataStore[StorePreference.NOTIFY_RACE] ?: true
@@ -88,12 +93,41 @@ class SessionNotificationManager @Inject constructor(
                         PendingIntent.FLAG_CANCEL_CURRENT
                     }
                 )
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    alarmManager.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP,
-                        date,
-                        pendingIntent
-                    )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (alarmManager.canScheduleExactAlarms()) {
+                        alarmManager.setExact(
+                            AlarmManager.RTC_WAKEUP,
+                            date,
+                            pendingIntent
+                        )
+                    } else {
+                        if (notifyFirstRun) {
+                            Toast.makeText(
+                                context,
+                                "Please allow Formula Info to send Alarms and reminders to get notified about sessions",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                            startActivity(
+                                context,
+                                Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).setFlags(
+                                    Intent.FLAG_ACTIVITY_NEW_TASK
+                                ),
+                                null
+                            )
+                            context.dataStore.updateData {
+                                it.toMutablePreferences()
+                                    .apply { set(StorePreference.NOTIFY_FIRST_RUN, false) }
+                            }
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Alarms and reminders not allowed",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                        }
+                    }
                 } else {
                     alarmManager.setExact(AlarmManager.RTC_WAKEUP, date, pendingIntent)
                 }
