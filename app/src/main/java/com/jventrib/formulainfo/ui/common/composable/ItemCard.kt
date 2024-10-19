@@ -64,7 +64,7 @@ fun ItemCard(
     ) {
         Row(
             verticalAlignment = CenterVertically,
-            modifier = Modifier.height(IntrinsicSize.Max)
+            modifier = Modifier.height(IntrinsicSize.Min)
         ) {
             border?.let {
                 Box(

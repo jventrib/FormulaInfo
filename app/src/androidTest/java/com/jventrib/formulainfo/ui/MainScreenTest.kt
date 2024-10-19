@@ -17,6 +17,7 @@ import com.jventrib.formulainfo.MainActivity
 import com.karumi.shot.ScreenshotTest
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import java.time.LocalDate
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,13 +35,16 @@ class MainScreenTest : ScreenshotTest {
     @Test
     fun testMainScreen() {
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("TAG")
-        waitUI(10000)
+        waitUI(4000)
         waitForNodeFromTag("about").performClick()
         Espresso.pressBack()
 
-        waitForNodeFromTag("preference").performClick()
-        screenshot("preference")
-        Espresso.pressBack()
+        // waitForNodeFromTag("preference").performClick()
+        // waitUI(2000)
+        // Espresso.pressBack()
+        // waitUI(2000)
+        // Espresso.pressBack()
+        // screenshot("preference")
 
         waitForNodeFromTag("raceList").performScrollToIndex(0)
         waitForNode("Bahrain Grand Prix").performClick()
@@ -50,7 +54,7 @@ class MainScreenTest : ScreenshotTest {
         Espresso.pressBack()
 
         // Back to schedule
-        waitForNode("2022", false).performClick()
+        waitForNode(LocalDate.now().year.toString(), false).performClick()
         composeTestRule.onNodeWithText("2021").assertExists().performClick()
         screenshot("schedule")
 

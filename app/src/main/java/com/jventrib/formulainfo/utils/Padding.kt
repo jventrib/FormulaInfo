@@ -2,7 +2,6 @@ package com.jventrib.formulainfo.utils
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import coil.bitmap.BitmapPool
 import coil.size.Size
 import coil.transform.Transformation
 
@@ -12,9 +11,10 @@ class Padding(
     private val left: Float = 0F,
     private val right: Float = 0F
 ) : Transformation {
-    override fun key() = Padding::class.java.toString()
+    override val cacheKey: String
+        get() = Padding::class.java.toString()
 
-    override suspend fun transform(pool: BitmapPool, input: Bitmap, size: Size): Bitmap =
+    override suspend fun transform(input: Bitmap, size: Size): Bitmap =
         input.pad(top, bottom, left, right)
 
     private fun Bitmap.pad(

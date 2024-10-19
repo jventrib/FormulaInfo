@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.jventrib.formulainfo.ui.laps
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -48,9 +51,9 @@ fun NavGraphBuilder.laps() {
     ) { navBackStackEntry ->
         val viewModel: LapsViewModel = hiltViewModel(navBackStackEntry)
 
-        val season = navBackStackEntry.arguments?.get("season") as Int
-        val round = navBackStackEntry.arguments?.get("round") as Int
-        val driverId = navBackStackEntry.arguments?.get("driver") as String
+        val season = navBackStackEntry.arguments!!.getInt("season")
+        val round = navBackStackEntry.arguments!!.getInt("round")
+        val driverId = navBackStackEntry.arguments!!.getString("driver")!!
 
         LaunchedEffect(season, round, driverId) {
             viewModel.setSeason(season)

@@ -12,6 +12,7 @@ class StorePreference(val dataStore: DataStore<Preferences>) : IStorePreference 
 
     // to make sure there's only one instance
     companion object {
+        val NOTIFY_FIRST_RUN = booleanPreferencesKey("notify_first_run")
         val NOTIFY_PRACTICE = booleanPreferencesKey("notify_practice")
         val NOTIFY_QUAL = booleanPreferencesKey("notify_qual")
         val NOTIFY_RACE = booleanPreferencesKey("notify_race")

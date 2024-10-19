@@ -46,10 +46,10 @@ class SessionNotificationReceiver : BroadcastReceiver() {
 
     private fun sendNotification(intent: Intent, context: Context) {
         // perform your scheduled task here (eg. send alarm notification)
-        val raceName = intent.extras?.get("race_name") as String? ?: "Not Found"
+        val raceName = intent.extras?.getString("race_name") ?: "Not Found"
         val sessionDateTime = intent.extras?.get("session_datetime") as Instant?
-        val flag = intent.extras?.get("race_flag") as String?
-        val session = intent.extras?.get("race_session") as String?
+        val flag = intent.extras?.getString("race_flag")
+        val session = intent.extras?.getString("race_session")
 
         val channelID = "FormulaInfoChannelID"
         val channelName = "Formula Info Notifications"
