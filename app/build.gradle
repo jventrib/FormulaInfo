@@ -99,7 +99,7 @@ dependencies {
     def archLifecycleVersion = '2.7.0'
     def coreTestingVersion = '2.2.0'
     def materialVersion = '1.11.0'
-    def coroutines = '1.7.3'
+    def coroutines = '1.9.0'
     def retrofitVersion = '2.11.0'
     def hiltVersion = "2.51.1"
     def truthVersion = '1.4.2'
