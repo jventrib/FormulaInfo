@@ -104,7 +104,7 @@ dependencies {
     def hiltVersion = "2.51.1"
     def truthVersion = '1.4.4'
     def composeUiVersion = "1.7.0-alpha05"
-    def coilVersion = "2.6.0"
+    def coilVersion = "2.7.0"
 
     implementation "androidx.compose.ui:ui:$composeUiVersion"
     implementation "androidx.compose.ui:ui-util:$composeUiVersion"
