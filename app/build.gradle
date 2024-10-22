@@ -14,7 +14,7 @@ android {
     apply plugin: 'shot'
 
     defaultConfig {
-        compileSdkVersion 34
+        compileSdkVersion 35
         applicationId "com.jventrib.formulainfo"
         minSdkVersion 21
         targetSdkVersion 34
