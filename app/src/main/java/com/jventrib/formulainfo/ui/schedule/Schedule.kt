@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package com.jventrib.formulainfo.ui.schedule
 
 import android.widget.Toast
@@ -8,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
@@ -17,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.MultilineChart
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,8 +36,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.jventrib.formulainfo.model.aggregate.RaceWithResults
 import com.jventrib.formulainfo.model.db.Race
 import com.jventrib.formulainfo.ui.common.composable.collectAsStateWithLifecycle
@@ -163,11 +166,11 @@ fun RaceList(
     listState: LazyListState,
     onRefresh: () -> Unit
 ) {
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(raceList.isEmpty()),
-        onRefresh = onRefresh,
-        modifier = Modifier.semantics { testTag = "raceListSwipe" }
-    ) {
+
+    val pullRefreshState = rememberPullRefreshState(raceList.isEmpty(), onRefresh)
+
+    Box(Modifier.pullRefresh(pullRefreshState).then(Modifier.semantics { testTag = "raceListSwipe" }
+    )) {
         LazyColumn(state = listState, modifier = Modifier.semantics { testTag = "raceList" }) {
             items(raceList) {
                 RaceInfo(

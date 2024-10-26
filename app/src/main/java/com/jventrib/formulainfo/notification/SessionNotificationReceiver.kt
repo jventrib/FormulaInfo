@@ -32,61 +32,61 @@ class SessionNotificationReceiver : BroadcastReceiver() {
     @Inject
     lateinit var imageLoader: ImageLoader
 
-    @Inject
+//    @Inject
     lateinit var sessionNotificationManager: SessionNotificationManager
 
     override fun onReceive(context: Context, intent: Intent) {
         if ((Intent.ACTION_BOOT_COMPLETED) != intent.action) {
-            sendNotification(intent, context)
+//            sendNotification(intent, context)
         }
         CoroutineScope(Dispatchers.IO).launch {
-            sessionNotificationManager.notifyNextRaces()
+//            sessionNotificationManager.notifyNextRaces()
         }
     }
 
-    private fun sendNotification(intent: Intent, context: Context) {
-        // perform your scheduled task here (eg. send alarm notification)
-        val raceName = intent.extras?.getString("race_name") ?: "Not Found"
-        val sessionDateTime = intent.extras?.get("session_datetime") as Instant?
-        val flag = intent.extras?.getString("race_flag")
-        val session = intent.extras?.getString("race_session")
-
-        val channelID = "FormulaInfoChannelID"
-        val channelName = "Formula Info Notifications"
-        val notificationManager =
-            getSystemService(context, NotificationManager::class.java)!!
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel =
-                NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_HIGH)
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val image = (
-                imageLoader.execute(
-                    ImageRequest.Builder(context).data(flag)
-                        .scale(Scale.FIT)
-                        .transformations(listOf(Padding(12f, 12f)))
-                        .build()
-                ).drawable as BitmapDrawable?
-                )?.bitmap
-            val builder =
-                NotificationCompat.Builder(context.applicationContext, channelID)
-                    .setContentTitle(raceName)
-                    .setContentText(
-                        "$session starting in ${
-                        java.time.Duration.between(
-                            now(),
-                            sessionDateTime
-                        ).toKotlinDuration().plus(1.seconds).inWholeMinutes
-                        } minutes (${sessionDateTime?.formatTime()})"
-                    )
-                    .setSmallIcon(R.drawable.ic_launcher_notif)
-                    .setLargeIcon(image)
-                    .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
-                    .setPriority(NotificationCompat.PRIORITY_MAX)
-
-            notificationManager.notify(1, builder.build())
-        }
-    }
+    // private fun sendNotification(intent: Intent, context: Context) {
+    //     // perform your scheduled task here (eg. send alarm notification)
+    //     val raceName = intent.extras?.getString("race_name") ?: "Not Found"
+    //     val sessionDateTime = intent.extras?.get("session_datetime") as Instant?
+    //     val flag = intent.extras?.getString("race_flag")
+    //     val session = intent.extras?.getString("race_session")
+    //
+    //     val channelID = "FormulaInfoChannelID"
+    //     val channelName = "Formula Info Notifications"
+    //     val notificationManager =
+    //         getSystemService(context, NotificationManager::class.java)!!
+    //     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    //         val channel =
+    //             NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_HIGH)
+    //         notificationManager.createNotificationChannel(channel)
+    //     }
+    //
+    //     CoroutineScope(Dispatchers.IO).launch {
+    //         val image = (
+    //             imageLoader.execute(
+    //                 ImageRequest.Builder(context).data(flag)
+    //                     .scale(Scale.FIT)
+    //                     .transformations(listOf(Padding(12f, 12f)))
+    //                     .build()
+    //             ).drawable as BitmapDrawable?
+    //             )?.bitmap
+    //         val builder =
+    //             NotificationCompat.Builder(context.applicationContext, channelID)
+    //                 .setContentTitle(raceName)
+    //                 .setContentText(
+    //                     "$session starting in ${
+    //                     java.time.Duration.between(
+    //                         now(),
+    //                         sessionDateTime
+    //                     ).toKotlinDuration().plus(1.seconds).inWholeMinutes
+    //                     } minutes (${sessionDateTime?.formatTime()})"
+    //                 )
+    //                 .setSmallIcon(R.drawable.ic_launcher_notif)
+    //                 .setLargeIcon(image)
+    //                 .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
+    //                 .setPriority(NotificationCompat.PRIORITY_MAX)
+    //
+    //         notificationManager.notify(1, builder.build())
+    //     }
+    // }
 }
