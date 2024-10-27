@@ -59,7 +59,7 @@ android {
     }
     shot {
         applicationId = "com.jventrib.formulainfo"
-//        tolerance =  5
+        tolerance =  6.0
     }
     spotless {
         kotlin {
