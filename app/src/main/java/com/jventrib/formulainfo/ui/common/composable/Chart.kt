@@ -161,7 +161,7 @@ fun <E> Chart(
 
 @Composable
 private fun <E> YAxis(seriesPoints: List<Serie<E>>) {
-    BoxWithConstraints(
+    Box(
         modifier = Modifier
             .fillMaxHeight()
             .wrapContentWidth()

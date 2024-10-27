@@ -15,10 +15,10 @@ android {
 
     defaultConfig {
         applicationId = "com.jventrib.formulainfo"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+//        versionCode = 1
+//        versionName = "1.0"
         javaCompileOptions {
             ksp {
                 arg("room.schemaLocation", "$projectDir/schemas")
@@ -54,7 +54,7 @@ android {
     spotless {
         kotlin {
             target("**/*.kt")
-            targetExclude("$buildDir/**/*.kt")
+            targetExclude("${layout.buildDirectory}/**/*.kt")
             targetExclude("bin/**/*.kt")
 //            ktlint('0.51.0-FINAL')
         }
