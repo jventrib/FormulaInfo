@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android)
+    id("shot")
 }
 
 android {
@@ -21,8 +22,7 @@ android {
                 arg("room.schemaLocation", "$projectDir/schemas")
             }
         }
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.jventrib.formulainfo.di.HiltTestRunner"
     }
 
     buildTypes {
@@ -44,6 +44,10 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+    shot {
+        applicationId = "com.jventrib.formulainfo"
+//        tolerance =  5
     }
 }
 
@@ -77,10 +81,15 @@ dependencies {
 
     //test
     testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit.ktx)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.truth)
+    kspAndroidTest(libs.hilt.android.compiler)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

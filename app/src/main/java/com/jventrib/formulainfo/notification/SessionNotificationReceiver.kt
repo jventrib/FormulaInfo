@@ -26,7 +26,7 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toKotlinDuration
 
-@AndroidEntryPoint
+//@AndroidEntryPoint
 class SessionNotificationReceiver : BroadcastReceiver() {
 
     @Inject

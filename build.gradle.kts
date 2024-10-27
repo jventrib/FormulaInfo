@@ -9,6 +9,7 @@ plugins {
 
 buildscript {
     dependencies {
-        classpath(libs.dagger.hilt.android.gradlePlugin)
+        classpath(libs.hilt.android.gradlePlugin)
+        classpath(libs.shot)
     }
 }
