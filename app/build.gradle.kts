@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android)
     id("shot")
+    id("com.diffplug.spotless") version("6.25.0")
+
 }
 
 android {
@@ -49,6 +51,15 @@ android {
         applicationId = "com.jventrib.formulainfo"
 //        tolerance =  5
     }
+    spotless {
+        kotlin {
+            target("**/*.kt")
+            targetExclude("$buildDir/**/*.kt")
+            targetExclude("bin/**/*.kt")
+//            ktlint('0.51.0-FINAL')
+        }
+    }
+
 }
 
 dependencies {
