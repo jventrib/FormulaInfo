@@ -19,8 +19,8 @@ import javax.inject.Inject
 @HiltAndroidApp
 class Application : Application() {
 
-    @Inject
-    lateinit var sessionNotificationManager: SessionNotificationManager
+//    @Inject
+//    lateinit var sessionNotificationManager: SessionNotificationManager
 
     override fun onCreate() {
         super.onCreate()
@@ -29,7 +29,7 @@ class Application : Application() {
         AndroidLogcatLogger.installOnDebuggableApp(this, minPriority = LogPriority.DEBUG)
         MainScope().launch {
             logcat { "Init application" }
-            sessionNotificationManager.notifyNextRaces()
+//            sessionNotificationManager.notifyNextRaces()
         }
     }
 }

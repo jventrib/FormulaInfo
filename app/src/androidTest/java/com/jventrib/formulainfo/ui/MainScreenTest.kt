@@ -26,11 +26,11 @@ import org.junit.runner.RunWith
 @HiltAndroidTest
 class MainScreenTest : ScreenshotTest {
 
-    @get:Rule
-    val composeTestRule = createAndroidComposeRule<MainActivity>()
-
-    @get:Rule
+    @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
+    val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @Test
     fun testMainScreen() {
