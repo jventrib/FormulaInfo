@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,8 +16,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Slider
 import androidx.compose.material.Switch
@@ -26,7 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -34,7 +33,6 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
@@ -63,19 +61,30 @@ private fun PreferencesScreen() {
     val preferencesViewModel: PreferencesViewModel = hiltViewModel()
     val dataStore = LocalContext.current.dataStore
     val datastore = StorePreference(dataStore)
+    val scope = rememberCoroutineScope()
+
 
     LaunchedEffect(Unit) {
-        datastore.dataStore.data.collect {
-            preferencesViewModel.sessionNotificationManager.notifyNextRaces()
-            logcat { "Rescheduling notifications" }
-        }
+        notify(datastore, preferencesViewModel, false)
     }
+    PreferencesScreen(datastore) {
+        scope.launch { notify(datastore, preferencesViewModel, true) }
+    }
+}
 
-    PreferencesScreen(datastore)
+private suspend fun notify(
+    datastore: StorePreference,
+    preferencesViewModel: PreferencesViewModel,
+    testRun: Boolean
+) {
+    datastore.dataStore.data.collect {
+        preferencesViewModel.sessionNotificationManager.notifyNextRaces(testRun)
+        logcat("PreferencesScreen") { "Rescheduling notifications" }
+    }
 }
 
 @Composable
-private fun PreferencesScreen(datastore: IStorePreference) {
+private fun PreferencesScreen(datastore: IStorePreference, onTestRun: () -> Unit = {}) {
     val scope = rememberCoroutineScope()
     Scaffold(
         topBar = { TopAppBar(title = { Text("Preferences") }) }
@@ -101,7 +110,7 @@ private fun PreferencesScreen(datastore: IStorePreference) {
                 datastore.getPreferenceItem(StorePreference.NOTIFY_BEFORE, 10f)
                     .collectAsState(initial = 10f).value
             var tempValue by remember(notifyBeforePref) {
-                mutableStateOf(notifyBeforePref)
+                mutableFloatStateOf(notifyBeforePref)
             }
             Text(text = "Notify before:")
             Spacer(modifier = Modifier.height(0.dp))
@@ -130,28 +139,51 @@ private fun PreferencesScreen(datastore: IStorePreference) {
                 }
             )
             Spacer(modifier = Modifier.height(30.dp))
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager?
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager?.canScheduleExactAlarms() != true) {
 
                 Text(text = "Alarms and Reminder not allowed. Please press button to allow")
+
+                Box(
+                    contentAlignment = androidx.compose.ui.Alignment.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(onClick = {
+                        Toast.makeText(
+                            context,
+                            "Please allow Formula Info to send Alarms and reminders to get notified about sessions",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        ContextCompat.startActivity(
+                            context,
+                            Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).setFlags(
+                                Intent.FLAG_ACTIVITY_NEW_TASK
+                            ),
+                            null
+                        )
+
+                    }) {
+                        Text(text = "Allow")
+                    }
+                }
+            }
+
+            Box(
+                contentAlignment = androidx.compose.ui.Alignment.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Button(onClick = {
                     Toast.makeText(
                         context,
-                        "Please allow Formula Info to send Alarms and reminders to get notified about sessions",
+                        "Sent Notification, it should be shown in your notifications in 2 seconds",
                         Toast.LENGTH_LONG
                     ).show()
 
-                    ContextCompat.startActivity(
-                        context,
-                        Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).setFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK
-                        ),
-                        null
-                    )
-
-                }) {
-                    Text(text = "Allow")
+                    onTestRun() }) {
+                    Text(text = "Test notification")
                 }
+
             }
         }
     }
