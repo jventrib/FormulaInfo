@@ -99,6 +99,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.face.detection)
+    implementation(libs.accompanist.permissions)
 
     //test
     testImplementation(libs.junit)
