@@ -6,6 +6,8 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -36,13 +40,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
-import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.jventrib.formulainfo.notification.calcNotifyBefore
 import com.jventrib.formulainfo.ui.common.toDurationString
 import kotlinx.coroutines.CoroutineScope
@@ -83,6 +90,7 @@ private suspend fun notify(
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun PreferencesScreen(datastore: IStorePreference, onTestRun: () -> Unit = {}) {
     val scope = rememberCoroutineScope()
@@ -139,32 +147,58 @@ private fun PreferencesScreen(datastore: IStorePreference, onTestRun: () -> Unit
                 }
             )
             Spacer(modifier = Modifier.height(30.dp))
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager?
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager?.canScheduleExactAlarms() != true) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-                Text(text = "Alarms and Reminder not allowed. Please press button to allow")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                var activityLaunched by remember { mutableStateOf(false) }
+                val startForResult =
+                    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                        activityLaunched = !activityLaunched //We are just using this to trigger a recomposition
+                        logcat("PreferencesScreen") { "hasActivityLaunched: $activityLaunched" }
+                    }
 
-                Box(
-                    contentAlignment = androidx.compose.ui.Alignment.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Button(onClick = {
-                        Toast.makeText(
-                            context,
-                            "Please allow Formula Info to send Alarms and reminders to get notified about sessions",
-                            Toast.LENGTH_LONG
-                        ).show()
+                key(activityLaunched) {
+                    if (!alarmManager.canScheduleExactAlarms()) {
+                        Text(text = "Alarms and Reminder not allowed. Please press button to allow")
+                        Box(
+                            contentAlignment = androidx.compose.ui.Alignment.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Button(onClick = {
+                                Toast.makeText(
+                                    context,
+                                    "Please allow Formula Info to send Alarms and reminders to get notified about sessions",
+                                    Toast.LENGTH_LONG
+                                ).show()
 
-                        ContextCompat.startActivity(
-                            context,
-                            Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).setFlags(
-                                Intent.FLAG_ACTIVITY_NEW_TASK
-                            ),
-                            null
-                        )
+                                startForResult.launch(
+                                    //context.startActivity(
+                                    Intent(
+                                        Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                                        "package:${context.packageName}".toUri()
+                                    )
+                                )
 
-                    }) {
-                        Text(text = "Allow")
+                            }) { Text(text = "Allow alarms and reminders") }
+                        }
+                    }
+                }
+            }
+
+            //ask for permission to send notifications
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val notificationPermissionState = rememberPermissionState(
+                    permission = android.Manifest.permission.POST_NOTIFICATIONS
+                )
+                if (!notificationPermissionState.status.isGranted) {
+                    Text(text = "Notifications not allowed. Please press button to allow")
+                    Box(
+                        contentAlignment = androidx.compose.ui.Alignment.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Button(onClick = { notificationPermissionState.launchPermissionRequest() }) {
+                            Text(text = "Allow notifications")
+                        }
                     }
                 }
             }
@@ -180,10 +214,8 @@ private fun PreferencesScreen(datastore: IStorePreference, onTestRun: () -> Unit
                         Toast.LENGTH_LONG
                     ).show()
 
-                    onTestRun() }) {
-                    Text(text = "Test notification")
-                }
-
+                    onTestRun()
+                }) { Text(text = "Test notification") }
             }
         }
     }

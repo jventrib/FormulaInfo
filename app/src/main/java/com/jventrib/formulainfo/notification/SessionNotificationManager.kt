@@ -25,6 +25,8 @@ import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.first
+import logcat.LogPriority
+import logcat.asLog
 import logcat.logcat
 
 @Singleton
@@ -113,11 +115,15 @@ class SessionNotificationManager @Inject constructor(
                                     .apply { set(StorePreference.NOTIFY_FIRST_RUN, false) }
                             }
                         } else {
-                            Toast.makeText(
-                                context,
-                                "Alarms and reminders not allowed",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            try {
+                                Toast.makeText(
+                                    context,
+                                    "Alarms and reminders not allowed",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } catch (e: NullPointerException) {
+                                logcat(LogPriority.ERROR) { e.asLog() }
+                            }
                         }
                     }
                 } else {
