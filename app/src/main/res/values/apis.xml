@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="api_ergast">https://ergast.com/api/f1/</string>
+    <string name="api_ergast">https://api.jolpi.ca/ergast/f1/</string>
     <string name="api_wikipedia">https://en.wikipedia.org/</string>
     <string name="api_github_raw">https://raw.githubusercontent.com/sportstimes/f1/main/_db/f1/</string>
 </resources>
