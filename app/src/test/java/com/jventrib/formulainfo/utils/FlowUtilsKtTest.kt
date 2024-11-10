@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.Mutex
 import org.junit.Ignore
 import org.junit.Test
 import retrofit2.Retrofit
@@ -54,10 +54,10 @@ class FlowUtilsKtTest {
 
     @Test
     fun testThrottle() = runBlocking {
-        val semaphore = Semaphore(4)
+        val mutex = Mutex()
         repeat(15) {
             launch {
-                throttled(semaphore) {
+                throttled(mutex) {
                     println(fetchData())
                 }
             }
@@ -67,7 +67,7 @@ class FlowUtilsKtTest {
     @Test
     @Ignore
     fun jolpicaApiShouldBeThrottled() {
-        val semaphore = Semaphore(1)
+        val mutex = Mutex()
         println("start --> ${now()}")
         val mrdService = Retrofit.Builder()
             .baseUrl("https://api.jolpi.ca/ergast/f1/")
@@ -78,13 +78,13 @@ class FlowUtilsKtTest {
         val round = 1
         runBlocking {
             val drivers =
-                throttled(semaphore) { mrdService.getResults(season, round) }
+                throttled(mutex) { mrdService.getResults(season, round) }
                     .mrData.table.races.first().results!!.map { it.driver }
             println("${now()} --> $drivers")
             drivers.forEach { driver ->
                 launch {
                     val tableMRResponse =
-                        throttled(semaphore) {
+                        throttled(mutex) {
                             mrdService.getLapTimes(
                                 season,
                                 round,
