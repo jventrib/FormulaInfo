@@ -42,7 +42,7 @@ class ThrottledCallAdapterFactoryTest {
         val mrdService = Retrofit.Builder()
             .baseUrl("https://api.jolpi.ca/ergast/f1/")
             .addConverterFactory(provideGsonConverterFactory())
-            .addCallAdapterFactory(ThrottledCallAdapterFactory(GlobalScope, 1, 250.milliseconds))
+            .addCallAdapterFactory(ThrottledCallAdapterFactory(GlobalScope, 250.milliseconds))
             .build()
             .create<MrdService>()
         val season = 2022

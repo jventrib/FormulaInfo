@@ -6,7 +6,7 @@ import com.jventrib.formulainfo.utils.throttled
 import java.net.URLDecoder
 import java.time.Instant
 import java.time.ZonedDateTime
-import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.Mutex
 
 const val DEFAULT_IMAGE_SIZE = 100
 
@@ -18,12 +18,12 @@ open class RaceRemoteDataSource(
     private val f1calendarService: F1CalendarService
 ) {
 
-    private val semaphore: Semaphore = Semaphore(1)
+    private val mutex = Mutex()
 
     suspend fun getRaces(season: Int): List<RaceRemote> {
 
         val races =
-            throttled(semaphore) { mrdService.getSchedule(season) }.mrData.table.races
+            throttled(mutex) { mrdService.getSchedule(season) }.mrData.table.races
         return if (season >= F1C_MIN_YEAR) {
             try {
                 zipMrdAndF1cSessions(races, season)
@@ -57,15 +57,15 @@ open class RaceRemoteDataSource(
         }
 
     suspend fun getResults(season: Int, round: Int): List<ResultRemote> =
-        throttled(semaphore) { mrdService.getResults(season, round) }
+        throttled(mutex) { mrdService.getResults(season, round) }
             .mrData.table.races.firstOrNull()?.results ?: listOf()
 
     suspend fun getQualResults(season: Int, round: Int): List<ResultRemote> =
-        throttled(semaphore) { mrdService.getQualResults(season, round) }
+        throttled(mutex) { mrdService.getQualResults(season, round) }
             .mrData.table.races.firstOrNull()?.qualResults ?: listOf()
 
     suspend fun getSprintResults(season: Int, round: Int): List<ResultRemote> =
-        throttled(semaphore) { mrdService.getSprintResults(season, round) }
+        throttled(mutex) { mrdService.getSprintResults(season, round) }
             .mrData.table.races.firstOrNull()?.sprintResults ?: listOf()
 
     suspend fun getCountryFlag(country: String) =
@@ -97,6 +97,6 @@ open class RaceRemoteDataSource(
     }
 
     suspend fun getLapTime(season: Int, round: Int, driver: String) =
-        throttled(semaphore) { mrdService.getLapTimes(season, round, driver) }
+        throttled(mutex) { mrdService.getLapTimes(season, round, driver) }
             .mrData.table.races.firstOrNull()?.laps ?: listOf()
 }

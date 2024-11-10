@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import logcat.LogPriority
 import logcat.logcat
@@ -35,35 +34,22 @@ fun <T> mutableSharedFlow() = MutableSharedFlow<T>(1)
 
 fun <T> mutableSharedFlow(initial: T) = mutableSharedFlow<T>().apply { tryEmit(initial) }
 
-private val mutex = Mutex()
-private val executionDurations = ArrayDeque<Long>(0)
 
 suspend fun <T> throttled(
-    semaphore: Semaphore,
+    mutex: Mutex,
     duration: Duration = 260.milliseconds,
     block: suspend () -> T
 ): T {
-    semaphore.acquire()
     mutex.withLock {
-        executionDurations.add(currentTimeMillis())
-    }
-
-    return block().also {
-        if (semaphore.availablePermits == 0) {
-            coroutineScope {
-                launch {
-                    val wait = mutex.withLock {
-                        val durationToOldest =
-                            currentTimeMillis() - executionDurations.removeFirst()
-                        (duration.inWholeMilliseconds - durationToOldest).coerceAtLeast(0)
-                    }
-                    //println("throttled wait: $wait")
-                    delay(wait)
-                    semaphore.release()
-                }
+        val start = currentTimeMillis()
+        val result = block()
+        coroutineScope {
+            launch {
+                val executionDuration = currentTimeMillis() - start
+                val wait = (duration.inWholeMilliseconds - executionDuration).coerceAtLeast(0)
+                delay(wait)
             }
-        } else {
-            semaphore.release()
         }
+        return result
     }
 }
