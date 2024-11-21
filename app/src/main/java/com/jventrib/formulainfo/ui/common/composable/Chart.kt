@@ -1,5 +1,9 @@
 package com.jventrib.formulainfo.ui.common.composable
 
+import android.graphics.Bitmap
+import android.graphics.BitmapShader
+import android.graphics.Canvas
+import android.graphics.Shader.TileMode.REPEAT
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,7 +34,10 @@ import androidx.compose.ui.geometry.lerp
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.PointMode
+import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
@@ -52,6 +59,7 @@ import com.jventrib.formulainfo.ui.common.detectTransformGesturesXY
 import com.jventrib.formulainfo.ui.common.div
 import com.jventrib.formulainfo.ui.common.formatDecimal
 import com.jventrib.formulainfo.ui.common.times
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -139,9 +147,18 @@ fun <E> Chart(
                 // Draw Grid
                 drawGrid(state)
 
+                val offset = getOnScreenPoint(Offset(0f, 0f), state)
+
                 // Series
-                onScreenSeries.forEach { serieScreen ->
-                    drawSerie(serieScreen.seriePoints, serieScreen.color, pointAlpha)
+                onScreenSeries.forEachIndexed { index, serieScreen ->
+                    drawSerie(
+                        serieScreen.seriePoints,
+                        serieScreen.color,
+                        serieScreen.alternateColor,
+                        pointAlpha,
+                        offset.x,
+                        offset.y
+                    )
                 }
 
                 drawAxisLabels(
@@ -299,15 +316,32 @@ private fun <E> DrawScope.drawAxisLabels(
 fun <E> DrawScope.drawSerie(
     points: List<DataPoint<E>>,
     color: Color,
+    alternateColor: Color?,
     alpha: Float,
+    offsetX: Float,
+    offsetY: Float,
 ) {
-    drawPoints(
-        points.map { it.offset },
-        PointMode.Polygon,
-        color,
-        3.dp.toPx(),
-        StrokeCap.Round,
-    )
+    if (alternateColor != null) {
+        val createDashShaderX = createDashShaderX(color, offsetX)
+        val createDashShaderY = createDashShaderY(color, offsetY)
+
+        points.map { it.offset }.windowed(2) {
+            val start = it[0]
+            val end = it[1]
+            val offset = end - start
+            val shader = if (abs(offset.y) > abs(offset.x)) createDashShaderY else createDashShaderX
+            val brush = ShaderBrush(shader)
+            drawLine(brush, start, end, 3.dp.toPx())
+        }
+    } else {
+        drawPoints(
+            points.map { it.offset },
+            PointMode.Polygon,
+            color,
+            3.dp.toPx(),
+            StrokeCap.Round,
+        )
+    }
     points.forEach { drawCircle(color = color, 4.dp.toPx(), it.offset, alpha) }
 }
 
@@ -392,6 +426,7 @@ enum class YOrientation {
 data class Serie<E>(
     val seriePoints: List<DataPoint<E>>,
     val color: Color,
+    val alternateColor: Color? = null,
     val label: String,
     val yOrigin: Offset? = null
 )
@@ -432,6 +467,7 @@ fun ChartPreview() {
                 DataPoint("TEST", Offset(it.toFloat(), Random.nextInt(20).toFloat()))
             },
             Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()),
+            null,
             "TEST"
         )
     }
@@ -451,4 +487,36 @@ fun ChartPreview() {
             gridStep = Offset(5f, 1000f),
         )
     }
+}
+
+private fun createDashShaderX(color: Color, offset: Float) =
+    createDashShader(color, 40, 1, 40F, 0f, -offset)
+
+private fun createDashShaderY(color: Color, offset: Float) =
+    createDashShader(color, 1, 40, 0F, 40f, -offset)
+
+private fun createDashShader(
+    color: Color,
+    width: Int,
+    height: Int,
+    tileX: Float,
+    tileY: Float,
+    offset: Float,
+): BitmapShader {
+    val p = Paint()
+    p.style = PaintingStyle.Fill
+    p.strokeWidth = 3F
+    p.color = color
+    p.pathEffect = PathEffect.dashPathEffect(floatArrayOf(30f, 10f), (offset) % 40)
+    val mask = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(mask)
+    canvas.drawLine(
+        0F,
+        0F,
+        tileX,
+        tileY,
+        p.asFrameworkPaint()
+    )
+    canvas.setBitmap(null)
+    return BitmapShader(mask, REPEAT, REPEAT)
 }

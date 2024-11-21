@@ -39,10 +39,10 @@ object ResultDriverMapper {
                 )
             )
         } else {
-            val list = remotes.groupBy { it.constructor }.flatMap {
-                it.value.mapIndexed { index, result -> Pair(result, index) }
-            }
-            list.map { toEntity(it.first, it.second) }
+            remotes
+                .groupBy { it.constructor.constructorId }
+                .flatMap { it.value.withIndex() }
+                .map { toEntity(it.value, it.index) }
         }
     }
 }
