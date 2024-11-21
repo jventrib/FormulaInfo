@@ -75,17 +75,15 @@ fun <E> Chart(
     var rotation by remember { mutableStateOf(0f) }
     val onGesture: (centroid: Offset, pan: Offset, zoom: Offset, rotation: Float) -> Unit =
         { _, offsetChange, zoomChange, rotationChange ->
-            scale =
-                abs(scale * zoomChange.coerceAtMost(Offset(2f, 2f))).coerceIn(
-                    Offset(1f, 1f), Offset(50f, 25f)
-                )
+            scale = abs(scale * zoomChange.coerceAtMost(Offset(2f, 2f))).coerceIn(
+                Offset(1f, 1f), Offset(50f, 25f)
+            )
             rotation += rotationChange
             scrollOffset += offsetChange / scale
         }
 
     BoxWithConstraints(
-        modifier
-            .fillMaxSize()
+        modifier.fillMaxSize()
     ) {
         val constraintSize = Size(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
         var size by remember { mutableStateOf(constraintSize) }
@@ -174,8 +172,7 @@ private fun <E> YAxis(seriesPoints: List<Serie<E>>) {
             val yOrigin = serie.yOrigin
             if (yOrigin != null && !yOrigin.y.isNaN()) {
                 Text(
-                    text = serie.label,
-                    color = Color.White,
+                    text = serie.label, color = Color.White,
                     modifier = Modifier
                         .offset(offset = {
                             IntOffset(0, yOrigin.y.roundToInt() - 12.dp.roundToPx())
@@ -195,8 +192,7 @@ private fun <E> DrawScope.drawGrid(state: ChartState<E>) {
         val verticalPadding = 16.dp.toPx() * 2
         val horizontalPadding = 4.dp.toPx()
 
-        val xRange =
-            range(state.boundaries.minX, state.boundaries.maxX, state.gridStep.x)
+        val xRange = range(state.boundaries.minX, state.boundaries.maxX, state.gridStep.x)
 
         xRange.forEach { x ->
             val onScreenPoint = getOnScreenPoint(Offset(x, 0f), state).copy(y = 0f)
@@ -205,15 +201,13 @@ private fun <E> DrawScope.drawGrid(state: ChartState<E>) {
                     Color.LightGray,
                     start = Offset(onScreenPoint.x, -verticalPadding),
                     end = Offset(
-                        onScreenPoint.x,
-                        this.size.height + verticalPadding
+                        onScreenPoint.x, this.size.height + verticalPadding
                     )
                 )
             }
         }
 
-        val yRange =
-            range(state.boundaries.minY, state.boundaries.maxY, state.gridStep.y)
+        val yRange = range(state.boundaries.minY, state.boundaries.maxY, state.gridStep.y)
 
         yRange.forEach { y ->
             val onScreenPoint = getOnScreenPoint(Offset(0f, y), state).copy(x = 0f)
@@ -222,8 +216,7 @@ private fun <E> DrawScope.drawGrid(state: ChartState<E>) {
                     Color.LightGray,
                     start = Offset(-horizontalPadding, onScreenPoint.y),
                     end = Offset(
-                        this.size.width + horizontalPadding,
-                        onScreenPoint.y
+                        this.size.width + horizontalPadding, onScreenPoint.y
                     )
                 )
             }
@@ -244,8 +237,7 @@ private fun <E> DrawScope.drawAxisLabels(
     }
 
     state.gridStep?.let { gridStep ->
-        val xRange =
-            range(state.boundaries.minX, state.boundaries.maxX, gridStep.x)
+        val xRange = range(state.boundaries.minX, state.boundaries.maxX, gridStep.x)
 
         xRange.forEach { x ->
             val label = xLabelTransform(x)
@@ -260,17 +252,14 @@ private fun <E> DrawScope.drawAxisLabels(
                 )
                 drawIntoCanvas {
                     it.nativeCanvas.drawText(
-                        label,
-                        onScreenPoint.x - 8 * label.length, // Center Axis Label on grid line
-                        this.size.height + 12.dp.toPx(),
-                        axisLabelPaint
+                        label, onScreenPoint.x - 8 * label.length, // Center Axis Label on grid line
+                        this.size.height + 12.dp.toPx(), axisLabelPaint
                     )
                 }
             }
         }
 
-        val yRange =
-            range(state.boundaries.minY, state.boundaries.maxY, gridStep.y)
+        val yRange = range(state.boundaries.minY, state.boundaries.maxY, gridStep.y)
 
         yRange.forEach { y ->
             val onScreenPoint = getOnScreenPoint(Offset(0f, y), state).copy(x = 0f)
@@ -285,9 +274,7 @@ private fun <E> DrawScope.drawAxisLabels(
                 )
                 drawIntoCanvas {
                     it.nativeCanvas.drawText(
-                        label,
-                        0f,
-                        onScreenPoint.y + 10, // Center Axis Label on grid line
+                        label, 0f, onScreenPoint.y + 10, // Center Axis Label on grid line
                         axisLabelPaint
                     )
                 }
@@ -312,15 +299,13 @@ fun <E> DrawScope.drawSerie(
 }
 
 private fun <E> getSeriePoints(serie: Serie<E>, state: ChartState<E>): Serie<E> {
-    val points = serie.seriePoints
-        .map {
-            it.copy(
-                offset = getOnScreenPoint(
-                    it.offset,
-                    state
-                )
+    val points = serie.seriePoints.map {
+        it.copy(
+            offset = getOnScreenPoint(
+                it.offset, state
             )
-        }
+        )
+    }
 
     val pointsOffset = points.map { it.offset }
     val start = pointsOffset.lastOrNull { it.x <= 0.1f }
@@ -361,25 +346,46 @@ private fun <E> getBoundaries(
     boundaries: Boundaries?,
     series: List<Serie<E>>
 ): ActualBoundaries {
-    val minX =
-        boundaries?.minX ?: series.filterNot { it.seriePoints.isEmpty() }.minOfOrNull { serie ->
-            serie.seriePoints.minOfOrNull { it.offset.x } ?: 0f
-        } ?: 0f
-    val maxX =
-        boundaries?.maxX ?: series.filterNot { it.seriePoints.isEmpty() }.maxOfOrNull { serie ->
-            serie.seriePoints.maxOfOrNull { it.offset.x } ?: 0f
-        } ?: 0f
-    val minY =
-        boundaries?.minY ?: series.filterNot { it.seriePoints.isEmpty() }.minOfOrNull { serie ->
-            serie.seriePoints.minOfOrNull { it.offset.y } ?: 0f
-        } ?: 0f
-    val maxY =
-        boundaries?.maxY ?: series.filterNot { it.seriePoints.isEmpty() }.maxOfOrNull { serie ->
-            serie.seriePoints.maxOfOrNull { it.offset.y } ?: 0f
-        } ?: 0f
+    val minX = min(boundaries, series, { it?.minX }, Offset::x)
+    val maxX = max(boundaries, series, { it?.maxX }, Offset::x)
+    val minY = min(boundaries, series, { it?.minY }, Offset::y)
+    val maxY = max(boundaries, series, { it?.maxY }, Offset::y)
 
     return ActualBoundaries(minX, maxX, minY, maxY)
 }
+
+private fun <E> max(
+    boundaries: Boundaries?,
+    series: List<Serie<E>>,
+    b: (Boundaries?) -> Float?,
+    axis: (Offset) -> Float
+) = if (boundaries?.adjust == true) {
+    @Suppress("DIVISION_BY_ZERO")
+    minOf(((b(boundaries) ?: (1.0F / 0.0F))), series.max(axis) ?: 0f)
+} else {
+    b(boundaries) ?: series.max(axis) ?: 0f
+}
+
+private fun <E> min(
+    boundaries: Boundaries?,
+    series: List<Serie<E>>,
+    b: (Boundaries?) -> Float?,
+    axis: (Offset) -> Float
+) = if (boundaries?.adjust == true) {
+    maxOf((b(boundaries) ?: 0f), series.min(axis) ?: 0f)
+} else {
+    b(boundaries) ?: series.min(axis) ?: 0f
+}
+
+private fun <E> List<Serie<E>>.max(axis: (Offset) -> Float) =
+    filterNot { it.seriePoints.isEmpty() }.maxOfOrNull { serie ->
+        serie.seriePoints.maxOfOrNull { axis(it.offset) } ?: 0f
+    }
+
+private fun <E> List<Serie<E>>.min(axis: (Offset) -> Float) =
+    filterNot { it.seriePoints.isEmpty() }.minOfOrNull { serie ->
+        serie.seriePoints.minOfOrNull { axis(it.offset) } ?: 0f
+    }
 
 private fun range(from: Float, to: Float, step: Float): Sequence<Float> {
     return generateSequence(from) { it + step }.takeWhile { it <= to }
@@ -402,7 +408,8 @@ data class Boundaries(
     val minX: Float? = null,
     val maxX: Float? = null,
     val minY: Float? = null,
-    val maxY: Float? = null
+    val maxY: Float? = null,
+    val adjust: Boolean = false
 )
 
 data class ActualBoundaries(
@@ -431,8 +438,7 @@ fun ChartPreview() {
             (0..10).map {
                 DataPoint("TEST", Offset(it.toFloat(), Random.nextInt(20).toFloat()))
             },
-            Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()),
-            "TEST"
+            Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat()), "TEST"
         )
     }
 
@@ -449,6 +455,7 @@ fun ChartPreview() {
                 .border(2.dp, Color.Red),
             yOrientation = YOrientation.Down,
             gridStep = Offset(5f, 1000f),
+            boundaries = Boundaries(maxY = 300f, adjust = true)
         )
     }
 }
