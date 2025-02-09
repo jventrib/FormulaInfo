@@ -7,7 +7,7 @@ import java.time.Instant
 class RaceRemote(
     val season: Int,
     val round: Int,
-    val url: String,
+    val url: String?,
     val raceName: String,
     @SerializedName("Circuit")
     val circuit: Circuit,

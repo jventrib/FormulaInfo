@@ -2,9 +2,11 @@ package com.jventrib.formulainfo.data.remote
 
 import com.jventrib.formulainfo.model.remote.RaceRemote
 import com.jventrib.formulainfo.model.remote.ResultRemote
+import com.jventrib.formulainfo.utils.throttled
 import java.net.URLDecoder
 import java.time.Instant
 import java.time.ZonedDateTime
+import kotlinx.coroutines.sync.Mutex
 
 const val DEFAULT_IMAGE_SIZE = 100
 
@@ -16,9 +18,12 @@ open class RaceRemoteDataSource(
     private val f1calendarService: F1CalendarService
 ) {
 
+    private val mutex = Mutex()
+
     suspend fun getRaces(season: Int): List<RaceRemote> {
 
-        val races = mrdService.getSchedule(season).mrData.table.races
+        val races =
+            throttled(mutex) { mrdService.getSchedule(season) }.mrData.table.races
         return if (season >= F1C_MIN_YEAR) {
             try {
                 zipMrdAndF1cSessions(races, season)
@@ -51,26 +56,17 @@ open class RaceRemoteDataSource(
             mrd
         }
 
-    suspend fun getResults(season: Int, round: Int): List<ResultRemote> {
-        return mrdService.getResults(
-            season,
-            round
-        ).mrData.table.races.firstOrNull()?.results ?: listOf()
-    }
+    suspend fun getResults(season: Int, round: Int): List<ResultRemote> =
+        throttled(mutex) { mrdService.getResults(season, round) }
+            .mrData.table.races.firstOrNull()?.results ?: listOf()
 
-    suspend fun getQualResults(season: Int, round: Int): List<ResultRemote> {
-        return mrdService.getQualResults(
-            season,
-            round
-        ).mrData.table.races.firstOrNull()?.qualResults ?: listOf()
-    }
+    suspend fun getQualResults(season: Int, round: Int): List<ResultRemote> =
+        throttled(mutex) { mrdService.getQualResults(season, round) }
+            .mrData.table.races.firstOrNull()?.qualResults ?: listOf()
 
-    suspend fun getSprintResults(season: Int, round: Int): List<ResultRemote> {
-        return mrdService.getSprintResults(
-            season,
-            round
-        ).mrData.table.races.firstOrNull()?.sprintResults ?: listOf()
-    }
+    suspend fun getSprintResults(season: Int, round: Int): List<ResultRemote> =
+        throttled(mutex) { mrdService.getSprintResults(season, round) }
+            .mrData.table.races.firstOrNull()?.sprintResults ?: listOf()
 
     suspend fun getCountryFlag(country: String) =
         getWikipediaImage(country, DEFAULT_IMAGE_SIZE, WikipediaService.Licence.FREE)
@@ -101,6 +97,6 @@ open class RaceRemoteDataSource(
     }
 
     suspend fun getLapTime(season: Int, round: Int, driver: String) =
-        mrdService.getLapTimes(season, round, driver).mrData.table.races.firstOrNull()?.laps
-            ?: listOf()
+        throttled(mutex) { mrdService.getLapTimes(season, round, driver) }
+            .mrData.table.races.firstOrNull()?.laps ?: listOf()
 }
