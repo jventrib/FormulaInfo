@@ -8,7 +8,7 @@ object RaceMapper : Mapper<RaceRemote, RaceInfo> {
     override fun toEntity(remote: RaceRemote) = RaceInfo(
         remote.season,
         remote.round,
-        remote.url,
+        remote.url ?: "",
         remote.raceName,
         remote.circuit.circuitId,
         RaceInfo.Sessions(
