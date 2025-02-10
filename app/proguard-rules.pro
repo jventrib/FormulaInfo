@@ -34,3 +34,5 @@
 -keepclassmembers,allowobfuscation class * {
   @com.google.gson.annotations.SerializedName <fields>;
 }
+
+-printmapping build/outputs/mapping/release/mapping.txt
