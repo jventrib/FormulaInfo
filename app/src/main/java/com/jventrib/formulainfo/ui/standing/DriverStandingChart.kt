@@ -16,6 +16,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -73,6 +74,13 @@ private fun DriverStandingChart(
     standings: Map<Driver, List<DriverStanding>>,
     onStandingClicked: () -> Unit
 ) {
+    val driverIndices = standings.values.map { it.first() }
+        .groupBy { it.constructor }.values.flatMap { results ->
+            results.sortedBy { it.driver.driverId }.withIndex()
+        }.associate {
+            it.value.driver.driverId to it.index
+        }
+
     val scaffoldState = rememberScaffoldState()
     val selectedDrivers =
         rememberSaveable(standings, key = "standingDrivers", saver = driverSelectionSaver) {
@@ -111,14 +119,13 @@ private fun DriverStandingChart(
         }
 
     ) {
-
         val series = standings
             .filter {
                 selectedDrivers[it.key.driverId] ?: false
             }
             .map { entry ->
                 Serie(
-                    entry.value.map { round ->
+                    seriePoints = entry.value.map { round ->
                         DataPoint(
                             round,
                             Offset(
@@ -127,8 +134,9 @@ private fun DriverStandingChart(
                             )
                         )
                     },
-                    entry.value.first().constructor.color,
-                    entry.key.code ?: entry.key.driverId.take(3)
+                    color = entry.value.first().constructor.color,
+                    alternateColor = if (driverIndices[entry.key.driverId] == 1) Color.Yellow else null,
+                    label = entry.key.code ?: entry.key.driverId.take(3)
                 )
             }
 
